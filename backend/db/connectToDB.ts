@@ -7,7 +7,7 @@ if (!mongoUrl) throw new Error();
 async function connectToDB() {
   try {
     const mongoUrl = process.env.MONGO_URL;
-    if (!mongoUrl) throw new Error();
+    if (!mongoUrl) throw new Error("No mongodb url found in .env");
 
     await mongoose.connect(mongoUrl);
     console.log("[server]: Connected to MongoDB");
