@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import catchErrorMessage from "../utils";
+import catchErrorMessage from "../utils/catchErrorMessage";
 
 const mongoUrl = process.env.MONGO_URL;
 if (!mongoUrl) throw new Error();
