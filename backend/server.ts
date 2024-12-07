@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import connectToDB from "./db/connectToDB";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
@@ -20,5 +21,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[server]: Server running on http://localhost:${PORT}`);
+  connectToDB();
+  console.log(`[server] Server running on http://localhost:${PORT}`);
 });
