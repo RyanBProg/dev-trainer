@@ -5,47 +5,47 @@ import { userSignupSchema } from "../zod/userSignupSchema";
 import UserModel from "../db/models/UserModel";
 import catchErrorMessage from "../utils/catchErrorMessage";
 
-// Define the structure of the request body
-interface SignupRequestBody {
+// define the structure of the request body
+type TSignupRequestBody = {
   fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
-}
+};
 
-// Define the signup controller
-export const signup: RequestHandler<{}, {}, SignupRequestBody, {}> = async (
+// define the signup controller
+export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
   res
 ) => {
   try {
-    // Validate the request body using Zod
+    // validate the request body using Zod
     const parsedData = userSignupSchema.parse(req.body);
     const { fullName, email, password } = parsedData;
 
-    // Check if the user already exists
+    // check if the user already exists
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       res.status(400).json({ error: "Email already exists" });
       return;
     }
 
-    // Hash the password
+    // hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user
+    // create a new user
     const newUser = new UserModel({
       fullName,
       email,
       password: hashedPassword,
     });
 
-    // Explicit check for the new user
+    // explicit check for the new user
     if (newUser) {
       const savedUser = await newUser.save();
 
-      // Send the created user details as a response
+      // send the created user details as a response
       res.status(201).json({
         _id: savedUser._id,
         fullName: savedUser.fullName,
@@ -59,7 +59,7 @@ export const signup: RequestHandler<{}, {}, SignupRequestBody, {}> = async (
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // Handle validation errors from Zod
+      // handle validation errors from Zod
       console.log(
         `[server] Error in zod userSignupSchema: ${JSON.stringify(
           error.errors
@@ -69,7 +69,7 @@ export const signup: RequestHandler<{}, {}, SignupRequestBody, {}> = async (
       return;
     }
 
-    // Handle other errors
+    // handle other errors
     catchErrorMessage("Error in signup controller", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
