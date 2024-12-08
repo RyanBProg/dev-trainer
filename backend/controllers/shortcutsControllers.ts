@@ -9,7 +9,6 @@ export const getShortcuts = async (req: Request, res: Response) => {
   // finish me!!!
 };
 
-// define the structure of the request body
 type TCreateNewShortcutRequestBody = {
   shortDescription: string;
   description: string;
@@ -85,5 +84,18 @@ export const createNewShortcut: RequestHandler<
     // handle other errors
     catchErrorMessage("Error in signup controller", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getShortcut = async (req: Request, res: Response) => {
+  try {
+    const shortcutId = req.params.id;
+    const shortcutData = await ShortcutsModel.find({ _id: shortcutId });
+    if (!shortcutData) throw new Error("Shortcut not found");
+
+    res.status(200).json(shortcutData);
+  } catch (error) {
+    catchErrorMessage("Error in getShortcut", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
