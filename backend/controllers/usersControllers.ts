@@ -10,7 +10,7 @@ async function getUserData(req: Request, res: Response) {
 
     res.status(200).json(userData);
   } catch (error) {
-    catchErrorMessage("Error in getUsersForSidebar", error);
+    catchErrorMessage("Error in getUserData", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
