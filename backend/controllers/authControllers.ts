@@ -1,46 +1,76 @@
 import bcrypt from "bcryptjs";
+import { RequestHandler } from "express";
+import { z } from "zod";
+import { userSignupSchema } from "../zod/userSignupSchema";
 import UserModel from "../db/models/UserModel";
-import { Request, Response } from "express";
 import catchErrorMessage from "../utils/catchErrorMessage";
 
-async function signup(req: Request, res: Response) {
+// Define the structure of the request body
+interface SignupRequestBody {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// Define the signup controller
+export const signup: RequestHandler<{}, {}, SignupRequestBody, {}> = async (
+  req,
+  res
+) => {
   try {
-    const { fullName, email, password, confirmPassword } = req.body;
+    // Validate the request body using Zod
+    const parsedData = userSignupSchema.parse(req.body);
+    const { fullName, email, password } = parsedData;
 
-    // check inputs
-    if (password.length < 8)
-      res
-        .status(400)
-        .json({ error: "Passwords must be longer than 8 characters" });
+    // Check if the user already exists
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ error: "Email already exists" });
+      return;
+    }
 
-    if (password !== confirmPassword)
-      res.status(400).json({ error: "Passwords don't match" });
-
-    const user = await UserModel.findOne({ email });
-    if (user) res.status(400).json({ error: "Email already exists" });
-
-    // hash user password
+    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // create new user
+    // Create a new user
     const newUser = new UserModel({
       fullName,
       email,
       password: hashedPassword,
     });
 
-    const savedUser = await newUser.save();
+    // Explicit check for the new user
+    if (newUser) {
+      const savedUser = await newUser.save();
 
-    res.status(201).json({
-      _id: savedUser._id,
-      fullName: savedUser.fullName,
-      email: savedUser.email,
-      custom: savedUser.custom,
-    });
+      // Send the created user details as a response
+      res.status(201).json({
+        _id: savedUser._id,
+        fullName: savedUser.fullName,
+        email: savedUser.email,
+        custom: savedUser.custom,
+      });
+      return;
+    } else {
+      res.status(400).json({ error: "Invalid user data" });
+      return;
+    }
   } catch (error) {
-    catchErrorMessage("Error in signup controller", error);
-  }
-}
+    if (error instanceof z.ZodError) {
+      // Handle validation errors from Zod
+      console.log(
+        `[server] Error in zod userSignupSchema: ${JSON.stringify(
+          error.errors
+        )}`
+      );
+      res.status(400).json({ error: error.errors });
+      return;
+    }
 
-export default signup;
+    // Handle other errors
+    catchErrorMessage("Error in signup controller", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
