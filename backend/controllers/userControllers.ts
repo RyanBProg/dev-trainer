@@ -4,7 +4,7 @@ import catchErrorMessage from "../utils/catchErrorMessage";
 
 async function getUserData(req: Request, res: Response) {
   try {
-    const userId = req.params._id;
+    const userId = req.params.id;
     const userData = await UserModel.find({ _id: userId }).select("-password");
     if (!userData) throw new Error("User not found");
 
