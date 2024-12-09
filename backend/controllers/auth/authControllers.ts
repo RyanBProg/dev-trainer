@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { z } from "zod";
-import { userSignupSchema } from "../zod/userSignupSchema";
-import UserModel from "../db/models/UserModel";
-import catchErrorMessage from "../utils/catchErrorMessage";
-import { TSignupRequestBody } from "../types/requestBodyControllersTypes";
-import { normaliseRequestBody } from "./auth/utils";
+import { userSignupSchema } from "../../zod/userSignupSchema";
+import UserModel from "../../db/models/UserModel";
+import catchErrorMessage from "../../utils/catchErrorMessage";
+import { TSignupRequestBody } from "../../types/requestBodyControllersTypes";
+import { normaliseRequestBody } from "./utils";
 
 // define the signup controller
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
