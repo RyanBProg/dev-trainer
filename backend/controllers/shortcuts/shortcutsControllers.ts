@@ -67,7 +67,7 @@ export const createNewShortcut: RequestHandler<
     res.status(201).json(savedShortcut);
     return;
   } catch (error) {
-    handleControllerError(error, res, "updateShortcut");
+    handleControllerError(error, res, "createNewShortcut");
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -129,7 +129,7 @@ export const deleteShortcut = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Successfully deleted shortcut" });
   } catch (error) {
-    catchErrorMessage("Error in getShortcut", error);
+    catchErrorMessage("Error in deleteShortcut", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
