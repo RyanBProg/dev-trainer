@@ -117,3 +117,17 @@ export const updateShortcut: RequestHandler<
     handleControllerError(error, res, "updateShortcut");
   }
 };
+
+export const deleteShortcut = async (req: Request, res: Response) => {
+  try {
+    const shortcutId = req.params.id;
+    const result = await ShortcutsModel.deleteOne({ _id: shortcutId });
+    if (!result.deletedCount)
+      throw new Error("Shortcut ID couldn't be found or deleted");
+
+    res.status(200).json({ message: "Successfully deleted shortcut" });
+  } catch (error) {
+    catchErrorMessage("Error in getShortcut", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
