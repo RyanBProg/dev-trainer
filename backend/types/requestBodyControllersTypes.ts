@@ -11,3 +11,8 @@ export type TSignupRequestBody = {
   password: string;
   confirmPassword: string;
 };
+
+export type TLoginRequestBody = {
+  email: string;
+  password: string;
+};
