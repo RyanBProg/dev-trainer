@@ -4,14 +4,8 @@ import { z } from "zod";
 import { userSignupSchema } from "../zod/userSignupSchema";
 import UserModel from "../db/models/UserModel";
 import catchErrorMessage from "../utils/catchErrorMessage";
-
-// define the structure of the request body
-type TSignupRequestBody = {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import { TSignupRequestBody } from "../types/requestBodyControllersTypes";
+import { normaliseRequestBody } from "./auth/utils";
 
 // define the signup controller
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
@@ -21,7 +15,10 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   try {
     // validate the request body using Zod
     const parsedData = userSignupSchema.parse(req.body);
-    const { fullName, email, password } = parsedData;
+
+    // normalise request body to lowercase
+    const normalisedData = normaliseRequestBody(parsedData);
+    const { fullName, email, password } = normalisedData;
 
     // check if the user already exists
     const existingUser = await UserModel.findOne({ email });

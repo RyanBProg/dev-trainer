@@ -4,3 +4,10 @@ export type TCreateShortcutRequestBody = {
   keys: string[];
   type: string;
 };
+
+export type TSignupRequestBody = {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};

@@ -2,7 +2,7 @@ import { FilterQuery } from "mongoose";
 import { z } from "zod";
 import { Response } from "express";
 import ShortcutsModel from "../../db/models/ShortcutsModel";
-import { TCreateShortcutRequestBody } from "../../types/shortcutsControllersTypes";
+import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
 
 export const normaliseRequestBody = (body: TCreateShortcutRequestBody) => {
   return {
