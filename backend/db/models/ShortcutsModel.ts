@@ -9,8 +9,9 @@ const shortcutsSchema = new Schema(
       type: [String],
       required: true,
       validate: {
-        validator: (arr: string[]) => arr.length >= 1,
-        message: "At least one key is required in the keys array.",
+        validator: (arr: string[]) =>
+          arr.length >= 1 && arr.every((key) => key.trim() !== ""),
+        message: "Keys array must have at least one non-empty string.",
       },
     }, // requires a min of 1 element in the keys array
     type: { type: String, required: true },
