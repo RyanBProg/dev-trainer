@@ -68,7 +68,6 @@ export const createNewShortcut: RequestHandler<
     return;
   } catch (error) {
     handleControllerError(error, res, "createNewShortcut");
-    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -116,7 +115,6 @@ export const updateShortcut: RequestHandler<
     res.status(200).json(updatedShortcut);
   } catch (error) {
     handleControllerError(error, res, "updateShortcut");
-    res.status(500).json({ error: "Internal server error" });
   }
 };
 

@@ -1,13 +1,15 @@
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
-import { z } from "zod";
 import { userSignupSchema } from "../../zod/userSignupSchema";
 import UserModel from "../../db/models/UserModel";
-import catchErrorMessage from "../../utils/catchErrorMessage";
-import { TSignupRequestBody } from "../../types/requestBodyControllersTypes";
+import {
+  TLoginRequestBody,
+  TSignupRequestBody,
+} from "../../types/requestBodyControllersTypes";
 import { normaliseRequestBody } from "./utils";
+import { handleControllerError } from "../shortcuts/utils";
+import { signinSchema } from "../../zod/signinSchema";
 
-// define the signup controller
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
   res
@@ -55,19 +57,44 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       return;
     }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      // handle validation errors from Zod
-      console.log(
-        `[server] Error in zod userSignupSchema: ${JSON.stringify(
-          error.errors
-        )}`
-      );
-      res.status(400).json({ error: error.errors });
+    handleControllerError(error, res, "signup");
+  }
+};
+
+export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
+  req,
+  res
+) => {
+  try {
+    // validate the request body using Zod
+    const parsedData = signinSchema.parse(req.body);
+    const { email, password } = parsedData;
+
+    // find the user in the database
+    const user = await UserModel.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      res.status(400).json({ error: "Invalid login details" });
       return;
     }
 
-    // handle other errors
-    catchErrorMessage("Error in signup controller", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    // COMPLETE THIS FUNCTION
+    // generateTokenAndSetCookie(user._id, res);
+
+    // check if password is correct
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      res.status(400).json({ error: "Invalid login details" });
+      return;
+    }
+
+    // return user object
+    res.status(200).json({
+      id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      custom: user.custom,
+    });
+  } catch (error) {
+    handleControllerError(error, res, "login");
   }
 };
