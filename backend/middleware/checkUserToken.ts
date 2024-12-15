@@ -32,7 +32,7 @@ export default async function checkUserToken(
     }
 
     // attach user to the request
-    req.user = { userId: decoded.userId, role: decoded.role };
+    req.user = { userId: decoded.userId, isAdmin: decoded.isAdmin };
 
     next();
   } catch (error) {

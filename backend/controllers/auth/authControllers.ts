@@ -45,7 +45,11 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     // explicit check for the new user
     if (newUser) {
       const savedUser = await newUser.save();
-      generateTokenAndSetCookie(savedUser._id.toString(), res);
+      generateTokenAndSetCookie(
+        savedUser._id.toString(),
+        savedUser.isAdmin,
+        res
+      );
 
       // send the created user details as a response
       res.status(201).json({
@@ -87,7 +91,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    generateTokenAndSetCookie(user._id.toString(), res);
+    generateTokenAndSetCookie(user._id.toString(), user.isAdmin, res);
 
     // return user object
     res.status(200).json({

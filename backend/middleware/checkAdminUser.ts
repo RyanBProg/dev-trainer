@@ -9,8 +9,7 @@ export default async function checkAdminUser(
 ) {
   try {
     // check for a token on the request
-    const role = req.user?.role;
-    if (role !== "admin") {
+    if (!req.user?.isAdmin) {
       res.status(401).json({ error: "Unauthorized - User is not an admin" });
       return;
     }

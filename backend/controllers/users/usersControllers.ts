@@ -5,9 +5,11 @@ import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 
 async function getUserData(req: TUserTokenRequest, res: Response) {
   try {
-    // find user in db using userId
     const userId = req.user?.userId;
-    const userData = await UserModel.find({ _id: userId }).select("-password");
+
+    const userData = await UserModel.findOne({ _id: userId }).select(
+      "-password"
+    );
     if (!userData) {
       res.status(400).json({ error: "User not found" });
       return;

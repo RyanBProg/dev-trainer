@@ -25,7 +25,7 @@ export type TLoginRequestBody = {
 
 type TUser = {
   userId: string;
-  role: string;
+  isAdmin: boolean;
 };
 
 export interface TUserTokenRequest extends Request {

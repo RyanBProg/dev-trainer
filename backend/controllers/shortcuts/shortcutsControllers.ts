@@ -17,7 +17,7 @@ export const getShortcuts = async (req: Request, res: Response) => {
 export const getShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
-    const shortcutData = await ShortcutsModel.find({ _id: shortcutId });
+    const shortcutData = await ShortcutsModel.findOne({ _id: shortcutId });
     if (!shortcutData) throw new Error("Shortcut not found");
 
     res.status(200).json(shortcutData);
@@ -80,7 +80,7 @@ export const updateShortcut: RequestHandler<
   try {
     // check shortcut exists
     const shortcutId = req.params.id;
-    const shortcutData = await ShortcutsModel.find({ _id: shortcutId });
+    const shortcutData = await ShortcutsModel.findOne({ _id: shortcutId });
     if (!shortcutData) throw new Error("Shortcut not found");
 
     // validate the request body using Zod

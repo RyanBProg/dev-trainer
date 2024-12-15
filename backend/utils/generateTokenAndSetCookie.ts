@@ -3,6 +3,7 @@ import { Response } from "express";
 
 export default function generateTokenAndSetCookie(
   userId: string,
+  isAdmin: boolean,
   res: Response
 ) {
   const secretKey = process.env.JWT_SECRET_KEY;
@@ -11,7 +12,7 @@ export default function generateTokenAndSetCookie(
     return res.status(500).json({ error: "Internal server error" });
   }
 
-  const token = jwt.sign({ userId }, secretKey, {
+  const token = jwt.sign({ userId, isAdmin }, secretKey, {
     expiresIn: "1d",
   });
 
