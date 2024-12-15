@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import UserModel from "../db/models/UserModel";
-import catchErrorMessage from "../utils/catchErrorMessage";
+import UserModel from "../../db/models/UserModel";
+import catchErrorMessage from "../../utils/catchErrorMessage";
 
 async function getUserData(req: Request, res: Response) {
   try {

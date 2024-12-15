@@ -7,7 +7,8 @@ export default function generateTokenAndSetCookie(
 ) {
   const secretKey = process.env.JWT_SECRET_KEY;
   if (!secretKey) {
-    return;
+    console.log("[server] generateTokenAndSetCookie: No JWT_SECRET_KEY found");
+    return res.status(500).json({ error: "Internal server error" });
   }
 
   const token = jwt.sign({ userId }, secretKey, {
