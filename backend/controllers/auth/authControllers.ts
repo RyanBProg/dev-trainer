@@ -9,6 +9,7 @@ import {
 import { normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../shortcuts/utils";
 import { signinSchema } from "../../zod/signinSchema";
+import generateTokenAndSetCookie from "../../utils/generateTokenAndSetCookie";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -77,15 +78,14 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    // COMPLETE THIS FUNCTION
-    // generateTokenAndSetCookie(user._id, res);
-
     // check if password is correct
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       res.status(400).json({ error: "Invalid login details" });
       return;
     }
+
+    generateTokenAndSetCookie(user._id.toString(), res);
 
     // return user object
     res.status(200).json({
