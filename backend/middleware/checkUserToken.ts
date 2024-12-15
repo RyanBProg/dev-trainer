@@ -1,11 +1,10 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import catchErrorMessage from "../utils/catchErrorMessage";
 import { Response, NextFunction } from "express";
-import UserModel from "../db/models/UserModel";
-import { TAuthenticatedRequest } from "../types/requestBodyControllersTypes";
+import { TUserTokenRequest } from "../types/requestBodyControllersTypes";
 
-export default async function protectRoute(
-  req: TAuthenticatedRequest,
+export default async function checkUserToken(
+  req: TUserTokenRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -32,21 +31,12 @@ export default async function protectRoute(
       return;
     }
 
-    // find user in db using decoded userId
-    const user = await UserModel.findById({ _id: decoded.userId }).select(
-      "-password"
-    );
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-
     // attach user to the request
-    req.user = user;
+    req.user = { userId: decoded.userId, role: decoded.role };
 
     next();
   } catch (error) {
-    catchErrorMessage("Error in protectRoute middleware", error);
+    catchErrorMessage("Error in checkUserToken middleware", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

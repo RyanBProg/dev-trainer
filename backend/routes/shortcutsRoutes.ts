@@ -6,13 +6,18 @@ import {
   updateShortcut,
   deleteShortcut,
 } from "../controllers/shortcuts/shortcutsControllers";
+import checkUserToken from "../middleware/checkUserToken";
+import checkAdminUser from "../middleware/checkAdminUser";
 
 const router = express.Router();
 
-router.get("/", getShortcuts);
-router.post("/", createNewShortcut);
-router.get("/:id", getShortcut);
-router.put("/:id", updateShortcut);
-router.delete("/:id", deleteShortcut);
+// public routes
+router.get("/", checkUserToken, getShortcuts);
+router.get("/:id", checkUserToken, getShortcut);
+
+// admin routes
+router.post("/admin", checkUserToken, checkAdminUser, createNewShortcut);
+router.put("/admin/:id", checkUserToken, checkAdminUser, updateShortcut);
+router.delete("/admin/:id", checkUserToken, checkAdminUser, deleteShortcut);
 
 export default router;

@@ -1,12 +1,17 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import UserModel from "../../db/models/UserModel";
 import catchErrorMessage from "../../utils/catchErrorMessage";
-import { TAuthenticatedRequest } from "../../types/requestBodyControllersTypes";
+import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 
-async function getUserData(req: TAuthenticatedRequest, res: Response) {
+async function getUserData(req: TUserTokenRequest, res: Response) {
   try {
-    const userData = req.user;
-    if (!userData) throw new Error("User not found");
+    // find user in db using userId
+    const userId = req.user?.userId;
+    const userData = await UserModel.find({ _id: userId }).select("-password");
+    if (!userData) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
 
     res.status(200).json(userData);
   } catch (error) {

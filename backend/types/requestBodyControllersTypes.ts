@@ -23,10 +23,19 @@ export type TLoginRequestBody = {
 
 // USER
 
-type TUserBase = InferSchemaType<typeof userSchema>;
-type TUserWithoutPassword = Omit<TUserBase, "password">;
-type TUserWithoutPasswordHYD = HydratedDocument<TUserWithoutPassword>;
+type TUser = {
+  userId: string;
+  role: string;
+};
 
-export interface TAuthenticatedRequest extends Request {
-  user?: TUserWithoutPasswordHYD;
+export interface TUserTokenRequest extends Request {
+  user?: TUser;
 }
+
+// type TUserBase = InferSchemaType<typeof userSchema>;
+// type TUserWithoutPassword = Omit<TUserBase, "password">;
+// type TUserWithoutPasswordHYD = HydratedDocument<TUserWithoutPassword>;
+
+// export interface TAuthenticatedRequest extends Request {
+//   user?: TUserWithoutPasswordHYD;
+// }
