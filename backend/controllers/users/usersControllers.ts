@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import UserModel from "../../db/models/UserModel";
 import catchErrorMessage from "../../utils/catchErrorMessage";
+import { TAuthenticatedRequest } from "../../types/requestBodyControllersTypes";
 
-async function getUserData(req: Request, res: Response) {
+async function getUserData(req: TAuthenticatedRequest, res: Response) {
   try {
-    const userId = req.params.id;
-    const userData = await UserModel.find({ _id: userId }).select("-password");
+    const userData = req.user;
     if (!userData) throw new Error("User not found");
 
     res.status(200).json(userData);

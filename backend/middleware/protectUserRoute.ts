@@ -1,10 +1,11 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import catchErrorMessage from "../utils/catchErrorMessage";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import UserModel from "../db/models/UserModel";
+import { TAuthenticatedRequest } from "../types/requestBodyControllersTypes";
 
 export default async function protectRoute(
-  req: Request,
+  req: TAuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -12,28 +13,32 @@ export default async function protectRoute(
     // check for a token on the request
     const token = req.cookies.jwt;
     if (!token) {
-      return res
-        .status(401)
-        .json({ error: "Unauthorized - No Token Provided" });
+      res.status(401).json({ error: "Unauthorized - No Token Provided" });
+      return;
     }
 
     // find secret key
     const secretKey = process.env.JWT_SECRET_KEY;
     if (!secretKey) {
       console.log("[server] protectRoute: No JWT_SECRET_KEY found");
-      return res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error" });
+      return;
     }
 
     // check that request token is valid
-    const decoded = jwt.verify(token, secretKey);
-    if (!decoded) {
-      return res.status(401).json({ error: "Unauthorized - Invalid Token" });
+    const decoded = jwt.verify(token, secretKey) as JwtPayload;
+    if (!decoded || !decoded.userId) {
+      res.status(401).json({ error: "Unauthorized - Invalid Token" });
+      return;
     }
 
     // find user in db using decoded userId
-    const user = await UserModel.findById(decoded.userId).select("-password");
+    const user = await UserModel.findById({ _id: decoded.userId }).select(
+      "-password"
+    );
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
     // attach user to the request
