@@ -10,6 +10,7 @@ import { normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../shortcuts/utils";
 import { signinSchema } from "../../zod/signinSchema";
 import generateTokenAndSetCookie from "../../utils/generateTokenAndSetCookie";
+import catchErrorMessage from "../../utils/catchErrorMessage";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -96,5 +97,15 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
     });
   } catch (error) {
     handleControllerError(error, res, "login");
+  }
+};
+
+export const logout: RequestHandler = async (req, res) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    catchErrorMessage("Error in getShortcut", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
