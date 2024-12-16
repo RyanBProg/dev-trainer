@@ -7,10 +7,28 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    // send request to server
+
+    try {
+      const res = await fetch("http://localhost:4040/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      alert(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+    }
   }
+
   return (
     <div className="pt-20">
       <h1 className="text-center font-bold text-3xl pb-8">User Login</h1>
@@ -52,6 +70,9 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
+        <button type="submit" className="btn btn-active btn-accent">
+          Login
+        </button>
       </form>
       <span className="block text-center pt-8">
         Don't have an account?{" "}

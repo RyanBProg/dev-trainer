@@ -13,9 +13,31 @@ const userDataTemplate = {
 export default function Signup() {
   const [userData, setUserData] = useState(userDataTemplate);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    // send request to server
+
+    try {
+      const res = await fetch("http://localhost:4040/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: userData.fullName,
+          email: userData.email,
+          password: userData.password,
+          confirmPassword: userData.confirmPassword,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      alert(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+    }
   }
   return (
     <div className="pt-20">
@@ -103,6 +125,9 @@ export default function Signup() {
             }
           />
         </label>
+        <button type="submit" className="btn btn-active btn-accent">
+          SignUp
+        </button>
       </form>
       <span className="block text-center pt-8">
         Already have an account?{" "}
