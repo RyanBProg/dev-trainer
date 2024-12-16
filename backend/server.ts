@@ -5,10 +5,12 @@ import connectToDB from "./db/connectToDB";
 import userRoutes from "./routes/usersRoutes";
 import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
+import cors from "cors";
 
 const app: Express = express();
 const PORT = process.env.PORT || 4040;
 dotenv.config();
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use(cookieParser());
 
