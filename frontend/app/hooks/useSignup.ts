@@ -2,7 +2,7 @@ import { useUserAuthContext } from "../context/userAuthContext";
 import { redirect } from "next/navigation";
 import { TUserSignup } from "../types/types";
 
-export function useLogin() {
+export function useSignup() {
   const { setAuthUser } = useUserAuthContext();
 
   async function signup(signupData: TUserSignup) {
