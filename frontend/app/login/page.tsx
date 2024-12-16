@@ -2,31 +2,16 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useLogin } from "../hooks/useLogin";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useLogin();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-
-    try {
-      const res = await fetch("http://localhost:4040/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      console.log(data);
-      if (data.error) {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-    }
+    await login(email, password);
   }
 
   return (

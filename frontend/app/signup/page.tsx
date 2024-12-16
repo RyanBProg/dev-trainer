@@ -2,8 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { useSignup } from "../hooks/useSignup";
 
-const userDataTemplate = {
+const signupDataTemplate = {
   fullName: "",
   email: "",
   confirmPassword: "",
@@ -11,33 +12,12 @@ const userDataTemplate = {
 };
 
 export default function Signup() {
-  const [userData, setUserData] = useState(userDataTemplate);
+  const [signupData, setSignupData] = useState(signupDataTemplate);
+  const { signup } = useSignup();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-
-    try {
-      const res = await fetch("http://localhost:4040/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: userData.fullName,
-          email: userData.email,
-          password: userData.password,
-          confirmPassword: userData.confirmPassword,
-        }),
-      });
-
-      const data = await res.json();
-      console.log(data);
-      if (data.error) {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-    }
+    await signup(signupData);
   }
   return (
     <div className="pt-20">
@@ -56,9 +36,9 @@ export default function Signup() {
             type="text"
             className="grow"
             placeholder="Full Name"
-            value={userData.fullName}
+            value={signupData.fullName}
             onChange={(e) =>
-              setUserData({ ...userData, fullName: e.target.value })
+              setSignupData({ ...signupData, fullName: e.target.value })
             }
           />
         </label>
@@ -75,9 +55,9 @@ export default function Signup() {
             type="text"
             className="grow"
             placeholder="Email"
-            value={userData.email}
+            value={signupData.email}
             onChange={(e) =>
-              setUserData({ ...userData, email: e.target.value })
+              setSignupData({ ...signupData, email: e.target.value })
             }
           />
         </label>
@@ -97,9 +77,9 @@ export default function Signup() {
             type="password"
             className="grow"
             placeholder="Password"
-            value={userData.password}
+            value={signupData.password}
             onChange={(e) =>
-              setUserData({ ...userData, password: e.target.value })
+              setSignupData({ ...signupData, password: e.target.value })
             }
           />
         </label>
@@ -119,9 +99,9 @@ export default function Signup() {
             type="password"
             className="grow"
             placeholder="Confirm Password"
-            value={userData.confirmPassword}
+            value={signupData.confirmPassword}
             onChange={(e) =>
-              setUserData({ ...userData, confirmPassword: e.target.value })
+              setSignupData({ ...signupData, confirmPassword: e.target.value })
             }
           />
         </label>
