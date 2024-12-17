@@ -1,8 +1,11 @@
+"use client";
+
 import { useUserAuthContext } from "../context/userAuthContext";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function useLogout() {
   const { setAuthUser } = useUserAuthContext();
+  const router = useRouter();
 
   async function logout() {
     try {
@@ -17,7 +20,7 @@ export function useLogout() {
       }
 
       setAuthUser(undefined);
-      redirect("/login");
+      router.push("/login");
     } catch (error) {
       alert(
         error instanceof Error ? error.message : "An unexpected error occurred"

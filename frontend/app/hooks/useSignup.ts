@@ -1,9 +1,12 @@
+"use client";
+
 import { useUserAuthContext } from "../context/userAuthContext";
-import { redirect } from "next/navigation";
 import { TUserSignup } from "../types/types";
+import { useRouter } from "next/navigation";
 
 export function useSignup() {
   const { setAuthUser } = useUserAuthContext();
+  const router = useRouter();
 
   async function signup(signupData: TUserSignup) {
     try {
@@ -28,7 +31,7 @@ export function useSignup() {
         email: userData.email,
         custom: userData.custom,
       });
-      redirect("/");
+      router.push("/dashboard");
     } catch (error) {
       alert(
         error instanceof Error ? error.message : "An unexpected error occurred"
