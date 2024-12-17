@@ -9,7 +9,7 @@ export const userSchema = new Schema(
     isAdmin: { type: Boolean, default: false },
     custom: {
       shortcuts: [
-        { type: [Schema.Types.ObjectId], ref: "shortcuts", default: [] },
+        { type: Schema.Types.ObjectId, ref: "shortcuts", default: [] },
       ],
     },
   },
