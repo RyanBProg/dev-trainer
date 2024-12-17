@@ -1,29 +1,28 @@
 "use client";
 
-// import { useUserAuthContext } from "../context/userAuthContext";
-// import { useRouter } from "next/navigation";
-// import { redirect } from "next/navigation";
-// import { useEffect } from "react";
-// import { fetchUserData } from "../hooks/fetchUserData";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { fetchUserData } from "../hooks/fetchUserData";
+import ShortcutKey from "./components/ShortcutKey";
 
 export default function Dashboard() {
-  // const { authUser } = useUserAuthContext();
-  // const router = useRouter();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [fullName, setFullName] = useState("");
 
-  // useEffect(() => {
-  //   if (!authUser) {
-  //     router.push(`/login`);
-  //   }
-  // }, [authUser, router]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await fetchUserData();
+      if (!userData) router.push(`/login`);
+      setFullName(userData.fullName);
+      setLoading(false);
+    };
+    fetchUser();
+  }, []);
 
-  // if (!authUser) {
-  //   return (
-  //     <span className="block loading loading-spinner mx-auto mt-20"></span>
-  //   );
-  // }
-
-  // const userData = await fetchUserData();
-  // if (!userData) redirect("/login");
+  if (loading) {
+    return <p>loading</p>;
+  }
 
   const demoData = {
     shortcuts: [
@@ -72,7 +71,9 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="font-bold text-4xl text-center pt-10">Welcome User</h1>
+      <h1 className="font-bold text-4xl text-center pt-10">
+        Welcome {fullName}
+      </h1>
       <div>
         {userShortcuts.map((category) => {
           return (
@@ -100,7 +101,9 @@ export default function Dashboard() {
                           </td>
                           <td>{shortcut.description}</td>
                           <td className="flex gap-4 font-semibold">
-                            {shortcut.keys.join(" + ")}
+                            {shortcut.keys.map((key) => (
+                              <ShortcutKey key={key} value={key} />
+                            ))}
                           </td>
                           <td>
                             <button className="btn btn-square btn-xs mr-2">
