@@ -1,4 +1,11 @@
+"use client";
+
+import { useLogout } from "@/app/hooks/useLogout";
+import Link from "next/link";
+
 export default function Navbar() {
+  const { logout } = useLogout();
+
   return (
     <header className="navbar bg-base-100">
       <nav className="navbar-start">
@@ -20,21 +27,18 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            className="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
-              <a>Homepage</a>
+              <Link href="/dashboard">Dashboard</Link>
             </li>
             <li>
-              <a>Portfolio</a>
-            </li>
-            <li>
-              <a>About</a>
+              <Link href="/guides">Guides</Link>
             </li>
           </ul>
         </div>
       </nav>
       <div className="navbar-center">
-        <a className="btn btn-ghost text-xl">Dev Trainer</a>
+        <span className="text-xl font-bold">Dev Trainer</span>
       </div>
       <div className="navbar-end">
         <div className="dropdown dropdown-end">
@@ -53,16 +57,16 @@ export default function Navbar() {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
-              <a className="justify-between">
+              <Link href="/dashboard" className="justify-between">
                 Profile
                 <span className="badge">New</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a>Settings</a>
+              <Link href="/dashboard">Settings</Link>
             </li>
             <li>
-              <a>Logout</a>
+              <button onClick={logout}>Logout</button>
             </li>
           </ul>
         </div>
