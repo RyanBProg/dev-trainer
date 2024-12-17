@@ -1,4 +1,30 @@
+"use client";
+
+// import { useUserAuthContext } from "../context/userAuthContext";
+// import { useRouter } from "next/navigation";
+// import { redirect } from "next/navigation";
+// import { useEffect } from "react";
+// import { fetchUserData } from "../hooks/fetchUserData";
+
 export default function Dashboard() {
+  // const { authUser } = useUserAuthContext();
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   if (!authUser) {
+  //     router.push(`/login`);
+  //   }
+  // }, [authUser, router]);
+
+  // if (!authUser) {
+  //   return (
+  //     <span className="block loading loading-spinner mx-auto mt-20"></span>
+  //   );
+  // }
+
+  // const userData = await fetchUserData();
+  // if (!userData) redirect("/login");
+
   const demoData = {
     shortcuts: [
       {
@@ -50,7 +76,7 @@ export default function Dashboard() {
       <div>
         {userShortcuts.map((category) => {
           return (
-            <div>
+            <div key={category.type}>
               <h2 className="text-xl font-bold pt-10 pb-4 px-4 capitalize">
                 {category.type} Shortcuts
               </h2>
