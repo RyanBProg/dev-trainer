@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchUserData } from "../hooks/fetchUserData";
-import ShortcutKey from "./components/ShortcutKey";
+import { demoData } from "./demoData";
+import { createShortcutTable } from "./utils/createShortcutTable";
+import TableRow from "./components/TableRow";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -21,57 +23,18 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return <p>loading</p>;
+    return (
+      <span className="font-bold text-2xl block text-center mx-auto mt-20">
+        <span className="loading loading-spinner mr-3"></span>loading...
+      </span>
+    );
   }
 
-  const demoData = {
-    shortcuts: [
-      {
-        shortDescription: "paste",
-        description: "paste something",
-        keys: ["cmd", "v"],
-        type: "mac",
-      },
-      {
-        shortDescription: "copy",
-        description: "copy something",
-        keys: ["cmd", "c"],
-        type: "mac",
-      },
-      {
-        shortDescription: "close file tree",
-        description: "close the vs code file tree",
-        keys: ["cmd", "b"],
-        type: "vs code",
-      },
-    ],
-  };
-
-  function createTable(demoData) {
-    const tableHeadings = new Set();
-
-    demoData.shortcuts.forEach((shortcut) => {
-      tableHeadings.add(shortcut.type);
-    });
-
-    const table = [];
-
-    tableHeadings.forEach((heading) => {
-      const typeTable = { type: heading, shortcuts: [] };
-      demoData.shortcuts.forEach((shortcut) => {
-        if (shortcut.type === heading) typeTable.shortcuts.push(shortcut);
-      });
-      table.push(typeTable);
-    });
-
-    return table;
-  }
-
-  const userShortcuts = createTable(demoData);
+  const userShortcuts = createShortcutTable(demoData);
 
   return (
     <div>
-      <h1 className="font-bold text-4xl text-center pt-10">
+      <h1 className="font-bold text-2xl text-center pt-10 capitalize">
         Welcome {fullName}
       </h1>
       <div>
@@ -94,66 +57,7 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {category.shortcuts.map((shortcut) => {
-                      return (
-                        <tr key={shortcut.shortDescription}>
-                          <td className="capitalize font-semibold">
-                            {shortcut.shortDescription}
-                          </td>
-                          <td>{shortcut.description}</td>
-                          <td className="flex gap-4 font-semibold">
-                            {shortcut.keys.map((key) => (
-                              <ShortcutKey key={key} value={key} />
-                            ))}
-                          </td>
-                          <td>
-                            <button className="btn btn-square btn-xs mr-2">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 15l7-7 7 7"
-                                />
-                              </svg>
-                            </button>
-                            <button className="btn btn-square btn-xs mr-4">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
-                            </button>
-                            <button className="btn btn-square btn-xs bg-red-700">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
+                      return <TableRow key={shortcut.id} shortcut={shortcut} />;
                     })}
                   </tbody>
                 </table>
