@@ -10,8 +10,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const { login } = useLogin();
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // proper form input checking should go here
     await login(email, password);
   }
 
@@ -33,6 +34,7 @@ export default function Login() {
               type="text"
               className="grow"
               placeholder="Email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -53,6 +55,7 @@ export default function Login() {
               type="password"
               className="grow"
               placeholder="Password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

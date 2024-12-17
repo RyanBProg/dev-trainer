@@ -18,6 +18,7 @@ export default function Signup() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    // proper form input checking should go here
     await signup(signupData);
   }
   return (
@@ -38,6 +39,7 @@ export default function Signup() {
               type="text"
               className="grow"
               placeholder="Full Name"
+              required
               value={signupData.fullName}
               onChange={(e) =>
                 setSignupData({ ...signupData, fullName: e.target.value })
@@ -57,6 +59,7 @@ export default function Signup() {
               type="text"
               className="grow"
               placeholder="Email"
+              required
               value={signupData.email}
               onChange={(e) =>
                 setSignupData({ ...signupData, email: e.target.value })
@@ -79,6 +82,7 @@ export default function Signup() {
               type="password"
               className="grow"
               placeholder="Password"
+              required
               value={signupData.password}
               onChange={(e) =>
                 setSignupData({ ...signupData, password: e.target.value })
@@ -101,6 +105,7 @@ export default function Signup() {
               type="password"
               className="grow"
               placeholder="Confirm Password"
+              required
               value={signupData.confirmPassword}
               onChange={(e) =>
                 setSignupData({
