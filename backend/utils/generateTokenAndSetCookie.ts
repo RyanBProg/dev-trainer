@@ -19,7 +19,7 @@ export default function generateTokenAndSetCookie(
   res.cookie("jwt", token, {
     maxAge: 86400000, // 1d
     httpOnly: true,
-    sameSite: "strict",
-    secure: true,
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    secure: process.env.NODE_ENV === "production" ? true : false,
   });
 }
