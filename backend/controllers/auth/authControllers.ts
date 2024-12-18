@@ -53,10 +53,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
 
       // send the created user details as a response
       res.status(201).json({
-        _id: savedUser._id,
         fullName: savedUser.fullName,
-        email: savedUser.email,
-        custom: savedUser.custom,
       });
       return;
     } else {
@@ -95,17 +92,14 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
 
     // return user object
     res.status(200).json({
-      id: user._id,
-      email: user.email,
       fullName: user.fullName,
-      custom: user.custom,
     });
   } catch (error) {
     handleControllerError(error, res, "login");
   }
 };
 
-export const logout: RequestHandler = async (req, res) => {
+export const logout: RequestHandler = async (_, res) => {
   try {
     res.clearCookie("accessToken", {
       httpOnly: true,
