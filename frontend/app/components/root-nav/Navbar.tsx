@@ -24,7 +24,7 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            className="menu menu-lg dropdown-content bg-base-300 font-medium rounded-box z-[1] w-[250px] mt-3 p-4 shadow flex flex-col gap-2">
             <li>
               <Link href="/">Home</Link>
             </li>
@@ -32,16 +32,26 @@ export default function Navbar() {
               <Link href="/">Pricing</Link>
             </li>
             <li>
-              <Link href="/login">Login</Link>
+              <Link href="/">About</Link>
             </li>
-            <li>
-              <Link href="/signup">SignUp</Link>
-            </li>
+            <hr className="h-[0.5px] w-full bg-base-content my-2 border-none" />
+            <div className="flex gap-2">
+              <li>
+                <Link href="/login" className="flex-1 btn btn-outline">
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link href="/signup" className="flex-1 btn btn-accent">
+                  SignUp
+                </Link>
+              </li>
+            </div>
           </ul>
         </div>
       </nav>
       <div className="navbar-end">
-        <span className="text-xl font-bold">Dev Trainer</span>
+        <span className="text-xl font-bold pr-4">Dev Trainer</span>
       </div>
     </header>
   );
