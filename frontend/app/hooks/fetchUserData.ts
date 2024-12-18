@@ -1,6 +1,6 @@
 export async function fetchUserData() {
   try {
-    const res = await fetch("http://localhost:4040/api/users/user", {
+    const res = await fetch("http://localhost:4040/api/user", {
       credentials: "include",
     });
     const userData = await res.json();
