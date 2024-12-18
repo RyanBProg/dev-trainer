@@ -17,9 +17,9 @@ export default async function checkUserToken(
     }
 
     // find secret key
-    const secretKey = process.env.JWT_SECRET_KEY;
+    const secretKey = process.env.ACCESS_SECRET_KEY;
     if (!secretKey) {
-      console.log("[server] protectRoute: No JWT_SECRET_KEY found");
+      console.log("[server] protectRoute: No ACCESS_SECRET_KEY found");
       res.status(500).json({ error: "Internal server error" });
       return;
     }

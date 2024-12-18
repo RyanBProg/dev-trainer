@@ -9,7 +9,7 @@ import {
 import { normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../shortcuts/utils";
 import { signinSchema } from "../../zod/signinSchema";
-import generateTokenAndSetCookie from "../../utils/generateTokenAndSetCookie";
+import { generateAccessTokenAndSetCookie } from "../../utils/generateTokenAndSetCookie";
 import catchErrorMessage from "../../utils/catchErrorMessage";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
@@ -45,7 +45,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     // explicit check for the new user
     if (newUser) {
       const savedUser = await newUser.save();
-      generateTokenAndSetCookie(
+      generateAccessTokenAndSetCookie(
         savedUser._id.toString(),
         savedUser.isAdmin,
         res
@@ -91,7 +91,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    generateTokenAndSetCookie(user._id.toString(), user.isAdmin, res);
+    generateAccessTokenAndSetCookie(user._id.toString(), user.isAdmin, res);
 
     // return user object
     res.status(200).json({
