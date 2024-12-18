@@ -12,7 +12,7 @@ export default async function Account() {
   });
 
   const userInfo = await res.json();
-  if (!userInfo.error) redirect("/login");
+  if (userInfo.error) redirect("/login");
 
   return (
     <div>
