@@ -1,10 +1,11 @@
 import bcrypt from "bcryptjs";
-import { RequestHandler } from "express";
+import { RequestHandler, Response } from "express";
 import { userSignupSchema } from "../../zod/userSignupSchema";
 import UserModel from "../../db/models/UserModel";
 import {
   TLoginRequestBody,
   TSignupRequestBody,
+  TUserTokenRequest,
 } from "../../types/requestBodyControllersTypes";
 import { normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../shortcuts/utils";
@@ -111,6 +112,25 @@ export const logout: RequestHandler = async (_, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     catchErrorMessage("Error in getShortcut", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const validateToken = async (req: TUserTokenRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    const userData = await UserModel.findOne({ _id: userId }).select(
+      "-password -custom -_id -__v"
+    );
+    if (!userData) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Access Token Valid" });
+  } catch (error) {
+    catchErrorMessage("Error in getUserInfo", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
