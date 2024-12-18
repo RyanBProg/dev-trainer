@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectToDB from "./db/connectToDB";
-import userRoutes from "./routes/usersRoutes";
+import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
 import cors from "cors";
@@ -14,7 +14,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
 
