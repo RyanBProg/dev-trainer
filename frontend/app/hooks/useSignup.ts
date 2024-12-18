@@ -19,6 +19,7 @@ export function useSignup() {
           password: signupData.password,
           confirmPassword: signupData.confirmPassword,
         }),
+        credentials: "include",
       });
 
       const userData = await res.json();

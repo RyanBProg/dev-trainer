@@ -21,5 +21,6 @@ export default function generateTokenAndSetCookie(
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
     secure: process.env.NODE_ENV === "production" ? true : false,
+    path: "/",
   });
 }

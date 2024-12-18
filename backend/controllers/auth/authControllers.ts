@@ -107,7 +107,13 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
 
 export const logout: RequestHandler = async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     catchErrorMessage("Error in getShortcut", error);
