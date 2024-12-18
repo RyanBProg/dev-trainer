@@ -10,7 +10,7 @@ export default async function checkUserToken(
 ) {
   try {
     // check for a token on the request
-    const token = req.cookies.jwt;
+    const token = req.cookies.accessToken;
     if (!token) {
       res.status(401).json({ error: "Unauthorized - No Token Provided" });
       return;
