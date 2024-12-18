@@ -2,13 +2,14 @@ import { Response } from "express";
 import UserModel from "../../db/models/UserModel";
 import catchErrorMessage from "../../utils/catchErrorMessage";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
+import ShortcutsModel from "../../db/models/ShortcutsModel";
 
-export const getUserData = async (req: TUserTokenRequest, res: Response) => {
+export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
 
     const userData = await UserModel.findOne({ _id: userId }).select(
-      "-password"
+      "-password -custom -_id -__v"
     );
     if (!userData) {
       res.status(400).json({ error: "User not found" });
@@ -88,6 +89,32 @@ export const deleteUserShortcut = async (
     res.status(200).json(updatedUser);
   } catch (error) {
     catchErrorMessage("Error in deleteUserShortcut", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getUserShortcuts = async (
+  req: TUserTokenRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    const userCustom = await UserModel.findOne({ _id: userId }).select(
+      "custom.shortcuts"
+    );
+    if (!userCustom) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
+
+    const shortcutIds = userCustom.custom?.shortcuts;
+
+    const shortcuts = await ShortcutsModel.find({ _id: { $in: shortcutIds } });
+
+    res.status(200).json(shortcuts);
+  } catch (error) {
+    catchErrorMessage("Error in getUserShortcuts", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
