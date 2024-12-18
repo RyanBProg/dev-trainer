@@ -15,7 +15,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       const userData = await fetchUserData();
-      if (!userData) router.push(`/login`);
+      if (!userData) {
+        router.push(`/login`);
+        return;
+      }
       setFullName(userData.fullName);
       setLoading(false);
     };
