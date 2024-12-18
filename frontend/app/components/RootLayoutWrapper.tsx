@@ -1,3 +1,6 @@
+import Footer from "./root-footer/Footer";
+import Navbar from "./root-nav/Navbar";
+
 export default function RootLayoutWrapper({
   children,
 }: Readonly<{
@@ -5,11 +8,9 @@ export default function RootLayoutWrapper({
 }>) {
   return (
     <div className="min-h-screen flex flex-col">
-      <header>
-        <nav>put navbar here</nav>
-      </header>
+      <Navbar />
       <main className="flex-1">{children}</main>
-      <footer>put footer here</footer>
+      <Footer />
     </div>
   );
 }

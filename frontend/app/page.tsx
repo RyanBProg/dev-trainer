@@ -3,13 +3,16 @@ import RootLayoutWrapper from "./components/RootLayoutWrapper";
 export default function Home() {
   return (
     <RootLayoutWrapper>
-      <h1 className="text-center font-bold text-3xl mt-20 mb-10">Home Page</h1>
-      <p className="max-w-96 text-center mx-auto">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Non excepturi
-        placeat cumque adipisci sed ab blanditiis perferendis nobis repellendus
-        quis. Ea optio non laudantium ipsa! Quibusdam magnam, laboriosam ipsum
-        eos sequi fugit temporibus veniam amet qui alias? Porro, fuga. Nisi!
-      </p>
+      <section className="h-screen px-10">
+        <h1 className="font-semibold text-2xl tracking-tight mt-64">
+          Custom Cheatsheets
+        </h1>
+        <p className="font-bold text-white text-[5rem] tracking-tight capitalize leading-none">
+          Shortcuts <span className="text-accent">you need,</span>
+          <br />
+          in <span className="text-red-400">one place</span>
+        </p>
+      </section>
     </RootLayoutWrapper>
   );
 }
