@@ -2,7 +2,7 @@ import { Response } from "express";
 import UserModel from "../../db/models/UserModel";
 import catchErrorMessage from "../../utils/catchErrorMessage";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
-import ShortcutsModel from "../../db/models/ShortcutsModel";
+import ShortcutModel from "../../db/models/ShortcutModel";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -110,7 +110,7 @@ export const getUserShortcuts = async (
 
     const shortcutIds = userCustom.custom?.shortcuts;
 
-    const shortcuts = await ShortcutsModel.find({ _id: { $in: shortcutIds } });
+    const shortcuts = await ShortcutModel.find({ _id: { $in: shortcutIds } });
 
     res.status(200).json(shortcuts);
   } catch (error) {

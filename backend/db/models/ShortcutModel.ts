@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const shortcutsSchema = new Schema(
+const shortcutSchema = new Schema(
   {
     shortDescription: { type: String, required: true, maxLength: 40 },
     description: { type: String, required: true },
@@ -19,5 +19,5 @@ const shortcutsSchema = new Schema(
   { timestamps: true }
 );
 
-const ShortcutsModel = model("shortcuts", shortcutsSchema);
-export default ShortcutsModel;
+const ShortcutModel = model("shortcuts", shortcutSchema);
+export default ShortcutModel;

@@ -1,7 +1,7 @@
 import { FilterQuery } from "mongoose";
 import { z } from "zod";
 import { Response } from "express";
-import ShortcutsModel from "../../db/models/ShortcutsModel";
+import ShortcutModel from "../../db/models/ShortcutModel";
 import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
 
 export const normaliseRequestBody = (body: TCreateShortcutRequestBody) => {
@@ -33,7 +33,7 @@ export const handleControllerError = (
 };
 
 export const checkKeysConflict = async (keys: string[], excludeId?: string) => {
-  const query: FilterQuery<typeof ShortcutsModel> = {
+  const query: FilterQuery<typeof ShortcutModel> = {
     $expr: {
       $and: [
         { $eq: [{ $size: "$keys" }, keys.length] }, // check array length
@@ -46,5 +46,5 @@ export const checkKeysConflict = async (keys: string[], excludeId?: string) => {
     query._id = { $ne: excludeId }; // exclude current shortcut by id
   }
 
-  return await ShortcutsModel.findOne(query);
+  return await ShortcutModel.findOne(query);
 };
