@@ -27,9 +27,12 @@ type TUserShortcutsData = {
 };
 
 export type TShortcut = {
-  id: string;
+  _id: string;
   shortDescription: string;
   description: string;
   keys: string[];
   type: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 };

@@ -1,19 +1,18 @@
-import { fetchUserData } from "./utils/fetchUserData";
-import { demoData } from "./demoData";
 import { createShortcutTable } from "./utils/createShortcutTable";
 import TableRow from "./components/TableRow";
+import { fetchUserShortcuts } from "./utils/fetchUserShorctus";
 
 export default async function Dashboard() {
-  const userData = await fetchUserData();
-  const userShortcuts = createShortcutTable(demoData);
+  const userShortcuts = await fetchUserShortcuts();
+  const shortcutsTable = createShortcutTable(userShortcuts);
 
   return (
     <div>
       <h1 className="font-bold text-2xl text-center pt-10 capitalize">
-        Welcome {userData.fullName}
+        Dashboard
       </h1>
       <div>
-        {userShortcuts.map((category) => {
+        {shortcutsTable.map((category) => {
           return (
             <div key={category.type}>
               <h2 className="text-xl font-bold pt-10 pb-4 px-4 capitalize">
@@ -32,7 +31,9 @@ export default async function Dashboard() {
                   </thead>
                   <tbody>
                     {category.shortcuts.map((shortcut) => {
-                      return <TableRow key={shortcut.id} shortcut={shortcut} />;
+                      return (
+                        <TableRow key={shortcut._id} shortcut={shortcut} />
+                      );
                     })}
                   </tbody>
                 </table>

@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 
-export async function fetchUserData() {
+export async function fetchUserShortcuts() {
   try {
     const cookieStore = await cookies();
 
-    const res = await fetch("http://localhost:4040/api/user", {
+    const res = await fetch("http://localhost:4040/api/user/shortcuts", {
       method: "GET",
       headers: { Cookie: cookieStore.toString() },
     });
