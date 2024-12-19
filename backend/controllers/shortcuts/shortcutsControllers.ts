@@ -14,6 +14,45 @@ export const getShortcuts = async (req: Request, res: Response) => {
   // finish me!!!
 };
 
+export const getShortcutTypes = async (req: Request, res: Response) => {
+  try {
+    const types = await ShortcutModel.distinct("type");
+
+    if (!types || types.length === 0) {
+      res.status(404).json({ error: "No types found" });
+      return;
+    }
+
+    res.status(200).json(types);
+  } catch (error) {
+    catchErrorMessage("Error in getShortcutTypes", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getShortcutsOfType = async (req: Request, res: Response) => {
+  try {
+    const type = decodeURIComponent(req.params.type);
+    if (!type) {
+      res.status(400).json({ error: "Type parameter is required" });
+      return;
+    }
+
+    const shortcuts = await ShortcutModel.find({ type });
+    if (!shortcuts || shortcuts.length === 0) {
+      res
+        .status(404)
+        .json({ error: "No shortcuts found for the specified type" });
+      return;
+    }
+
+    res.status(200).json(shortcuts);
+  } catch (error) {
+    catchErrorMessage("Error in getShortcutsOfType", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const getShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
