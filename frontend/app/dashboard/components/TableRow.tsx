@@ -1,7 +1,17 @@
+"use client";
+
 import { TShortcut } from "@/app/types/types";
 import ShortcutKey from "./ShortcutKey";
+import { deleteUserShortcut } from "../utils/deleteUserShortcut";
+import { useRouter } from "next/navigation";
 
 export default function TableRow({ shortcut }: { shortcut: TShortcut }) {
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    await deleteUserShortcut(shortcut._id);
+    router.refresh();
+  };
   return (
     <tr>
       <td className="capitalize font-semibold">{shortcut.shortDescription}</td>
@@ -45,7 +55,9 @@ export default function TableRow({ shortcut }: { shortcut: TShortcut }) {
               />
             </svg>
           </button>
-          <button className="btn btn-square btn-xs bg-red-700">
+          <button
+            onClick={handleDelete}
+            className="btn btn-square btn-xs bg-red-700">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
