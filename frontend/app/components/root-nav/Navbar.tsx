@@ -24,7 +24,7 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-lg dropdown-content bg-base-300 font-medium rounded-box z-[1] w-[250px] mt-3 p-4 shadow flex flex-col gap-2">
+            className="menu menu-md dropdown-content bg-base-300 font-medium rounded-box z-[1] w-[250px] mt-3 p-4 shadow flex flex-col gap-2">
             <li>
               <Link href="/">Home</Link>
             </li>
