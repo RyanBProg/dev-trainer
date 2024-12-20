@@ -26,31 +26,24 @@ export default function NewCategoryButton() {
 
   return (
     <>
-      <button
-        className="btn btn-sm"
-        onClick={() => document.getElementById("my_modal_3").showModal()}>
-        + Add New Category
-      </button>
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-          </form>
-          <h3 className="font-bold text-lg">Categories</h3>
-          <ul>
-            {categories.length === 0 ? (
-              <>Loading...</>
-            ) : (
-              categories.map((categorie) => (
-                <li key={categorie}>{categorie}</li>
-              ))
-            )}
-          </ul>
+      <div className="dropdown dropdown-bottom">
+        <div tabIndex={0} role="button" className="btn m-1">
+          + Add New Category
         </div>
-      </dialog>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+          {categories.length === 0 ? (
+            <>Loading...</>
+          ) : (
+            categories.map((categorie) => (
+              <li key={categorie}>
+                <button>{categorie}</button>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
     </>
   );
 }
