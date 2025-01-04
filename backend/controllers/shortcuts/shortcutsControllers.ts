@@ -55,7 +55,10 @@ export const getShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
     const shortcutData = await ShortcutModel.findOne({ _id: shortcutId });
-    if (!shortcutData) throw new Error("Shortcut not found");
+    if (!shortcutData) {
+      res.status(400).json({ error: "Shortcut not found" });
+      return;
+    }
 
     res.status(200).json(shortcutData);
   } catch (error) {
@@ -86,22 +89,17 @@ export const createNewShortcut: RequestHandler<
       return;
     }
 
-    // create a new shortcut
+    // create and save new shortcut
     const newShortcut = new ShortcutModel({
       shortDescription,
       description,
       keys,
       type,
     });
-    if (!newShortcut) {
-      res.status(500).json({ error: "Failed to create the shortcut" });
-      return;
-    }
 
-    // save shortcut and send as a response
     const savedShortcut = await newShortcut.save();
+
     res.status(201).json(savedShortcut);
-    return;
   } catch (error) {
     handleControllerError(error, res, "createNewShortcut");
   }
@@ -117,7 +115,10 @@ export const updateShortcut: RequestHandler<
     // check shortcut exists
     const shortcutId = req.params.id;
     const shortcutData = await ShortcutModel.findOne({ _id: shortcutId });
-    if (!shortcutData) throw new Error("Shortcut not found");
+    if (!shortcutData) {
+      res.status(400).json({ error: "Shortcut not found" });
+      return;
+    }
 
     // validate the request body using Zod
     const parsedData = shortcutSchema.parse(req.body);
@@ -141,9 +142,8 @@ export const updateShortcut: RequestHandler<
       { shortDescription, description, keys, type },
       { new: true, runValidators: true }
     );
-
     if (!updatedShortcut) {
-      res.status(500).json({ error: "Failed to update the shortcut" });
+      res.status(400).json({ error: "Failed to update the shortcut" });
       return;
     }
 
@@ -158,8 +158,12 @@ export const deleteShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
     const result = await ShortcutModel.deleteOne({ _id: shortcutId });
-    if (!result.deletedCount)
-      throw new Error("Shortcut ID couldn't be found or deleted");
+    if (!result.deletedCount) {
+      res
+        .status(400)
+        .json({ error: "Shortcut ID couldn't be found or deleted" });
+      return;
+    }
 
     res.status(200).json({ message: "Successfully deleted shortcut" });
   } catch (error) {
