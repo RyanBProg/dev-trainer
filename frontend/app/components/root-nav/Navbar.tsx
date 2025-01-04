@@ -29,10 +29,10 @@ export default function Navbar() {
               <Link href="/">Home</Link>
             </li>
             <li>
-              <Link href="/">Pricing</Link>
+              <Link href="/pricing">Pricing</Link>
             </li>
             <li>
-              <Link href="/">About</Link>
+              <Link href="/about">About</Link>
             </li>
             <hr className="h-[0.5px] w-full bg-base-content my-2 border-none" />
             <div className="flex gap-2">
