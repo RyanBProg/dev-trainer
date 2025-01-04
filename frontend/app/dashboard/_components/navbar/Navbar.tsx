@@ -1,6 +1,6 @@
 "use client";
 
-import { useLogout } from "@/app/hooks/useLogout";
+import { useLogout } from "@/app/_hooks/useLogout";
 import Link from "next/link";
 
 export default function Navbar() {

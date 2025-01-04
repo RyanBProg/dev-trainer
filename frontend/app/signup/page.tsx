@@ -2,8 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useSignup } from "../hooks/useSignup";
-import RootLayoutWrapper from "../components/RootLayoutWrapper";
+import { useSignup } from "../_hooks/useSignup";
+import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 
 const signupDataTemplate = {
   fullName: "",

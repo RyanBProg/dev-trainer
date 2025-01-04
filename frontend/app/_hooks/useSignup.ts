@@ -1,7 +1,7 @@
 "use client";
 
-import { useUserAuthContext } from "../context/userAuthContext";
-import { TUserSignup } from "../types/types";
+import { useUserAuthContext } from "../_context/userAuthContext";
+import { TUserSignup } from "../_types/types";
 import { useRouter } from "next/navigation";
 
 export function useSignup() {

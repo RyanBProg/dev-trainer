@@ -1,8 +1,8 @@
-import { createShortcutTable } from "./utils/createShortcutTable";
-import TableRow from "./components/TableRow";
-import { fetchUserShortcuts } from "./utils/fetchUserShorctus";
-import NewCategoryButton from "./components/NewCategoryButton";
-import NewShortcutButton from "./components/NewShortcutButton";
+import { createShortcutTable } from "./_utils/createShortcutTable";
+import TableRow from "./_components/TableRow";
+import { fetchUserShortcuts } from "./_utils/fetchUserShorctus";
+import NewCategoryButton from "./_components/NewCategoryButton";
+import NewShortcutButton from "./_components/NewShortcutButton";
 
 export default async function Dashboard() {
   const userShortcuts = await fetchUserShortcuts();

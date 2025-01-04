@@ -1,6 +1,6 @@
 "use client";
 
-import { useUserAuthContext } from "../context/userAuthContext";
+import { useUserAuthContext } from "../_context/userAuthContext";
 import { useRouter } from "next/navigation";
 
 export function useLogout() {

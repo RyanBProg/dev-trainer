@@ -1,8 +1,8 @@
 "use client";
 
-import { TShortcut } from "@/app/types/types";
+import { TShortcut } from "@/app/_types/types";
 import ShortcutKey from "./ShortcutKey";
-import { deleteUserShortcut } from "../utils/deleteUserShortcut";
+import { deleteUserShortcut } from "../_utils/deleteUserShortcut";
 import { useRouter } from "next/navigation";
 
 export default function TableRow({ shortcut }: { shortcut: TShortcut }) {

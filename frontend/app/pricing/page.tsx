@@ -1,4 +1,4 @@
-import RootLayoutWrapper from "../components/RootLayoutWrapper";
+import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 
 export default function Pricing() {
   return (
