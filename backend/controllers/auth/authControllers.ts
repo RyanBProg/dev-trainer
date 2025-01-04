@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { RequestHandler, Response } from "express";
 import { userSignupSchema } from "../../zod/userSignupSchema";
 import UserModel from "../../db/models/UserModel";
@@ -8,10 +9,8 @@ import {
   TUserTokenRequest,
 } from "../../types/requestBodyControllersTypes";
 import { normaliseRequestBody } from "./utils";
-import { handleControllerError } from "../shortcuts/utils";
 import { signinSchema } from "../../zod/signinSchema";
 import { generateAccessTokenAndSetCookie } from "../../utils/generateTokenAndSetCookie";
-import catchErrorMessage from "../../utils/catchErrorMessage";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -62,7 +61,15 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       return;
     }
   } catch (error) {
-    handleControllerError(error, res, "signup");
+    if (error instanceof z.ZodError) {
+      console.log(`[server] Error in signup: ${JSON.stringify(error.errors)}`);
+    } else if (error instanceof Error) {
+      console.log(`[server] Error in signup: ${error.message}`);
+    } else {
+      console.error("[server] Error in signup");
+    }
+
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -96,7 +103,15 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       fullName: user.fullName,
     });
   } catch (error) {
-    handleControllerError(error, res, "login");
+    if (error instanceof z.ZodError) {
+      console.log(`[server] Error in login: ${JSON.stringify(error.errors)}`);
+    } else if (error instanceof Error) {
+      console.log(`[server] Error in login: ${error.message}`);
+    } else {
+      console.error("[server] Error in login");
+    }
+
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -111,7 +126,12 @@ export const logout: RequestHandler = async (_, res) => {
 
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    catchErrorMessage("Error in getShortcut", error);
+    if (error instanceof Error) {
+      console.log(`[server] Error in logout: ${error.message}`);
+    } else {
+      console.error("[server] Error in logout");
+    }
+
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -130,7 +150,12 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
 
     res.status(200).json({ message: "Access Token Valid" });
   } catch (error) {
-    catchErrorMessage("Error in getUserInfo", error);
+    if (error instanceof Error) {
+      console.log(`[server] Error in validateToken: ${error.message}`);
+    } else {
+      console.error("[server] Error in validateToken");
+    }
+
     res.status(500).json({ error: "Internal server error" });
   }
 };
