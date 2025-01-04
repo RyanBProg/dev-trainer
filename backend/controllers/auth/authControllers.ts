@@ -35,31 +35,21 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // create a new user
+    // create an save a new user
     const newUser = new UserModel({
       fullName,
       email,
       password: hashedPassword,
     });
+    const savedUser = await newUser.save();
 
-    // explicit check for the new user
-    if (newUser) {
-      const savedUser = await newUser.save();
-      generateAccessTokenAndSetCookie(
-        savedUser._id.toString(),
-        savedUser.isAdmin,
-        res
-      );
+    generateAccessTokenAndSetCookie(
+      savedUser._id.toString(),
+      savedUser.isAdmin,
+      res
+    );
 
-      // send the created user details as a response
-      res.status(201).json({
-        fullName: savedUser.fullName,
-      });
-      return;
-    } else {
-      res.status(400).json({ error: "Invalid user data" });
-      return;
-    }
+    res.status(201).json({ fullName: savedUser.fullName });
   } catch (error) {
     handleControllerError(error, res, "signup");
   }
@@ -90,10 +80,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
 
     generateAccessTokenAndSetCookie(user._id.toString(), user.isAdmin, res);
 
-    // return user object
-    res.status(200).json({
-      fullName: user.fullName,
-    });
+    res.status(200).json({ fullName: user.fullName });
   } catch (error) {
     handleControllerError(error, res, "login");
   }
