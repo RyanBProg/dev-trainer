@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import catchErrorMessage from "../utils/catchErrorMessage";
 
 async function connectToDB() {
   try {
@@ -9,7 +8,11 @@ async function connectToDB() {
     await mongoose.connect(mongoUrl);
     console.log("[server] Connected to MongoDB");
   } catch (error) {
-    catchErrorMessage("Error connecting to MongoDB", error);
+    if (error instanceof Error) {
+      console.log(`[server] Error connecting to MongoDB: ${error.message}`);
+    } else {
+      console.log(`[server] Error connecting to MongoDB`);
+    }
   }
 }
 export default connectToDB;

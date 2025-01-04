@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import catchErrorMessage from "../utils/catchErrorMessage";
 import { Response, NextFunction } from "express";
 import { TUserTokenRequest } from "../types/requestBodyControllersTypes";
+import { handleControllerError } from "../utils/handleControllerError";
 
 export default async function checkUserToken(
   req: TUserTokenRequest,
@@ -36,7 +36,6 @@ export default async function checkUserToken(
 
     next();
   } catch (error) {
-    catchErrorMessage("Error in checkUserToken middleware", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "checkUserToken");
   }
 }

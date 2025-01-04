@@ -1,20 +1,20 @@
 import { Request, RequestHandler, Response } from "express";
 import ShortcutModel from "../../db/models/ShortcutModel";
 import { shortcutSchema } from "../../zod/shortcutSchema";
-import catchErrorMessage from "../../utils/catchErrorMessage";
 import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
-import {
-  checkKeysConflict,
-  handleControllerError,
-  normaliseRequestBody,
-} from "./utils";
+import { checkKeysConflict, normaliseRequestBody } from "./utils";
+import { handleControllerError } from "../../utils/handleControllerError";
 
-export const getShortcuts = async (req: Request, res: Response) => {
-  res.status(200).json({ message: "shortcuts" });
-  // finish me!!!
+export const getShortcuts = async (_: Request, res: Response) => {
+  try {
+    res.status(200).json({ message: "shortcuts" });
+    // finish me!!!
+  } catch (error) {
+    handleControllerError(error, res, "getShortcuts");
+  }
 };
 
-export const getShortcutTypes = async (req: Request, res: Response) => {
+export const getShortcutTypes = async (_: Request, res: Response) => {
   try {
     const types = await ShortcutModel.distinct("type");
 
@@ -25,8 +25,7 @@ export const getShortcutTypes = async (req: Request, res: Response) => {
 
     res.status(200).json(types);
   } catch (error) {
-    catchErrorMessage("Error in getShortcutTypes", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "getShortcutTypes");
   }
 };
 
@@ -48,8 +47,7 @@ export const getShortcutsOfType = async (req: Request, res: Response) => {
 
     res.status(200).json(shortcuts);
   } catch (error) {
-    catchErrorMessage("Error in getShortcutsOfType", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "getShortcutsTypeOfType");
   }
 };
 
@@ -61,8 +59,7 @@ export const getShortcut = async (req: Request, res: Response) => {
 
     res.status(200).json(shortcutData);
   } catch (error) {
-    catchErrorMessage("Error in getShortcut", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "getShortcut");
   }
 };
 
@@ -166,7 +163,6 @@ export const deleteShortcut = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Successfully deleted shortcut" });
   } catch (error) {
-    catchErrorMessage("Error in deleteShortcut", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "deleteShortcut");
   }
 };

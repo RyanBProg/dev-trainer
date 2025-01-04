@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import { z } from "zod";
 import { RequestHandler, Response } from "express";
 import { userSignupSchema } from "../../zod/userSignupSchema";
 import UserModel from "../../db/models/UserModel";
@@ -8,6 +7,7 @@ import {
   TSignupRequestBody,
   TUserTokenRequest,
 } from "../../types/requestBodyControllersTypes";
+import { handleControllerError } from "../../utils/handleControllerError";
 import { normaliseRequestBody } from "./utils";
 import { signinSchema } from "../../zod/signinSchema";
 import { generateAccessTokenAndSetCookie } from "../../utils/generateTokenAndSetCookie";
@@ -61,15 +61,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       return;
     }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.log(`[server] Error in signup: ${JSON.stringify(error.errors)}`);
-    } else if (error instanceof Error) {
-      console.log(`[server] Error in signup: ${error.message}`);
-    } else {
-      console.error("[server] Error in signup");
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "signup");
   }
 };
 
@@ -103,15 +95,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       fullName: user.fullName,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.log(`[server] Error in login: ${JSON.stringify(error.errors)}`);
-    } else if (error instanceof Error) {
-      console.log(`[server] Error in login: ${error.message}`);
-    } else {
-      console.error("[server] Error in login");
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "login");
   }
 };
 
@@ -126,13 +110,7 @@ export const logout: RequestHandler = async (_, res) => {
 
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(`[server] Error in logout: ${error.message}`);
-    } else {
-      console.error("[server] Error in logout");
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "logout");
   }
 };
 
@@ -150,12 +128,6 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
 
     res.status(200).json({ message: "Access Token Valid" });
   } catch (error) {
-    if (error instanceof Error) {
-      console.log(`[server] Error in validateToken: ${error.message}`);
-    } else {
-      console.error("[server] Error in validateToken");
-    }
-
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "validateToken");
   }
 };

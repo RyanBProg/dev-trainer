@@ -1,6 +1,6 @@
-import catchErrorMessage from "../utils/catchErrorMessage";
 import { Response, NextFunction } from "express";
 import { TUserTokenRequest } from "../types/requestBodyControllersTypes";
+import { handleControllerError } from "../utils/handleControllerError";
 
 export default async function checkAdminUser(
   req: TUserTokenRequest,
@@ -16,7 +16,6 @@ export default async function checkAdminUser(
 
     next();
   } catch (error) {
-    catchErrorMessage("Error in checkAdminUser middleware", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "checkAdminUser");
   }
 }

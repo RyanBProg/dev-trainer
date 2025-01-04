@@ -1,8 +1,8 @@
 import { Response } from "express";
 import UserModel from "../../db/models/UserModel";
-import catchErrorMessage from "../../utils/catchErrorMessage";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 import ShortcutModel from "../../db/models/ShortcutModel";
+import { handleControllerError } from "../../utils/handleControllerError";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -18,8 +18,7 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
 
     res.status(200).json(userData);
   } catch (error) {
-    catchErrorMessage("Error in getUserInfo", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "getUserInfo");
   }
 };
 
@@ -53,8 +52,7 @@ export const addUserShortcut = async (
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    catchErrorMessage("Error in addUserShortcut", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "addUserShortcut");
   }
 };
 
@@ -88,8 +86,7 @@ export const deleteUserShortcut = async (
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    catchErrorMessage("Error in deleteUserShortcut", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "deleteUserShortcut");
   }
 };
 
@@ -114,7 +111,6 @@ export const getUserShortcuts = async (
 
     res.status(200).json(shortcuts);
   } catch (error) {
-    catchErrorMessage("Error in getUserShortcuts", error);
-    res.status(500).json({ error: "Internal server error" });
+    handleControllerError(error, res, "getUserShortcuts");
   }
 };
