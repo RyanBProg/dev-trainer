@@ -10,7 +10,7 @@ export default function Home() {
         <p className="font-bold text-white text-[5rem] tracking-tight capitalize leading-none">
           Shortcuts <span className="text-accent">you need,</span>
           <br />
-          in <span className="text-red-400">one place</span>
+          in <span className="text-info">one place</span>
         </p>
       </section>
     </RootLayoutWrapper>
