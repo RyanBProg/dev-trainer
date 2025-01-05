@@ -118,3 +118,11 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
     handleControllerError(error, res, "validateToken");
   }
 };
+
+export const makeUserAdmin = async (req: Request, res: Response) => {
+  try {
+    // add function body here
+  } catch (error) {
+    handleControllerError(error, res, "makeUserAdmin");
+  }
+};
