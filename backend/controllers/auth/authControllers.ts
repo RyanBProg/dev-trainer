@@ -121,7 +121,15 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
 
 export const makeUserAdmin = async (req: Request, res: Response) => {
   try {
-    // add function body here
+    const { password } = req.body;
+    if (password !== process.env.ADMIN_PASSWORD) {
+      res.status(400).json({ error: "Invalid admin password" });
+      return;
+    }
+
+    // get current user
+
+    // if password matches make a db call for current user to change isAdmin to true
   } catch (error) {
     handleControllerError(error, res, "makeUserAdmin");
   }
