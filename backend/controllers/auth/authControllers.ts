@@ -119,27 +119,20 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
   }
 };
 
-export const makeUserAdmin = async (req: Request, res: Response) => {
+export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
   try {
-    const { adminPassword, email } = req.body;
-    if (password !== process.env.ADMIN_PASSWORD) {
+    const { adminPassword } = req.body;
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
       res.status(400).json({ error: "Invalid admin password" });
       return;
     }
 
-    // db call for current user to change isAdmin to true
-    await UserModel.findOneAndUpdate({ email: email.toLowerCase() });
-
     const userId = req.user?.userId;
-    if (!userId) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
 
     await UserModel.updateOne(
       { _id: userId },
       { $set: { isAdmin: true } },
-      { new: true, runValidators: true }
+      { runValidators: true }
     );
 
     res.status(201).json({ message: "User now admin" });

@@ -4,6 +4,7 @@ import {
   login,
   logout,
   validateToken,
+  makeUserAdmin,
 } from "../controllers/auth/authControllers";
 import checkUserToken from "../middleware/checkUserToken";
 
@@ -17,5 +18,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 // route for validating an access token, returns a success message
 router.post("/validate-token", checkUserToken, validateToken);
+// route for making a user an admin, returns a success message
+router.post("/make-user-admin", checkUserToken, makeUserAdmin);
 
 export default router;
