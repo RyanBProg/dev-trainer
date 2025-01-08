@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
-const shortcutSchema = new Schema(
+export const shortcutSchema = new Schema(
   {
     shortDescription: { type: String, required: true, maxLength: 40 },
     description: { type: String, required: true },

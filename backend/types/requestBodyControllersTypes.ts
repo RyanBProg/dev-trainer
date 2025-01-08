@@ -1,13 +1,15 @@
-import { InferSchemaType, HydratedDocument } from "mongoose";
-import { userSchema } from "../db/models/UserModel";
+import { InferSchemaType } from "mongoose";
+import { shortcutSchema } from "../db/models/ShortcutModel";
 import { Request } from "express";
 
-export type TCreateShortcutRequestBody = {
-  shortDescription: string;
-  description: string;
-  keys: string[];
-  type: string;
-};
+// Inferred Types
+type TShortcutBase = Omit<
+  InferSchemaType<typeof shortcutSchema>,
+  "createdAt" | "updatedAt"
+>;
+
+// Request Bodies
+export type TCreateShortcutRequestBody = TShortcutBase;
 
 export type TSignupRequestBody = {
   fullName: string;
@@ -21,7 +23,7 @@ export type TLoginRequestBody = {
   password: string;
 };
 
-// USER
+// User
 
 type TUser = {
   userId: string;
@@ -31,11 +33,3 @@ type TUser = {
 export interface TUserTokenRequest extends Request {
   user?: TUser;
 }
-
-// type TUserBase = InferSchemaType<typeof userSchema>;
-// type TUserWithoutPassword = Omit<TUserBase, "password">;
-// type TUserWithoutPasswordHYD = HydratedDocument<TUserWithoutPassword>;
-
-// export interface TAuthenticatedRequest extends Request {
-//   user?: TUserWithoutPasswordHYD;
-// }
