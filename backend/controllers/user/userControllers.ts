@@ -26,16 +26,27 @@ export const addUserShortcut = async (
   req: TUserTokenRequest,
   res: Response
 ) => {
+  const shortcutId = req.body.shortcutId;
+
+  if (!shortcutId) {
+    res.status(400).json({ error: "Shortcut ID is required" });
+    return;
+  }
+
+  const userId = req.user?.userId;
+
   try {
-    const shortcutId = req.body.shortcutId;
-    if (!shortcutId) {
-      res.status(400).json({ error: "Shortcut ID is required" });
+    const user = await UserModel.findById(userId).select("custom.shortcuts");
+
+    if (!user) {
+      res.status(400).json({ error: "User not found" });
       return;
     }
 
-    const userId = req.user?.userId;
-    if (!userId) {
-      res.status(401).json({ error: "User not authenticated" });
+    const shortcutExists = user.custom?.shortcuts.includes(shortcutId);
+
+    if (shortcutExists) {
+      res.status(400).json({ error: "Shortcut already exists in users list" });
       return;
     }
 
@@ -45,12 +56,7 @@ export const addUserShortcut = async (
       { new: true, runValidators: true }
     ).select("-password");
 
-    if (!updatedUser) {
-      res.status(400).json({ error: "User not found" });
-      return;
-    }
-
-    res.status(200).json(updatedUser);
+    res.status(200).json({ updatedUser });
   } catch (error) {
     handleControllerError(error, res, "addUserShortcut");
   }
