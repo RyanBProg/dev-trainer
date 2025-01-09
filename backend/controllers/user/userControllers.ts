@@ -8,9 +8,9 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
 
-    const userData = await UserModel.findOne({ _id: userId }).select(
-      "-password -custom -_id -__v"
-    );
+    const userData = await UserModel.findOne({ _id: userId })
+      .select("-password -custom -_id -__v")
+      .lean();
     if (!userData) {
       res.status(400).json({ error: "User not found" });
       return;
@@ -26,17 +26,18 @@ export const addUserShortcut = async (
   req: TUserTokenRequest,
   res: Response
 ) => {
-  const shortcutId = req.body.shortcutId;
-
-  if (!shortcutId) {
-    res.status(400).json({ error: "Shortcut ID is required" });
-    return;
-  }
-
-  const userId = req.user?.userId;
-
   try {
-    const user = await UserModel.findById(userId).select("custom.shortcuts");
+    const shortcutId = req.body.shortcutId;
+
+    if (!shortcutId) {
+      res.status(400).json({ error: "Shortcut ID is required" });
+      return;
+    }
+
+    const userId = req.user?.userId;
+    const user = await UserModel.findById(userId)
+      .select("custom.shortcuts")
+      .lean();
 
     if (!user) {
       res.status(400).json({ error: "User not found" });
@@ -103,17 +104,19 @@ export const getUserShortcuts = async (
   try {
     const userId = req.user?.userId;
 
-    const userCustom = await UserModel.findOne({ _id: userId }).select(
-      "custom.shortcuts"
-    );
+    const userCustom = await UserModel.findOne({ _id: userId })
+      .select("custom.shortcuts")
+      .lean();
     if (!userCustom) {
       res.status(400).json({ error: "User not found" });
       return;
     }
 
-    const shortcutIds = userCustom.custom?.shortcuts;
+    const shortcutIds = userCustom.custom?.shortcuts || [];
 
-    const shortcuts = await ShortcutModel.find({ _id: { $in: shortcutIds } });
+    const shortcuts = await ShortcutModel.find({
+      _id: { $in: shortcutIds },
+    }).lean();
 
     res.status(200).json(shortcuts);
   } catch (error) {
