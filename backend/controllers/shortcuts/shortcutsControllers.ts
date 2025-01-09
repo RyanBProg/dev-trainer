@@ -43,7 +43,7 @@ export const getShortcuts = async (req: Request, res: Response) => {
 
 export const getShortcutTypes = async (_: Request, res: Response) => {
   try {
-    const types = await ShortcutModel.distinct("type");
+    const types = await ShortcutModel.distinct("type").lean();
 
     if (!types || types.length === 0) {
       res.status(404).json({ error: "No types found" });
@@ -64,7 +64,7 @@ export const getShortcutsOfType = async (req: Request, res: Response) => {
       return;
     }
 
-    const shortcuts = await ShortcutModel.find({ type });
+    const shortcuts = await ShortcutModel.find({ type }).lean();
     if (!shortcuts || shortcuts.length === 0) {
       res
         .status(404)
@@ -81,7 +81,9 @@ export const getShortcutsOfType = async (req: Request, res: Response) => {
 export const getShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
-    const shortcutData = await ShortcutModel.findOne({ _id: shortcutId });
+    const shortcutData = await ShortcutModel.findOne({
+      _id: shortcutId,
+    }).lean();
     if (!shortcutData) {
       res.status(400).json({ error: "Shortcut not found" });
       return;
@@ -100,10 +102,7 @@ export const createNewShortcut: RequestHandler<
   {}
 > = async (req, res) => {
   try {
-    // validate the request body using Zod
     const parsedData = shortcutSchema.parse(req.body);
-
-    // normalise request body to lowercase
     const normalisedData = normaliseRequestBody(parsedData);
     const { shortDescription, description, keys, type } = normalisedData;
 
@@ -116,7 +115,6 @@ export const createNewShortcut: RequestHandler<
       return;
     }
 
-    // create and save new shortcut
     const newShortcut = new ShortcutModel({
       shortDescription,
       description,
@@ -141,7 +139,9 @@ export const updateShortcut: RequestHandler<
   try {
     // check shortcut exists
     const shortcutId = req.params.id;
-    const shortcutData = await ShortcutModel.findOne({ _id: shortcutId });
+    const shortcutData = await ShortcutModel.findOne({
+      _id: shortcutId,
+    }).lean();
     if (!shortcutData) {
       res.status(400).json({ error: "Shortcut not found" });
       return;
@@ -168,7 +168,7 @@ export const updateShortcut: RequestHandler<
       shortcutId,
       { shortDescription, description, keys, type },
       { new: true, runValidators: true }
-    );
+    ).lean();
     if (!updatedShortcut) {
       res.status(400).json({ error: "Failed to update the shortcut" });
       return;

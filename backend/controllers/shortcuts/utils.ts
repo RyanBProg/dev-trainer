@@ -25,5 +25,5 @@ export const checkKeysConflict = async (keys: string[], excludeId?: string) => {
     query._id = { $ne: excludeId }; // exclude current shortcut by id
   }
 
-  return await ShortcutModel.findOne(query);
+  return await ShortcutModel.findOne(query).lean();
 };
