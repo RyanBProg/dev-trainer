@@ -5,10 +5,37 @@ import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTy
 import { checkKeysConflict, normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../../utils/handleControllerError";
 
-export const getShortcuts = async (_: Request, res: Response) => {
+export const getShortcuts = async (req: Request, res: Response) => {
   try {
-    res.status(200).json({ message: "shortcuts" });
-    // finish me!!!
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
+
+    if (pageNumber < 1 || limitNumber < 1) {
+      res
+        .status(400)
+        .json({ error: "Page and limit must be positive integers" });
+      return;
+    }
+
+    const shortcuts = await ShortcutModel.find()
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const totalItems = await ShortcutModel.countDocuments();
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    res.status(200).json({
+      shortcuts,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        totalItems,
+        limit: limitNumber,
+      },
+    });
   } catch (error) {
     handleControllerError(error, res, "getShortcuts");
   }
