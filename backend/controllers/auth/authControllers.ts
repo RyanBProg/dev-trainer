@@ -17,15 +17,12 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   res
 ) => {
   try {
-    // validate the request body using Zod
     const parsedData = userSignupSchema.parse(req.body);
-
-    // normalise request body to lowercase
     const normalisedData = normaliseRequestBody(parsedData);
     const { fullName, email, password } = normalisedData;
 
     // check if the user already exists
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ email }).lean();
     if (existingUser) {
       res.status(400).json({ error: "Email already exists" });
       return;
@@ -35,7 +32,6 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // create an save a new user
     const newUser = new UserModel({
       fullName,
       email,
@@ -60,18 +56,15 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   res
 ) => {
   try {
-    // validate the request body using Zod
     const parsedData = signinSchema.parse(req.body);
     const { email, password } = parsedData;
 
-    // find the user in the database
-    const user = await UserModel.findOne({ email: email.toLowerCase() });
+    const user = await UserModel.findOne({ email: email.toLowerCase() }).lean();
     if (!user) {
       res.status(400).json({ error: "Invalid login details" });
       return;
     }
 
-    // check if password is correct
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       res.status(400).json({ error: "Invalid login details" });
@@ -105,9 +98,9 @@ export const validateToken = async (req: TUserTokenRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
 
-    const userData = await UserModel.findOne({ _id: userId }).select(
-      "-password -custom -_id -__v"
-    );
+    const userData = await UserModel.findOne({ _id: userId })
+      .select("-password -custom -_id -__v")
+      .lean();
     if (!userData) {
       res.status(400).json({ error: "User not found" });
       return;
