@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-type TokenName = "accessToken" | "refreashToken";
+type TokenName = "accessToken" | "refreshToken";
 
 export function setTokenCookie(
   res: Response,
