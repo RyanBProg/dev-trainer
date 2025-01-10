@@ -10,7 +10,11 @@ import {
 import { handleControllerError } from "../../utils/handleControllerError";
 import { normaliseRequestBody } from "./utils";
 import { signinSchema } from "../../zod/signinSchema";
-import { generateAccessTokenAndSetCookie } from "../../utils/generateTokenAndSetCookie";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/generateTokens";
+import { setTokenCookie } from "../../utils/setTokenCookie";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -39,11 +43,20 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     });
     const savedUser = await newUser.save();
 
-    generateAccessTokenAndSetCookie(
+    const accessToken = generateAccessToken(
       savedUser._id.toString(),
       savedUser.isAdmin,
       res
-    );
+    ) as string;
+    const refreshToken = generateRefreshToken(
+      savedUser._id.toString(),
+      savedUser.isAdmin,
+      savedUser.tokenVersion,
+      res
+    ) as string;
+
+    setTokenCookie(res, "accessToken", accessToken);
+    setTokenCookie(res, "refreshToken", refreshToken);
 
     res.status(201).json({ fullName: savedUser.fullName });
   } catch (error) {
@@ -71,7 +84,20 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    generateAccessTokenAndSetCookie(user._id.toString(), user.isAdmin, res);
+    const accessToken = generateAccessToken(
+      user._id.toString(),
+      user.isAdmin,
+      res
+    ) as string;
+    const refreshToken = generateRefreshToken(
+      user._id.toString(),
+      user.isAdmin,
+      user.tokenVersion,
+      res
+    ) as string;
+
+    setTokenCookie(res, "accessToken", accessToken);
+    setTokenCookie(res, "refreshToken", refreshToken);
 
     res.status(200).json({ fullName: user.fullName });
   } catch (error) {
@@ -82,6 +108,13 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
 export const logout: RequestHandler = async (_, res) => {
   try {
     res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       secure: process.env.NODE_ENV === "production" ? true : false,
