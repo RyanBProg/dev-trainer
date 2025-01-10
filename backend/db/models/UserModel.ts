@@ -7,6 +7,7 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minLength: 8 },
     isAdmin: { type: Boolean, default: false },
+    tokenVersion: { type: Number, default: 1 },
     custom: {
       shortcuts: [
         { type: Schema.Types.ObjectId, ref: "shortcuts", default: [] },
