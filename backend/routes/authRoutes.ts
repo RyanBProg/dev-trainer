@@ -6,7 +6,7 @@ import {
   validateToken,
   makeUserAdmin,
 } from "../controllers/auth/authControllers";
-import checkUserToken from "../middleware/checkUserToken";
+import { authenticateTokens } from "../middleware/authenticateTokens";
 
 const router = express.Router();
 
@@ -17,8 +17,8 @@ router.post("/login", login);
 // route for logging out a user, returns a success message and voids the access token
 router.post("/logout", logout);
 // route for validating an access token, returns a success message
-router.post("/validate-token", checkUserToken, validateToken);
+router.post("/validate-token", authenticateTokens, validateToken);
 // route for making a user an admin, returns a success message
-router.post("/make-user-admin", checkUserToken, makeUserAdmin);
+router.post("/make-user-admin", authenticateTokens, makeUserAdmin);
 
 export default router;
