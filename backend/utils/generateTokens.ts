@@ -1,36 +1,38 @@
 import { Response } from "express";
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-const generateAccessToken = (
+export const generateAccessToken = (
   userId: string,
   isAdmin: boolean,
   res: Response
 ) => {
-  const secretKey = process.env.ACCESS_SECRET_KEY;
-  if (!secretKey) {
+  const accessSecretKey = process.env.ACCESS_SECRET_KEY;
+  if (!accessSecretKey) {
     console.log("[server] generateAccessToken: No ACCESS_SECRET_KEY found");
     return res.status(500).json({ error: "Internal server error" });
   }
 
-  const token = jwt.sign({ userId, isAdmin }, process.env.ACCESS_SECRET_KEY, {
+  const token = jwt.sign({ userId, isAdmin }, accessSecretKey, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
   });
 
   return token;
 };
 
-const generateRefreshToken = (userId: string, res: Response) => {
-  const secretKey = process.env.REFRESH_SECRET_KEY;
-  if (!secretKey) {
+export const generateRefreshToken = (
+  userId: string,
+  isAdmin: boolean,
+  res: Response
+) => {
+  const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
+  if (!refreshSecretKey) {
     console.log("[server] generateAccessToken: No REFRESH_SECRET_KEY found");
     return res.status(500).json({ error: "Internal server error" });
   }
 
-  const token = jwt.sign({ userId }, process.env.REFRESH_SECRET_KEY, {
+  const token = jwt.sign({ userId, isAdmin }, refreshSecretKey, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
   });
 
   return token;
 };
-
-module.exports = { generateAccessToken, generateRefreshToken };
