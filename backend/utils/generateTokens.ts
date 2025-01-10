@@ -22,6 +22,7 @@ export const generateAccessToken = (
 export const generateRefreshToken = (
   userId: string,
   isAdmin: boolean,
+  tokenVersion: number,
   res: Response
 ) => {
   const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
@@ -30,7 +31,7 @@ export const generateRefreshToken = (
     return res.status(500).json({ error: "Internal server error" });
   }
 
-  const token = jwt.sign({ userId, isAdmin }, refreshSecretKey, {
+  const token = jwt.sign({ userId, isAdmin, tokenVersion }, refreshSecretKey, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
   });
 
