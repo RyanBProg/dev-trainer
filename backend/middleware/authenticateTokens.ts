@@ -50,6 +50,7 @@ export async function authenticateTokens(
       // check refresh token matches version in db
       const user = await UserModel.findById(refreshDecoded.userId).lean();
       if (!user || user.tokenVersion !== refreshDecoded.tokenVersion) {
+        console.log("[server] User could not be found");
         res.status(403).json({ error: "Invalid refresh token" });
         return;
       }
