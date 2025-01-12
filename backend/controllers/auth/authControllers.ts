@@ -58,7 +58,11 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     setTokenCookie(res, "accessToken", accessToken);
     setTokenCookie(res, "refreshToken", refreshToken);
 
-    res.status(201).json({ fullName: savedUser.fullName });
+    res.status(201).json({
+      fullName: savedUser.fullName,
+      isAdmin: savedUser.isAdmin,
+      message: "Signed in successfully",
+    });
   } catch (error) {
     handleControllerError(error, res, "signup");
   }
@@ -99,7 +103,13 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
     setTokenCookie(res, "accessToken", accessToken);
     setTokenCookie(res, "refreshToken", refreshToken);
 
-    res.status(200).json({ fullName: user.fullName });
+    res
+      .status(200)
+      .json({
+        fullName: user.fullName,
+        isAdmin: user.isAdmin,
+        message: "Logged in successfully",
+      });
   } catch (error) {
     handleControllerError(error, res, "login");
   }
@@ -137,13 +147,22 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
 
     const userId = req.user?.userId;
 
-    await UserModel.updateOne(
+    const user = await UserModel.findByIdAndUpdate(
       { _id: userId },
       { $set: { isAdmin: true } },
       { runValidators: true }
-    );
+    ).lean();
+    if (!user) {
+      console.log("[server] makeUserAdmin: User cannot be found");
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
 
-    res.status(201).json({ message: "User now admin" });
+    res.status(201).json({
+      fullName: user.fullName,
+      isAdmin: user.isAdmin,
+      message: "User now admin",
+    });
   } catch (error) {
     handleControllerError(error, res, "makeUserAdmin");
   }
