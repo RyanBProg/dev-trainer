@@ -148,3 +148,41 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
     handleControllerError(error, res, "makeUserAdmin");
   }
 };
+
+export const logOutOnAllDevices = async (
+  req: TUserTokenRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $inc: { tokenVersion: 1 } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
+    res.status(200).json({ message: "Logged out on all devices successfully" });
+  } catch (error) {
+    handleControllerError(error, res, "logOutOnAllDevices");
+  }
+};

@@ -4,6 +4,7 @@ import {
   login,
   logout,
   makeUserAdmin,
+  logOutOnAllDevices,
 } from "../controllers/auth/authControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
 
@@ -17,5 +18,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 // route for making a user an admin, returns a success message
 router.post("/make-user-admin", authenticateTokens, makeUserAdmin);
+// route for logging out user on all devices by increasing version on refresh token
+router.post("/logout-all", authenticateTokens, logOutOnAllDevices);
 
 export default router;
