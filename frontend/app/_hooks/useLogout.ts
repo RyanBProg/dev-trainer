@@ -2,6 +2,7 @@
 
 import { useUserAuthContext } from "../_context/userAuthContext";
 import { useRouter } from "next/navigation";
+import { initialUserContext } from "../_context/userAuthContext";
 
 export function useLogout() {
   const { setAuthUser } = useUserAuthContext();
@@ -20,7 +21,7 @@ export function useLogout() {
         throw new Error(data.error);
       }
 
-      setAuthUser(undefined);
+      setAuthUser(initialUserContext);
       router.push("/login");
     } catch (error) {
       alert(

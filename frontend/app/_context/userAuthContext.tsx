@@ -8,33 +8,19 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
+import { TUserContext } from "../_types/types";
 
-const initialUser: TUserContext = {
+export const initialUserContext: TUserContext = {
   fullName: "",
-  email: "",
+  isAdmin: false,
   custom: {
     shortcuts: [],
   },
 };
 
-type TUserContext = {
-  fullName: string;
-  email: string;
-  custom: {
-    shortcuts: TShortcut[];
-  };
-};
-
-type TShortcut = {
-  type: string;
-  keys: string[];
-  shortDescription: string;
-  description: string;
-};
-
 type TAuthContext = {
   authUser: TUserContext | undefined;
-  setAuthUser: Dispatch<SetStateAction<TUserContext | undefined>>;
+  setAuthUser: Dispatch<SetStateAction<TUserContext>>;
 };
 
 const UserAuthContext = createContext<TAuthContext | undefined>(undefined);
@@ -56,7 +42,7 @@ type TAuthContextProviderProps = {
 export const UserAuthContextProvider = ({
   children,
 }: TAuthContextProviderProps) => {
-  const [authUser, setAuthUser] = useState<TUserContext | undefined>();
+  const [authUser, setAuthUser] = useState<TUserContext>(initialUserContext);
 
   return (
     <UserAuthContext.Provider value={{ authUser, setAuthUser }}>

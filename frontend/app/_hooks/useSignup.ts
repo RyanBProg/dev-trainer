@@ -27,11 +27,11 @@ export function useSignup() {
         throw new Error(userData.error);
       }
 
-      setAuthUser({
+      setAuthUser((prev) => ({
+        ...prev,
         fullName: userData.fullName,
-        email: userData.email,
-        custom: userData.custom,
-      });
+        isAdmin: userData.isAdmin,
+      }));
       router.push("/dashboard");
     } catch (error) {
       alert(

@@ -9,21 +9,12 @@ export type TUserSignup = {
 
 // server response types
 
-type TUserBasicData = {
+export type TUserContext = {
   fullName: string;
   isAdmin: boolean;
-};
-
-type TUserPersonalData = {
-  fullName: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isAdmin: boolean;
-};
-
-type TUserShortcutsData = {
-  shortcuts: string[];
+  custom: {
+    shortcuts: TShortcut[];
+  };
 };
 
 export type TShortcut = {
