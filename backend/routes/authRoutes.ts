@@ -3,7 +3,6 @@ import {
   signup,
   login,
   logout,
-  validateToken,
   makeUserAdmin,
 } from "../controllers/auth/authControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
@@ -16,8 +15,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 // route for logging out a user, returns a success message and voids the access token
 router.post("/logout", logout);
-// route for validating an access token, returns a success message
-router.post("/validate-token", authenticateTokens, validateToken);
 // route for making a user an admin, returns a success message
 router.post("/make-user-admin", authenticateTokens, makeUserAdmin);
 

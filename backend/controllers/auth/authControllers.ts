@@ -127,24 +127,6 @@ export const logout: RequestHandler = async (_, res) => {
   }
 };
 
-export const validateToken = async (req: TUserTokenRequest, res: Response) => {
-  try {
-    const userId = req.user?.userId;
-
-    const userData = await UserModel.findOne({ _id: userId })
-      .select("-password -custom -_id -__v")
-      .lean();
-    if (!userData) {
-      res.status(400).json({ error: "User not found" });
-      return;
-    }
-
-    res.status(200).json({ message: "Access Token Valid" });
-  } catch (error) {
-    handleControllerError(error, res, "validateToken");
-  }
-};
-
 export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
   try {
     const { adminPassword } = req.body;
