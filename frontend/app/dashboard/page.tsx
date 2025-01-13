@@ -11,20 +11,20 @@ export default async function Dashboard() {
   return (
     <div className="px-8">
       <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">
-        Dashboard
+        My Dashboard
       </h1>
       <div className="flex gap-2">
         <NewCategoryButton />
       </div>
       <div>
-        {shortcutsTable.map((category) => {
+        {shortcutsTable.map((category, index) => {
           return (
             <div key={category.type}>
               <div className="flex gap-4 mt-10 mb-4">
                 <h2 className="text-xl font-bold capitalize">
                   {category.type} Shortcuts
                 </h2>
-                <NewShortcutButton type={category.type} />
+                <NewShortcutButton type={category.type} index={index} />
               </div>
               <div className="overflow-x-auto">
                 <table className="table">
