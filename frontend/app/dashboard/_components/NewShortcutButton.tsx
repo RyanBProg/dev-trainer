@@ -95,7 +95,6 @@ export default function NewShortcutButton({
                   setSelectedShortcuts={setSelectedShortcuts}
                   isLoading={isLoading}
                   setIsModalOpen={setIsModalOpen}
-                  type={type}
                 />
               )}
             </div>
@@ -112,7 +111,6 @@ type FormModalProps = {
   setSelectedShortcuts: Dispatch<SetStateAction<string[]>>;
   isLoading: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  type: string;
 };
 
 function FormModal({
@@ -121,7 +119,6 @@ function FormModal({
   setSelectedShortcuts,
   isLoading,
   setIsModalOpen,
-  type,
 }: FormModalProps) {
   const router = useRouter();
 
@@ -159,7 +156,7 @@ function FormModal({
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3 className="font-bold text-lg mb-4 capitalize">{type} Shortcuts</h3>
+      <h3 className="font-bold text-lg mb-4 capitalize">Shortcut List</h3>
 
       {isLoading ? (
         <div className="flex justify-center items-center">
