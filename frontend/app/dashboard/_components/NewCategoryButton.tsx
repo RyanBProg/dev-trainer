@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useState,
-  useEffect,
-} from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 
@@ -20,24 +14,21 @@ export default function NewCategoryButton({
   const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedShortcuts, setSelectedShortcuts] = useState<string[]>([]);
-  const router = useRouter();
   const [categories, setCategories] = useState([]);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await fetch("http://localhost:4040/api/shortcuts/types", {
-        method: "GET",
-        credentials: "include",
-      });
+  const fetchCategories = async () => {
+    const res = await fetch("http://localhost:4040/api/shortcuts/types", {
+      method: "GET",
+      credentials: "include",
+    });
 
-      const categories = await res.json();
-      if (categories.error) router.push("/login");
-      setCategories(categories);
-    };
-
-    fetchCategories();
-  }, []);
+    const categories = await res.json();
+    if (categories.error) router.push("/login");
+    setCategories(categories);
+  };
 
   const fetchShortcuts = async (type: string) => {
     try {
@@ -75,7 +66,17 @@ export default function NewCategoryButton({
     }
   };
 
+  const toggleDropdown = () => {
+    if (!isDropdownOpen) {
+      setIsDropdownOpen(true);
+      fetchCategories();
+    } else {
+      setIsDropdownOpen(false);
+    }
+  };
+
   const openModal = (category: string) => {
+    setIsDropdownOpen(false);
     setIsModalOpen(true);
     fetchShortcuts(category);
   };
@@ -85,19 +86,23 @@ export default function NewCategoryButton({
     setSelectedShortcuts([]);
   };
 
-  if (categories.length === 0) return <>Loading...</>;
-
   return (
     <>
       <div className="dropdown dropdown-bottom">
-        <div tabIndex={0} role="button" className="btn m-1">
+        <div
+          tabIndex={0}
+          onClick={toggleDropdown}
+          role="button"
+          className="btn m-1">
           + Add New Category
         </div>
         <ul
           tabIndex={0}
           className="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow">
           {categories.length === 0 ? (
-            <>Loading...</>
+            <div className="flex justify-center items-center py-2">
+              <span className="loading loading-spinner loading-md"></span>
+            </div>
           ) : (
             categories.map((category) => (
               <li key={category}>
