@@ -24,7 +24,11 @@ export default async function Dashboard() {
                 <h2 className="text-xl font-bold capitalize">
                   {category.type} Shortcuts
                 </h2>
-                <NewShortcutButton type={category.type} index={index} />
+                <NewShortcutButton
+                  type={category.type}
+                  index={index}
+                  userShortcuts={category.shortcuts}
+                />
               </div>
               <div className="overflow-x-auto">
                 <table className="table">

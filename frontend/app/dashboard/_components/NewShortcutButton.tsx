@@ -1,16 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
+
+type NewShortcutButtonProps = {
+  type: string;
+  index: number;
+  userShortcuts: TShortcut[];
+};
 
 export default function NewShortcutButton({
   type,
   index,
-}: {
-  type: string;
-  index: number;
-}) {
+  userShortcuts,
+}: NewShortcutButtonProps) {
   const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +41,15 @@ export default function NewShortcutButton({
         return;
       }
 
-      setShortcuts(data);
+      // filter the list by what the user already has saved to get unsaved shortcuts only
+      const newShortcuts = data.filter(
+        (shortcut: TShortcut) =>
+          !userShortcuts.some(
+            (userShortcut) => userShortcut._id === shortcut._id
+          )
+      );
+
+      setShortcuts(newShortcuts);
     } catch (error) {
       console.error("Failed to fetch shortcuts:", error);
     } finally {
@@ -54,6 +66,64 @@ export default function NewShortcutButton({
     setIsModalOpen(false);
     setSelectedShortcuts([]);
   };
+
+  return (
+    <>
+      <button className="btn btn-sm" onClick={openModal}>
+        + Add Shortcut
+      </button>
+
+      {isModalOpen && (
+        <div className="z-50">
+          <div className="fixed inset-0 bg-white/10 backdrop-blur-sm"></div>
+          <dialog id={`my_modal_${index}`} className="modal" open>
+            <div className="modal-box relative bg-neutral-900">
+              <button
+                type="button"
+                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                onClick={closeModal}>
+                ✕
+              </button>
+              {isLoading ? (
+                <div className="flex justify-center items-center">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              ) : (
+                <FormModal
+                  shortcuts={shortcuts}
+                  selectedShortcuts={selectedShortcuts}
+                  setSelectedShortcuts={setSelectedShortcuts}
+                  isLoading={isLoading}
+                  setIsModalOpen={setIsModalOpen}
+                  type={type}
+                />
+              )}
+            </div>
+          </dialog>
+        </div>
+      )}
+    </>
+  );
+}
+
+type FormModalProps = {
+  shortcuts: TShortcut[];
+  selectedShortcuts: string[];
+  setSelectedShortcuts: Dispatch<SetStateAction<string[]>>;
+  isLoading: boolean;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  type: string;
+};
+
+function FormModal({
+  shortcuts,
+  selectedShortcuts,
+  setSelectedShortcuts,
+  isLoading,
+  setIsModalOpen,
+  type,
+}: FormModalProps) {
+  const router = useRouter();
 
   const handleCheckboxChange = (id: string) => {
     setSelectedShortcuts((prev) =>
@@ -83,54 +153,37 @@ export default function NewShortcutButton({
     router.refresh();
   }
 
-  return (
-    <>
-      <button className="btn btn-sm" onClick={openModal}>
-        + Add Shortcut
-      </button>
+  if (shortcuts.length === 0) {
+    return <p>No More Shortcuts</p>;
+  }
 
-      {isModalOpen && (
-        <dialog id={`my_modal_${index}`} className="modal" open>
-          <form className="modal-box relative" onSubmit={handleSubmit}>
-            <button
-              type="button"
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={closeModal}>
-              ✕
-            </button>
-            <h3 className="font-bold text-lg mb-4 capitalize">
-              {type} Shortcuts
-            </h3>
-            <ul className="grid gap-2">
-              {isLoading ? (
-                <div className="flex justify-center items-center">
-                  <span className="loading loading-spinner loading-lg"></span>
-                </div>
-              ) : shortcuts.length === 0 ? (
-                <p>No shortcuts found.</p>
-              ) : (
-                shortcuts.map((shortcut) => (
-                  <li
-                    key={shortcut._id}
-                    className="capitalize flex gap-2 items-center">
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={selectedShortcuts.includes(shortcut._id)}
-                      onChange={() =>
-                        handleCheckboxChange(shortcut._id)
-                      }></input>
-                    {shortcut.shortDescription}
-                  </li>
-                ))
-              )}
-            </ul>
-            <button className="btn mt-4" type="submit">
-              Add Shortcuts
-            </button>
-          </form>
-        </dialog>
+  return (
+    <form onSubmit={handleSubmit}>
+      <h3 className="font-bold text-lg mb-4 capitalize">{type} Shortcuts</h3>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : (
+        <ul className="grid gap-3">
+          {shortcuts.map((shortcut) => (
+            <li
+              key={shortcut._id}
+              className="capitalize flex gap-2 items-center">
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={selectedShortcuts.includes(shortcut._id)}
+                onChange={() => handleCheckboxChange(shortcut._id)}></input>
+              {shortcut.shortDescription}
+            </li>
+          ))}
+        </ul>
       )}
-    </>
+      <button className="btn mt-8" type="submit">
+        Add Shortcuts
+      </button>
+    </form>
   );
 }
