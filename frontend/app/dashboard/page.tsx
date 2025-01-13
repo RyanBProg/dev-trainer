@@ -14,7 +14,7 @@ export default async function Dashboard() {
         My Dashboard
       </h1>
       <div className="flex gap-2">
-        <NewCategoryButton />
+        <NewCategoryButton userShortcuts={userShortcuts} />
       </div>
       <div>
         {shortcutsTable.map((category, index) => {
