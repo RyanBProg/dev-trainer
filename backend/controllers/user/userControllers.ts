@@ -22,44 +22,37 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   }
 };
 
-export const addUserShortcut = async (
+export const addUserShortcuts = async (
   req: TUserTokenRequest,
   res: Response
 ) => {
   try {
-    const shortcutId = req.body.shortcutId;
+    const shortcutIds = req.body.shortcutIds;
 
-    if (!shortcutId) {
-      res.status(400).json({ error: "Shortcut ID is required" });
+    if (!Array.isArray(shortcutIds) || shortcutIds.length === 0) {
+      res.status(400).json({ error: "Shortcut IDs are required" });
       return;
     }
 
     const userId = req.user?.userId;
-    const user = await UserModel.findById(userId)
-      .select("custom.shortcuts")
-      .lean();
+    const user = await UserModel.findById(userId).select("custom.shortcuts");
 
     if (!user) {
-      res.status(400).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
       return;
     }
 
-    const shortcutExists = user.custom?.shortcuts.includes(shortcutId);
+    await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { "custom.shortcuts": { $each: shortcutIds } },
+      },
+      { new: true }
+    );
 
-    if (shortcutExists) {
-      res.status(400).json({ error: "Shortcut already exists in users list" });
-      return;
-    }
-
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { _id: userId },
-      { $push: { "custom.shortcuts": shortcutId } },
-      { new: true, runValidators: true }
-    ).select("-password");
-
-    res.status(200).json({ updatedUser });
+    res.status(200).json({ message: "User shortcuts updated" });
   } catch (error) {
-    handleControllerError(error, res, "addUserShortcut");
+    handleControllerError(error, res, "addUserShortcuts");
   }
 };
 
