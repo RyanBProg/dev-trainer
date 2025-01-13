@@ -5,17 +5,17 @@ import {
   deleteUserShortcut,
   getUserShortcuts,
 } from "../controllers/user/userControllers";
-import checkUserToken from "../middleware/checkUserToken";
+import { authenticateTokens } from "../middleware/authenticateTokens";
 
 const router = express.Router();
 
 // returns logged in user's information
-router.get("/", checkUserToken, getUserInfo);
+router.get("/", authenticateTokens, getUserInfo);
 // adds a shortcut to the user's shortcuts, returns an array of user shortcuts
-router.post("/shortcuts", checkUserToken, addUserShortcuts);
+router.post("/shortcuts", authenticateTokens, addUserShortcuts);
 // deletes a shortcut from the user's shortcuts, returns an array of user shortcuts
-router.delete("/shortcuts/:shortcutId", checkUserToken, deleteUserShortcut);
+router.delete("/shortcuts/:shortcutId", authenticateTokens, deleteUserShortcut);
 // returns an array of user shortcuts
-router.get("/shortcuts", checkUserToken, getUserShortcuts);
+router.get("/shortcuts", authenticateTokens, getUserShortcuts);
 
 export default router;
