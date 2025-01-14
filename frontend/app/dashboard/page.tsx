@@ -9,7 +9,7 @@ export default async function Dashboard() {
   const shortcutsTable = createShortcutTable(userShortcuts);
 
   return (
-    <div className="px-8">
+    <div className="px-8 mb-10">
       <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">
         My Dashboard
       </h1>
