@@ -1,8 +1,9 @@
 "use client";
 
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
+import ShortcutForm from "./ShortcutForm";
 
 export default function EditShortcut() {
   const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
@@ -72,15 +73,26 @@ export default function EditShortcut() {
   };
 
   return (
-    <div className="mt-10">
+    <div className="my-10">
       <h2 className="mb-4 font-semibold text-lg">Update a Shortcut</h2>
-      <div className="dropdown dropdown-bottom">
+      <div className="dropdown dropdown-bottom mb-4">
         <div
           tabIndex={0}
           onClick={toggleDropdown}
           role="button"
           className="btn">
-          Select a Category
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            className="h-4 w-4 opacity-70">
+            <path
+              fillRule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Find a Shortcut
         </div>
         <ul
           tabIndex={0}
@@ -126,6 +138,15 @@ export default function EditShortcut() {
           </dialog>
         </div>
       )}
+      {selectedShortcut && (
+        <>
+          <ShortcutForm
+            method="PUT"
+            url={`http://localhost:4040/api/shortcuts/admin/${selectedShortcut._id}`}
+            initalFormData={selectedShortcut}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -143,8 +164,6 @@ function FormModal({
   isLoading,
   setIsModalOpen,
 }: FormModalProps) {
-  const router = useRouter();
-
   async function handleSubmit(eValue: string) {
     if (eValue === "") {
       alert("No shortcut selected");
@@ -158,14 +177,12 @@ function FormModal({
       });
 
       const fetchedShortcut = await res.json();
-      console.log(fetchedShortcut);
       setSelectedShortcut(fetchedShortcut);
     } catch (error) {
       console.error("Failed to add shortcut:", error);
     }
 
     setIsModalOpen(false);
-    router.refresh();
   }
 
   return (

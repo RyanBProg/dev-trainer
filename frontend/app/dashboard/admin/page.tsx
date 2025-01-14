@@ -1,6 +1,14 @@
 "use client";
 
-import CreateShortcutForm from "./_components/CreateShortcutForm";
+import ShortcutForm from "./_components/ShortcutForm";
+import EditShortcut from "./_components/EditShortcut";
+
+const blankFormData = {
+  shortDescription: "",
+  description: "",
+  keys: [] as string[],
+  type: "",
+};
 
 export default function Admin() {
   return (
@@ -8,7 +16,16 @@ export default function Admin() {
       <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">
         Admin Panel
       </h1>
-      <CreateShortcutForm />
+      <h2 className="mb-4 font-semibold text-lg">Create a Shortcut</h2>
+      <ShortcutForm
+        method="POST"
+        url={"http://localhost:4040/api/shortcuts/admin"}
+        initalFormData={blankFormData}
+      />
+
+      <hr className="mt-10 border-neutral-600" />
+
+      <EditShortcut />
     </div>
   );
 }

@@ -1,18 +1,24 @@
 "use client";
 
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-const initalFormData = {
-  shortDescription: "",
-  description: "",
-  keys: [] as string[],
-  type: "",
+type Props = {
+  method: "POST" | "PUT";
+  url: string;
+  initalFormData: {
+    shortDescription: string;
+    description: string;
+    keys: string[];
+    type: string;
+  };
 };
 
-export default function CreateShortcutForm() {
+export default function ShortcutForm({ method, url, initalFormData }: Props) {
   const [formData, setFormData] = useState(initalFormData);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -58,8 +64,8 @@ export default function CreateShortcutForm() {
       }
       shortcutSchema.parse(formData);
 
-      const res = await fetch("http://localhost:4040/api/shortcuts/admin", {
-        method: "POST",
+      const res = await fetch(url, {
+        method: method,
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ ...formData }),
         credentials: "include",
@@ -72,8 +78,8 @@ export default function CreateShortcutForm() {
         return;
       }
 
-      setFormData(initalFormData);
-      alert("New Shortcut Created");
+      router.refresh();
+      alert("Shortcut Submitted");
     } catch (error) {
       console.log("handleSubmit: ", error);
       alert("Form submisson failed");
@@ -84,7 +90,6 @@ export default function CreateShortcutForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="mb-2 font-semibold text-lg">Add a New Shortcut</h2>
       <div className="grid gap-4 items-start sm:grid-cols-2">
         <label htmlFor="title" className="grid gap-1">
           Shortcut Title
@@ -168,7 +173,7 @@ export default function CreateShortcutForm() {
             <span className="loading loading-spinner loading-sm"></span>
           </div>
         ) : (
-          "Create Shortcut"
+          "Submit Shortcut"
         )}
       </button>
     </form>
