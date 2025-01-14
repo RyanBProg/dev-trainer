@@ -32,7 +32,7 @@ export default function Navbar() {
               <Link href="/dashboard">Dashboard</Link>
             </li>
             <li>
-              <Link href="/dashboard/Admin">Admin Panel</Link>
+              <Link href="/dashboard/admin">Admin Panel</Link>
             </li>
             <li>
               <Link href="/guides">Guides</Link>
