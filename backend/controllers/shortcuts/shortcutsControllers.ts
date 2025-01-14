@@ -109,9 +109,7 @@ export const createNewShortcut: RequestHandler<
     // Check for conflicting keys
     const conflict = await checkKeysConflict(keys);
     if (conflict) {
-      res
-        .status(400)
-        .json({ error: "Keys array matches an existing shortcut" });
+      res.status(400).json({ error: "Keys matches an existing shortcut" });
       return;
     }
 
