@@ -3,7 +3,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
-import ShortcutForm from "./ShortcutForm";
+import UpdateShortcutForm from "./UpdateShortcutForm";
 
 export default function EditShortcut() {
   const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
@@ -140,10 +140,9 @@ export default function EditShortcut() {
       )}
       {selectedShortcut && (
         <>
-          <ShortcutForm
-            method="PUT"
-            url={`http://localhost:4040/api/shortcuts/admin/${selectedShortcut._id}`}
-            initalFormData={selectedShortcut}
+          <UpdateShortcutForm
+            selectedShortcut={selectedShortcut}
+            setSelectedShortcut={setSelectedShortcut}
           />
         </>
       )}

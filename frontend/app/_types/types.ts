@@ -27,3 +27,10 @@ export type TShortcut = {
   updatedAt: string;
   __v: number;
 };
+
+export type TShortcutForm = {
+  shortDescription: string;
+  description: string;
+  keys: string[];
+  type: string;
+};

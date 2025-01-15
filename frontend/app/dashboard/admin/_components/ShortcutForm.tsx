@@ -1,26 +1,22 @@
 "use client";
 
-import { shortcutSchema } from "@/app/_zod/shortcutSchema";
-import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction } from "react";
 import { getKeyDownValue } from "../../_utils/getKeyDownValue";
+import { TShortcut, TShortcutForm } from "@/app/_types/types";
 
 type Props = {
-  method: "POST" | "PUT";
-  url: string;
-  initalFormData: {
-    shortDescription: string;
-    description: string;
-    keys: string[];
-    type: string;
-  };
+  handleSubmit: (e: FormEvent) => Promise<void>;
+  formData: TShortcut | TShortcutForm;
+  setFormData: Dispatch<SetStateAction<TShortcut | TShortcutForm>>;
+  isLoading: boolean;
 };
 
-export default function ShortcutForm({ method, url, initalFormData }: Props) {
-  const [formData, setFormData] = useState(initalFormData);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
+export default function ShortcutForm({
+  handleSubmit,
+  formData,
+  setFormData,
+  isLoading,
+}: Props) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     const key = getKeyDownValue(event);
@@ -35,42 +31,6 @@ export default function ShortcutForm({ method, url, initalFormData }: Props) {
 
   const handleClearKeys = () => {
     setFormData((prev) => ({ ...prev, keys: [] }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      if (formData.type === "") {
-        alert("A type must be selected");
-        setIsLoading(false);
-        return;
-      }
-      shortcutSchema.parse(formData);
-
-      const res = await fetch(url, {
-        method: method,
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ ...formData }),
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        const resData = await res.json();
-        alert(resData.error || "Failed to create shortcut");
-        setIsLoading(false);
-        return;
-      }
-
-      router.refresh();
-      alert("Shortcut Submitted");
-    } catch (error) {
-      console.log("handleSubmit: ", error);
-      alert("Form submisson failed");
-    }
-
-    setIsLoading(false);
   };
 
   return (
