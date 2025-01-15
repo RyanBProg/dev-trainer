@@ -3,6 +3,7 @@
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { getKeyDownValue } from "../../_utils/getKeyDownValue";
 
 type Props = {
   method: "POST" | "PUT";
@@ -22,26 +23,10 @@ export default function ShortcutForm({ method, url, initalFormData }: Props) {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
-
-    // Initialize an array to hold the key combination
-    const keyCombination: string[] = [];
-
-    // Check for macOS-specific modifier keys
-    if (event.metaKey) keyCombination.push("cmd");
-    if (event.altKey) keyCombination.push("option");
-    if (event.shiftKey) keyCombination.push("shift");
-    if (event.ctrlKey) keyCombination.push("ctrl");
-
-    // Add the main key (e.g., "a", "Enter") if it's not a modifier
-    const key = event.key.toLowerCase();
-    if (key === " ") {
-      keyCombination.push("space"); // Explicitly handle the spacebar
-    } else if (!["meta", "alt", "shift", "control"].includes(key)) {
-      keyCombination.push(key);
-    }
+    const key = getKeyDownValue(event);
 
     // Deduplicate and update the keys in the state
-    const uniqueKeys = [...new Set([...formData.keys, ...keyCombination])];
+    const uniqueKeys = [...new Set([...formData.keys, key])];
     setFormData((prev) => ({
       ...prev,
       keys: uniqueKeys,
