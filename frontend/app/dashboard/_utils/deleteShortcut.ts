@@ -1,4 +1,4 @@
-export async function useDeleteShortcut(shortcutId: string) {
+export async function deleteShortcut(shortcutId: string) {
   try {
     const res = await fetch(
       `http://localhost:4040/api/shortcuts/admin/${shortcutId}`,

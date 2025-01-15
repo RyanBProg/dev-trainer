@@ -5,7 +5,7 @@ import { TShortcut, TShortcutForm } from "@/app/_types/types";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
 import ShortcutForm from "./ShortcutForm";
-import { useDeleteShortcut } from "@/app/_hooks/useDeleteShortcut";
+import { deleteShortcut } from "@/app/dashboard/_utils/deleteShortcut";
 
 type Props = {
   selectedShortcut: TShortcut;
@@ -23,7 +23,7 @@ export default function UpdateShortcutForm({
 
   const handleDelete = async () => {
     try {
-      const result = await useDeleteShortcut(selectedShortcut._id);
+      const result = await deleteShortcut(selectedShortcut._id);
       if (!result) {
         throw new Error("Failed to delete shortcut");
       }
