@@ -48,9 +48,25 @@ export default function CreateShortcutForm() {
       <ShortcutForm
         handleSubmit={handleSubmit}
         formData={formData}
-        setFormData={setFormData}
-        isLoading={isLoading}
-      />
+        setFormData={setFormData}>
+        <FormButtons isLoading={isLoading} />
+      </ShortcutForm>
+    </div>
+  );
+}
+
+function FormButtons({ isLoading }: { isLoading: boolean }) {
+  return (
+    <div className="mt-6 flex gap-4">
+      <button type="submit" className="btn btn-success">
+        {isLoading ? (
+          <div className="flex justify-center items-center">
+            <span className="loading loading-spinner loading-sm"></span>
+          </div>
+        ) : (
+          "Create Shortcut"
+        )}
+      </button>
     </div>
   );
 }

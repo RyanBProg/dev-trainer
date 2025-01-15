@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, FormEvent, SetStateAction } from "react";
+import { Dispatch, FormEvent, ReactNode, SetStateAction } from "react";
 import { getKeyDownValue } from "../../_utils/getKeyDownValue";
 import { TShortcut, TShortcutForm } from "@/app/_types/types";
 
@@ -8,14 +8,14 @@ type Props = {
   handleSubmit: (e: FormEvent) => Promise<void>;
   formData: TShortcut | TShortcutForm;
   setFormData: Dispatch<SetStateAction<TShortcut | TShortcutForm>>;
-  isLoading: boolean;
+  children: ReactNode;
 };
 
 export default function ShortcutForm({
   handleSubmit,
   formData,
   setFormData,
-  isLoading,
+  children,
 }: Props) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -112,15 +112,7 @@ export default function ShortcutForm({
           </select>
         </label>
       </div>
-      <button type="submit" className="btn mt-6">
-        {isLoading ? (
-          <div className="flex justify-center items-center">
-            <span className="loading loading-spinner loading-sm"></span>
-          </div>
-        ) : (
-          "Submit Shortcut"
-        )}
-      </button>
+      {children}
     </form>
   );
 }
