@@ -5,6 +5,7 @@ import { TShortcut, TShortcutForm } from "@/app/_types/types";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
 import ShortcutForm from "./ShortcutForm";
+import { useDeleteShortcut } from "@/app/_hooks/useDeleteShortcut";
 
 type Props = {
   selectedShortcut: TShortcut;
@@ -19,6 +20,23 @@ export default function UpdateShortcutForm({
     selectedShortcut
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      const result = await useDeleteShortcut(selectedShortcut._id);
+      if (!result) {
+        throw new Error("Failed to delete shortcut");
+      }
+
+      setSelectedShortcut(undefined);
+      alert("Shortcut Deleted");
+      setIsLoading(false);
+    } catch (error) {
+      console.log("handleDelete: ", error);
+      alert("Failed to delete shortcut");
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -53,13 +71,18 @@ export default function UpdateShortcutForm({
         handleSubmit={handleSubmit}
         formData={formData}
         setFormData={setFormData}>
-        <FormButtons isLoading={isLoading} />
+        <FormButtons isLoading={isLoading} handleDelete={handleDelete} />
       </ShortcutForm>
     </div>
   );
 }
 
-function FormButtons({ isLoading }: { isLoading: boolean }) {
+type FormButtonsProps = {
+  isLoading: boolean;
+  handleDelete: () => Promise<void>;
+};
+
+function FormButtons({ isLoading, handleDelete }: FormButtonsProps) {
   return (
     <div className="mt-6 flex gap-4">
       <button type="submit" className="btn btn-success">
@@ -71,7 +94,7 @@ function FormButtons({ isLoading }: { isLoading: boolean }) {
           "Update Shortcut"
         )}
       </button>
-      <button className="btn btn-error">
+      <button onClick={handleDelete} type="button" className="btn btn-error">
         {isLoading ? (
           <div className="flex justify-center items-center">
             <span className="loading loading-spinner loading-sm"></span>
