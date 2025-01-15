@@ -1,11 +1,11 @@
 "use client";
 
-import { useUpdateShortcut } from "@/app/_hooks/useUpdateShortcut";
-import { TShortcut, TShortcutForm } from "@/app/_types/types";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { TShortcut, TShortcutForm } from "@/app/_types/types";
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
 import ShortcutForm from "./ShortcutForm";
 import { deleteShortcut } from "@/app/dashboard/_utils/deleteShortcut";
+import { updateShortcut } from "@/app/dashboard/_utils/updateShortcut";
 
 type Props = {
   selectedShortcut: TShortcut;
@@ -50,7 +50,7 @@ export default function UpdateShortcutForm({
       }
       shortcutSchema.parse(formData);
 
-      const result = await useUpdateShortcut(formData, selectedShortcut._id);
+      const result = await updateShortcut(formData, selectedShortcut._id);
       if (!result) {
         throw new Error("Failed to update shortcut");
       }

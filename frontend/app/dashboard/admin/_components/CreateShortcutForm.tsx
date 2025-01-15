@@ -1,8 +1,8 @@
 "use client";
 
-import { useCreateShortcut } from "@/app/_hooks/useCreateShortcut";
-import ShortcutForm from "./ShortcutForm";
 import { FormEvent, useState } from "react";
+import { createShortcut } from "@/app/dashboard/_utils/createShortcut";
+import ShortcutForm from "./ShortcutForm";
 import { shortcutSchema } from "@/app/_zod/shortcutSchema";
 
 const blankFormData = {
@@ -28,7 +28,7 @@ export default function CreateShortcutForm() {
       }
       shortcutSchema.parse(formData);
 
-      const result = await useCreateShortcut(formData);
+      const result = await createShortcut(formData);
       if (!result) {
         throw new Error("Failed to create shortcut");
       }

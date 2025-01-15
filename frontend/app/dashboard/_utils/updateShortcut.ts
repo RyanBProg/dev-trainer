@@ -1,6 +1,6 @@
-import { TShortcutForm } from "../_types/types";
+import { TShortcutForm } from "@/app/_types/types";
 
-export async function useUpdateShortcut(
+export async function updateShortcut(
   formData: TShortcutForm,
   shortcutId: string
 ) {
@@ -24,6 +24,6 @@ export async function useUpdateShortcut(
 
     return resData;
   } catch (error) {
-    console.log("useUpdateShortcut: ", error);
+    console.log("updateShortcut: ", error);
   }
 }
