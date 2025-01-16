@@ -2,18 +2,8 @@
 
 import EditShortcut from "./_components/EditShortcut";
 import CreateShortcutForm from "./_components/CreateShortcutForm";
-import { useUserAuthContext } from "@/app/_context/userAuthContext";
-import { useRouter } from "next/navigation";
 
 export default function Admin() {
-  const { authUser } = useUserAuthContext();
-  const router = useRouter();
-
-  // if (!authUser?.isAdmin) {
-  //   alert("User must be an admin");
-  //   router.push(`/login`);
-  // }
-
   return (
     <div className="px-8 container mx-auto">
       <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">

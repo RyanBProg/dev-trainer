@@ -1,12 +1,12 @@
 "use client";
 
-import { useUserAuthContext } from "@/app/_context/userAuthContext";
+import { useUserContext } from "@/app/_context/userContext";
 import { useLogout } from "@/app/_hooks/useLogout";
 import Link from "next/link";
 
 export default function Navbar() {
   const { logout } = useLogout();
-  const { authUser } = useUserAuthContext();
+  const { isAdmin } = useUserContext();
 
   return (
     <header className="navbar bg-base-100">
@@ -33,7 +33,7 @@ export default function Navbar() {
             <li>
               <Link href="/dashboard">Dashboard</Link>
             </li>
-            {authUser?.isAdmin && (
+            {isAdmin && (
               <li>
                 <Link href="/dashboard/admin">Admin Panel</Link>
               </li>

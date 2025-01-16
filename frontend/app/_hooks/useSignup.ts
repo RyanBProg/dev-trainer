@@ -1,11 +1,9 @@
 "use client";
 
-import { useUserAuthContext } from "../_context/userAuthContext";
 import { TUserSignup } from "../_types/types";
 import { useRouter } from "next/navigation";
 
 export function useSignup() {
-  const { setAuthUser } = useUserAuthContext();
   const router = useRouter();
 
   async function signup(signupData: TUserSignup) {
@@ -27,11 +25,6 @@ export function useSignup() {
         throw new Error(userData.error);
       }
 
-      setAuthUser((prev) => ({
-        ...prev,
-        fullName: userData.fullName,
-        isAdmin: userData.isAdmin,
-      }));
       router.push("/dashboard");
     } catch (error) {
       alert(
