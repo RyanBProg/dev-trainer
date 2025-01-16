@@ -1,18 +1,49 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+"use client";
 
-export default async function Account() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  if (!accessToken) redirect("/login");
+import { useLogout } from "@/app/_hooks/useLogout";
+import { TUserData } from "@/app/_types/types";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-  const res = await fetch("http://localhost:4040/api/user", {
-    method: "GET",
-    headers: { Cookie: cookieStore.toString() },
-  });
+const emptyUser = {
+  fullName: "",
+  email: "",
+  isAdmin: false,
+  tokenVersion: "",
+  createdAt: "",
+  updatedAt: "",
+};
 
-  const userInfo = await res.json();
-  if (userInfo.error) redirect("/login");
+export default function Account() {
+  const router = useRouter();
+  const { logout } = useLogout();
+  const [userData, setUserData] = useState<TUserData>(emptyUser);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const res = await fetch("http://localhost:4040/api/user", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const resData = await res.json();
+      if (resData.error) router.push("/login");
+
+      setUserData(resData);
+      setIsLoading(false);
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -21,28 +52,30 @@ export default async function Account() {
         <div className="grid gap-4 mt-10">
           <div className="grid">
             <span className="font-semibold">Full Name</span>
-            <span className="text-xl capitalize">{userInfo.fullName}</span>
+            <span className="text-xl capitalize">{userData.fullName}</span>
           </div>
           <div className="grid">
             <span className="font-semibold">Email</span>
-            <span className="text-xl">{userInfo.email}</span>
+            <span className="text-xl">{userData.email}</span>
           </div>
           <div className="grid">
             <span className="font-semibold">Member Since</span>
-            <span className="text-xl">{userInfo.createdAt.split("T")[0]}</span>
+            <span className="text-xl">{userData.createdAt.split("T")[0]}</span>
           </div>
           <div className="grid gap-2">
             <span className="font-semibold">Admin</span>
             <input
               type="checkbox"
-              checked={userInfo.isAdmin}
+              checked={userData.isAdmin}
               className="checkbox"
               disabled={true}
             />
           </div>
         </div>
         <div className="mt-10 flex gap-4">
-          <button className="btn btn-accent">Logout</button>
+          <button className="btn btn-accent" onClick={logout}>
+            Logout
+          </button>
           <button className="btn btn-outline">Admin Request</button>
           <button className="btn btn-outline btn-error">Delete Account</button>
         </div>
