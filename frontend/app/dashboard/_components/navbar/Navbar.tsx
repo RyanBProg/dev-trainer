@@ -1,6 +1,6 @@
 "use client";
 
-import { useUserContext } from "@/app/_context/userContext";
+import { useUserContext } from "@/app/dashboard/_context/userContext";
 import { useLogout } from "@/app/_hooks/useLogout";
 import Link from "next/link";
 

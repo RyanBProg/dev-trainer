@@ -8,7 +8,7 @@ import {
   useState,
   useEffect,
 } from "react";
-import { TUserData } from "../_types/types";
+import { TUserData } from "@/app/_types/types";
 
 const UserContext = createContext<TUserData | undefined>(undefined);
 

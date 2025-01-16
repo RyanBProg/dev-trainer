@@ -1,6 +1,6 @@
 import Footer from "./_components/footer/Footer";
 import Navbar from "./_components/navbar/Navbar";
-import { UserContextProvider } from "@/app/_context/userContext";
+import { UserContextProvider } from "@/app/dashboard/_context/userContext";
 
 export default function RootLayout({
   children,
