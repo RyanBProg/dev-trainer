@@ -105,7 +105,9 @@ export default function ShortcutSelectModal({
 
   return (
     <form onSubmit={handleAddShortcuts}>
-      <h3 className="font-bold text-lg mb-4 capitalize">Shortcut List</h3>
+      <h3 className="font-bold text-lg mb-4 capitalize">
+        {type} Shortcut List
+      </h3>
       <ul className="grid gap-3">
         {shortcuts.map((shortcut) => (
           <li key={shortcut._id} className="capitalize flex gap-2 items-center">
