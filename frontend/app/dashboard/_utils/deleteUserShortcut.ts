@@ -1,5 +1,3 @@
-"use client";
-
 export async function deleteUserShortcut(shortcutId: string) {
   try {
     const res = await fetch(
