@@ -39,7 +39,7 @@ export default function Account() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-28">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
