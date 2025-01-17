@@ -14,8 +14,8 @@ export default function ShortcutsModal({
   type,
 }: ShortcutsModalProps) {
   return (
-    <div className="z-50">
-      <div className="fixed inset-0 bg-white/10 backdrop-blur-sm"></div>
+    <>
+      <div className="fixed inset-0 bg-white/10 backdrop-blur-sm z-10"></div>
       <dialog className="modal" open>
         <div className="modal-box relative bg-neutral-900">
           <button
@@ -32,6 +32,6 @@ export default function ShortcutsModal({
           </div>
         </div>
       </dialog>
-    </div>
+    </>
   );
 }

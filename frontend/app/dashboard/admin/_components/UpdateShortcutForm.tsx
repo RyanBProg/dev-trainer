@@ -66,14 +66,12 @@ export default function UpdateShortcutForm({
   };
 
   return (
-    <div>
-      <ShortcutForm
-        handleSubmit={handleSubmit}
-        formData={formData}
-        setFormData={setFormData}>
-        <FormButtons isLoading={isLoading} handleDelete={handleDelete} />
-      </ShortcutForm>
-    </div>
+    <ShortcutForm
+      handleSubmit={handleSubmit}
+      formData={formData}
+      setFormData={setFormData}>
+      <FormButtons isLoading={isLoading} handleDelete={handleDelete} />
+    </ShortcutForm>
   );
 }
 
