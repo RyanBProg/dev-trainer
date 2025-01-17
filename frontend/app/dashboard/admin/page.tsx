@@ -1,9 +1,20 @@
-"use client";
-
 import EditShortcut from "./_components/EditShortcut";
 import CreateShortcutForm from "./_components/CreateShortcutForm";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
-export default function Admin() {
+export default async function Admin() {
+  const cookieStore = await cookies();
+
+  const res = await fetch("http://localhost:4040/api/user", {
+    method: "GET",
+    headers: { Cookie: cookieStore.toString() },
+  });
+
+  const resData = await res.json();
+  if (resData.error) redirect("/dashboard");
+  if (!resData.isAdmin) redirect("/dashboard");
+
   return (
     <div className="px-8 container mx-auto">
       <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">
