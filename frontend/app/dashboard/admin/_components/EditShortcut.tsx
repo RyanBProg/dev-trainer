@@ -1,75 +1,40 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 import UpdateShortcutForm from "./UpdateShortcutForm";
+import ShortcutsModalButtonList from "../../_components/modals/ShortcutsModalButtonList";
+import CategoriesDropdownList from "../../_components/dropdowns/CategoriesDropdownList";
+import ShortcutsModal from "../../_components/modals/ShortcutsModal";
 
 export default function EditShortcut() {
-  const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedShortcut, setSelectedShortcut] = useState<TShortcut>();
   const [categories, setCategories] = useState([]);
+  const [type, setType] = useState("");
   const router = useRouter();
 
   const fetchCategories = async () => {
-    const res = await fetch("http://localhost:4040/api/shortcuts/types", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    const categories = await res.json();
-    if (categories.error) router.push("/login");
-    setCategories(categories);
-  };
-
-  const fetchShortcuts = async (type: string) => {
     try {
-      setIsLoading(true);
-      const encodedType = encodeURIComponent(type);
+      const res = await fetch("http://localhost:4040/api/shortcuts/types", {
+        method: "GET",
+        credentials: "include",
+      });
 
-      const res = await fetch(
-        `http://localhost:4040/api/shortcuts/type/${encodedType}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.error) {
-        router.push("/login");
-        return;
-      }
-
-      setShortcuts(data);
+      const categories = await res.json();
+      if (categories.error) router.push("/login");
+      setCategories(categories);
+      setIsCategoriesLoading(false);
     } catch (error) {
-      console.error("Failed to fetch shortcuts:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleDropdown = () => {
-    if (!isDropdownOpen) {
-      setIsDropdownOpen(true);
-      fetchCategories();
-    } else {
-      setIsDropdownOpen(false);
+      console.error("Failed to fetch categories:", error);
     }
   };
 
   const openModal = (category: string) => {
-    setIsDropdownOpen(false);
+    setType(category);
     setIsModalOpen(true);
-    fetchShortcuts(category);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   };
 
   return (
@@ -78,7 +43,7 @@ export default function EditShortcut() {
       <div className="dropdown dropdown-bottom mb-4">
         <div
           tabIndex={0}
-          onClick={toggleDropdown}
+          onClick={() => fetchCategories()}
           role="button"
           className="btn">
           <svg
@@ -94,119 +59,35 @@ export default function EditShortcut() {
           </svg>
           Find a Shortcut
         </div>
-        <ul
+        <div
           tabIndex={0}
           className="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow">
-          {categories.length === 0 ? (
-            <div className="flex justify-center items-center py-2">
-              <span className="loading loading-spinner loading-md"></span>
-            </div>
-          ) : (
-            categories.map((category) => (
-              <li key={category}>
-                <button onClick={() => openModal(category)}>{category}</button>
-              </li>
-            ))
-          )}
-        </ul>
+          <CategoriesDropdownList
+            isCategoriesLoading={isCategoriesLoading}
+            categories={categories}
+            openModal={openModal}
+          />
+        </div>
       </div>
 
       {isModalOpen && (
-        <div className="z-50">
-          <div className="fixed inset-0 bg-white/10 backdrop-blur-sm"></div>
-          <dialog id={`my_modal_dropdown`} className="modal" open>
-            <div className="modal-box relative bg-neutral-900">
-              <button
-                type="button"
-                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                onClick={closeModal}>
-                ✕
-              </button>
-              {isLoading ? (
-                <div className="flex justify-center items-center">
-                  <span className="loading loading-spinner loading-lg"></span>
-                </div>
-              ) : (
-                <FormModal
-                  shortcuts={shortcuts}
-                  setSelectedShortcut={setSelectedShortcut}
-                  isLoading={isLoading}
-                  setIsModalOpen={setIsModalOpen}
-                />
-              )}
-            </div>
-          </dialog>
-        </div>
+        <ShortcutsModal setIsModalOpen={setIsModalOpen} type={type}>
+          <ShortcutsModalButtonList
+            type={type}
+            setSelectedShortcut={setSelectedShortcut}
+            setIsModalOpen={setIsModalOpen}
+          />
+        </ShortcutsModal>
       )}
+
       {selectedShortcut && (
         <>
           <UpdateShortcutForm
+            key={selectedShortcut._id}
             selectedShortcut={selectedShortcut}
             setSelectedShortcut={setSelectedShortcut}
           />
         </>
-      )}
-    </div>
-  );
-}
-
-type FormModalProps = {
-  shortcuts: TShortcut[];
-  setSelectedShortcut: Dispatch<SetStateAction<TShortcut | undefined>>;
-  isLoading: boolean;
-  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-};
-
-function FormModal({
-  shortcuts,
-  setSelectedShortcut,
-  isLoading,
-  setIsModalOpen,
-}: FormModalProps) {
-  async function handleSubmit(eValue: string) {
-    if (eValue === "") {
-      alert("No shortcut selected");
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:4040/api/shortcuts/${eValue}`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const fetchedShortcut = await res.json();
-      setSelectedShortcut(fetchedShortcut);
-    } catch (error) {
-      console.error("Failed to add shortcut:", error);
-    }
-
-    setIsModalOpen(false);
-  }
-
-  return (
-    <div>
-      <h3 className="font-bold text-lg mb-4 capitalize">Shortcut List</h3>
-      {isLoading ? (
-        <div className="flex justify-center items-center">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : (
-        <ul className="grid gap-3">
-          {shortcuts.map((shortcut) => (
-            <li
-              key={shortcut._id}
-              className="capitalize flex gap-2 items-center">
-              <button
-                className="btn capitalize"
-                value={shortcut._id}
-                onClick={(e) => handleSubmit(e.currentTarget.value)}
-                type="button">
-                {shortcut.shortDescription}
-              </button>
-            </li>
-          ))}
-        </ul>
       )}
     </div>
   );
