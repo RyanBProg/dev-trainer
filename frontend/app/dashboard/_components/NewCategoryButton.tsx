@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
@@ -14,6 +14,9 @@ type NewCategoryButtonProps = {
 export default function NewCategoryButton({
   userShortcuts,
 }: NewCategoryButtonProps) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownButtonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -36,45 +39,62 @@ export default function NewCategoryButton({
     }
   };
 
+  const toggleNavMenu = () => {
+    if (dropdownOpen) {
+      setDropdownOpen(false);
+    } else {
+      fetchCategories();
+      setDropdownOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // check if the click is outside the menu dropdown and not the menu button
+      if (
+        dropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        dropdownButtonRef.current &&
+        !dropdownButtonRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   const openModal = (category: string) => {
+    toggleNavMenu();
     setType(category);
     setIsModalOpen(true);
   };
 
   return (
     <>
-      <div className="dropdown dropdown-bottom">
-        <div
-          tabIndex={0}
-          onClick={() => fetchCategories()}
-          role="button"
+      <div className="relative">
+        <button
+          ref={dropdownButtonRef}
+          onClick={toggleNavMenu}
           className="btn m-1">
           + Add New Category
-        </div>
-        <div
-          tabIndex={0}
-          className="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow">
-          <CategoriesDropdownList
-            isCategoriesLoading={isCategoriesLoading}
-            categories={categories}
-            openModal={openModal}
-          />
-        </div>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow">
-          {categories.length === 0 ? (
-            <div className="flex justify-center items-center py-2">
-              <span className="loading loading-spinner loading-md"></span>
-            </div>
-          ) : (
-            categories.map((category) => (
-              <li key={category}>
-                <button onClick={() => openModal(category)}>{category}</button>
-              </li>
-            ))
-          )}
-        </ul>
+        </button>
+        {dropdownOpen && (
+          <div
+            className="absolute left-0 translate-y-1 menu bg-base-300 rounded-box z-[1] w-52 p-2 shadow"
+            ref={dropdownRef}>
+            <CategoriesDropdownList
+              isCategoriesLoading={isCategoriesLoading}
+              categories={categories}
+              openModal={openModal}
+            />
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
