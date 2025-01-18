@@ -73,6 +73,7 @@ export default function NavMenu() {
             <li>
               <Link href="/dashboard/admin" onClick={toggleNavMenu}>
                 Admin Panel
+                <span className="badge">New</span>
               </Link>
             </li>
           )}
@@ -84,7 +85,6 @@ export default function NavMenu() {
           <li>
             <Link href="/dashboard/guides" onClick={toggleNavMenu}>
               Guides
-              <span className="badge">New</span>
             </Link>
           </li>
         </ul>

@@ -3,6 +3,8 @@
 import { useLogout } from "@/app/_hooks/useLogout";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import ProfileIcon from "@/app/_assets/icons/user.png";
 
 export default function AccountMenu() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -42,13 +44,16 @@ export default function AccountMenu() {
   return (
     <div className="relative">
       <button
-        className="btn btn-ghost btn-circle avatar"
+        className="btn bg-gray-400 btn-ghost btn-circle avatar"
         ref={accountMenuButtonRef}
         onClick={toggleAccountMenu}>
-        <div className="w-10 rounded-full">
-          <img
-            alt="Tailwind CSS Navbar component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+        <div className="w-10 h-10 rounded-full">
+          <Image
+            className="-mt-1"
+            src={ProfileIcon}
+            alt="user profile icon"
+            height={40}
+            width={40}
           />
         </div>
       </button>
