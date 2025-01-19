@@ -8,7 +8,7 @@ export default function NavMenu() {
   const [navMenuOpen, setNavMenuOpen] = useState(false);
   const navMenuButtonRef = useRef<HTMLButtonElement>(null);
   const navMenuDropdownRef = useRef<HTMLUListElement>(null);
-  const { isAdmin } = useUserContext();
+  const { userData } = useUserContext();
 
   const toggleNavMenu = () => {
     if (navMenuOpen) {
@@ -69,7 +69,7 @@ export default function NavMenu() {
               Dashboard
             </Link>
           </li>
-          {isAdmin && (
+          {userData.isAdmin && (
             <li>
               <Link href="/dashboard/admin" onClick={toggleNavMenu}>
                 Admin Panel

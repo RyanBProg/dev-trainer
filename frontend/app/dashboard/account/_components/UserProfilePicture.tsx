@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import ProfileIcon from "@/app/_assets/icons/user.png";
+import { useUserContext } from "../../_context/userContext";
 
 export default function UserProfilePicture() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { profilePicture, setProfilePicture } = useUserContext();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -57,7 +58,7 @@ export default function UserProfilePicture() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!file) {
+    if (!file || !previewUrl) {
       setError("Please upload a valid image.");
       return;
     }
@@ -77,6 +78,7 @@ export default function UserProfilePicture() {
     const data = await response.json();
     if (response.ok) {
       console.log("Profile picture uploaded successfully", data);
+      setProfilePicture(previewUrl);
     } else {
       console.error("Error uploading profile picture:", data.error);
     }
@@ -92,19 +94,17 @@ export default function UserProfilePicture() {
       <div className="my-10 flex gap-10 items-center">
         <div className="rounded-full bg-white h-24 w-24 overflow-clip">
           {previewUrl ? (
-            <div className="mt-4">
-              <Image
-                src={previewUrl}
-                alt="user profile icon"
-                width={96}
-                height={96}
-                className="object-cover"
-              />
-            </div>
+            <Image
+              src={previewUrl}
+              alt="user profile icon"
+              width={96}
+              height={96}
+              className="object-cover"
+            />
           ) : (
             <Image
-              className="-mt-1 object-cover"
-              src={ProfileIcon}
+              className="object-cover"
+              src={profilePicture}
               alt="user profile icon"
               width={96}
               height={96}

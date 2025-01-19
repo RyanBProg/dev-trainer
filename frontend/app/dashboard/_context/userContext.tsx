@@ -7,10 +7,20 @@ import {
   useContext,
   useState,
   useEffect,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import { TUserData } from "@/app/_types/types";
+import defaultProfileIcon from "@/app/_assets/icons/user.png";
+import { StaticImageData } from "next/image";
 
-const UserContext = createContext<TUserData | undefined>(undefined);
+type ContextValue = {
+  userData: TUserData;
+  profilePicture: string | StaticImageData;
+  setProfilePicture: Dispatch<SetStateAction<string | StaticImageData>>;
+};
+
+const UserContext = createContext<ContextValue | undefined>(undefined);
 
 export function useUserContext() {
   const context = useContext(UserContext);
@@ -31,29 +41,56 @@ const emptyUser = {
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<TUserData>(emptyUser);
+  const [profilePicture, setProfilePicture] = useState<
+    string | StaticImageData
+  >(defaultProfileIcon);
   const [isLoading, setIsLoading] = useState(true);
-
   const router = useRouter();
 
+  // Fetch user data and profile picture concurrently
   useEffect(() => {
-    const fetchUserData = async () => {
-      const res = await fetch("http://localhost:4040/api/user", {
-        method: "GET",
-        credentials: "include",
-      });
+    const fetchData = async () => {
+      try {
+        const [userResponse, profileResponse] = await Promise.all([
+          fetch("http://localhost:4040/api/user", {
+            method: "GET",
+            credentials: "include",
+          }),
+          fetch("http://localhost:4040/api/user/profile-picture", {
+            method: "GET",
+            credentials: "include",
+          }),
+        ]);
 
-      const resData = await res.json();
-      if (resData.error) router.push("/login");
+        // Handle user data response
+        const userData = await userResponse.json();
+        if (userData.error) {
+          router.push("/login");
+          return;
+        }
+        setUserData(userData);
 
-      setUserData(resData);
-      setIsLoading(false);
+        // Handle profile picture response
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          if (profileData.profilePicture) {
+            setProfilePicture(profileData.profilePicture);
+          }
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
     };
 
-    fetchUserData();
+    fetchData();
   }, []);
 
   return (
-    <UserContext.Provider value={userData}>
+    <UserContext.Provider
+      value={{ userData, profilePicture, setProfilePicture }}>
       {isLoading ? (
         <div className="flex justify-center items-center">
           <span className="loading loading-spinner loading-lg"></span>
