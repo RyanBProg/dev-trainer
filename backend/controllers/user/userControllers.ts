@@ -3,6 +3,7 @@ import UserModel from "../../db/models/UserModel";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 import ShortcutModel from "../../db/models/ShortcutModel";
 import { handleControllerError } from "../../utils/handleControllerError";
+import sharp from "sharp";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -114,5 +115,42 @@ export const getUserShortcuts = async (
     res.status(200).json(shortcuts);
   } catch (error) {
     handleControllerError(error, res, "getUserShortcuts");
+  }
+};
+
+export const addProfilePicture = async (
+  req: TUserTokenRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    // Ensure a file is uploaded
+    if (!req.file) {
+      res.status(400).json({ error: "No image file uploaded" });
+      return;
+    }
+
+    // Minify and process the image using Sharp
+    const processedImage = await sharp(req.file.buffer)
+      .resize(100, 100) // Resize to 100x100 pixels
+      .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+      .toBuffer();
+
+    // Update the user's profile picture in the database
+    await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        profilePicture: {
+          data: processedImage,
+          contentType: "image/jpeg",
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ message: "Profile picture updated successfully" });
+  } catch (error) {
+    handleControllerError(error, res, "addProfilePicture");
   }
 };

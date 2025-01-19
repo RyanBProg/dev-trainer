@@ -4,8 +4,10 @@ import {
   addUserShortcuts,
   deleteUserShortcut,
   getUserShortcuts,
+  addProfilePicture,
 } from "../controllers/user/userControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
+import { upload } from "../middleware/multerConfig";
 
 const router = express.Router();
 
@@ -17,5 +19,12 @@ router.post("/shortcuts", authenticateTokens, addUserShortcuts);
 router.delete("/shortcuts/:shortcutId", authenticateTokens, deleteUserShortcut);
 // returns an array of user shortcuts
 router.get("/shortcuts", authenticateTokens, getUserShortcuts);
+// minifys and then adds/updates the users profile picture
+router.post(
+  "/profile-picture",
+  authenticateTokens,
+  upload.single("image"),
+  addProfilePicture
+);
 
 export default router;
