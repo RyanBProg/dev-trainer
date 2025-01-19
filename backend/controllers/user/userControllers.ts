@@ -10,7 +10,7 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
     const userId = req.user?.userId;
 
     const userData = await UserModel.findOne({ _id: userId })
-      .select("-password -custom -_id -__v")
+      .select("-password -custom -_id -__v -profilePicture")
       .lean();
     if (!userData) {
       res.status(400).json({ error: "User not found" });
@@ -152,5 +152,35 @@ export const addProfilePicture = async (
     res.status(200).json({ message: "Profile picture updated successfully" });
   } catch (error) {
     handleControllerError(error, res, "addProfilePicture");
+  }
+};
+
+export const getUserProfilePicture = async (
+  req: TUserTokenRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    const userData = await UserModel.findOne({ _id: userId })
+      .select("profilePicture")
+      .lean();
+    if (!userData) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
+
+    if (!userData.profilePicture?.data) {
+      res.status(200).json({ profilePicture: null });
+      return;
+    }
+
+    const imageBase64 = userData.profilePicture.data.toString("base64");
+    const contentType = userData.profilePicture.contentType;
+    const imageSrc = `data:${contentType};base64,${imageBase64}`;
+
+    res.status(200).json({ profilePicture: imageSrc });
+  } catch (error) {
+    handleControllerError(error, res, "getUserProfilePicture");
   }
 };
