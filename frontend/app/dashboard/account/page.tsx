@@ -4,6 +4,7 @@ import { useLogout } from "@/app/_hooks/useLogout";
 import { TUserData } from "@/app/_types/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import UserProfilePicture from "./_components/UserProfilePicture";
 
 const emptyUser = {
   fullName: "",
@@ -48,7 +49,10 @@ export default function Account() {
   return (
     <>
       <div className="card bg-base-300 shadow-xl max-w-[600px] mx-auto mt-20 p-10">
-        <h1 className="font-bold text-3xl text-white">My Account</h1>
+        <h1 className="font-bold text-3xl text-white text-center">
+          My Account
+        </h1>
+        <UserProfilePicture />
         <div className="grid gap-4 mt-10">
           <div className="grid">
             <span className="font-semibold">Full Name</span>
@@ -72,7 +76,7 @@ export default function Account() {
             />
           </div>
         </div>
-        <div className="mt-10 flex gap-4">
+        <div className="mt-16 flex gap-4 mx-auto">
           <button className="btn btn-accent" onClick={logout}>
             Logout
           </button>
