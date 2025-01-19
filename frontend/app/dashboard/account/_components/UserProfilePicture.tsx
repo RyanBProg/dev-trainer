@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import ProfileIcon from "@/app/_assets/icons/user.png";
@@ -52,7 +54,7 @@ export default function UserProfilePicture() {
     reader.readAsDataURL(selectedFile);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!file) {
@@ -60,8 +62,29 @@ export default function UserProfilePicture() {
       return;
     }
 
-    // Process the file here (e.g., send it to the server)
-    console.log("File ready to upload:", file);
+    const formData = new FormData();
+    formData.append("image", file); // Match the key "image" expected on the backend
+
+    const response = await fetch(
+      "http://localhost:4040/api/user/profile-picture",
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log("Profile picture uploaded successfully", data);
+    } else {
+      console.error("Error uploading profile picture:", data.error);
+    }
+
+    if (!file) {
+      setError("Please upload a valid image.");
+      return;
+    }
   };
 
   return (
