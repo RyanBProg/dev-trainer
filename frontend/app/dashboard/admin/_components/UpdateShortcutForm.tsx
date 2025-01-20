@@ -6,6 +6,7 @@ import { shortcutSchema } from "@/app/_zod/formSchemas";
 import ShortcutForm from "./ShortcutForm";
 import { deleteShortcut } from "@/app/dashboard/_utils/deleteShortcut";
 import { updateShortcut } from "@/app/dashboard/_utils/updateShortcut";
+import toast from "react-hot-toast";
 
 type Props = {
   selectedShortcut: TShortcut;
@@ -42,14 +43,14 @@ export default function UpdateShortcutForm({
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      if (formData.type === "") {
-        alert("A type must be selected");
-        setIsLoading(false);
-        return;
-      }
-      shortcutSchema.parse(formData);
+    const result = shortcutSchema.safeParse(formData);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message || "Something went wrong");
+      setIsLoading(false);
+      return;
+    }
 
+    try {
       const result = await updateShortcut(formData, selectedShortcut._id);
       if (!result) {
         throw new Error("Failed to update shortcut");
@@ -57,10 +58,10 @@ export default function UpdateShortcutForm({
 
       setIsLoading(false);
       setSelectedShortcut(undefined);
-      alert("Shortcut Updated");
+      toast.success("Shortcut Updated");
     } catch (error) {
       console.log("handleSubmit: ", error);
-      alert("Failed to update shortcut");
+      toast.error("Failed to update shortcut");
       setIsLoading(false);
     }
   };

@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { createShortcut } from "@/app/dashboard/_utils/createShortcut";
 import ShortcutForm from "./ShortcutForm";
 import { shortcutSchema } from "@/app/_zod/formSchemas";
+import toast from "react-hot-toast";
 
 const blankFormData = {
   shortDescription: "",
@@ -20,14 +21,14 @@ export default function CreateShortcutForm() {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      if (formData.type === "") {
-        alert("A type must be selected");
-        setIsLoading(false);
-        return;
-      }
-      shortcutSchema.parse(formData);
+    const result = shortcutSchema.safeParse(formData);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message || "Something went wrong");
+      setIsLoading(false);
+      return;
+    }
 
+    try {
       const result = await createShortcut(formData);
       if (!result) {
         throw new Error("Failed to create shortcut");
@@ -35,10 +36,10 @@ export default function CreateShortcutForm() {
 
       setFormData(blankFormData);
       setIsLoading(false);
-      alert("Shortcut Created");
+      toast.success("Shortcut Created");
     } catch (error) {
       console.log("handleSubmit: ", error);
-      alert("Failed to create shortcut");
+      toast.error("Failed to create shortcut");
       setIsLoading(false);
     }
   };

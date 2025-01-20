@@ -27,14 +27,14 @@ export const userSignupSchema = z
 export const shortcutSchema = z.object({
   shortDescription: z
     .string()
-    .min(1, "Short description can't be empty")
-    .max(30, "Short description is longer than 30 characters"),
+    .min(3, "Shortcut name must be 3 characters or more")
+    .max(30, "Shortcut name must be no longer than 30 characters"),
   description: z
     .string()
-    .min(1, "Description can't be empty")
-    .max(50, "Description is longer than 50 characters"),
+    .min(3, "Description must be 3 characters or more")
+    .max(50, "Description must be no longer than 50 characters"),
   keys: z
     .array(z.string().min(1, "String must not be empty"))
     .nonempty("At least one key is required"),
-  type: z.string(),
+  type: z.string().min(1, "Type can't be empty"),
 });

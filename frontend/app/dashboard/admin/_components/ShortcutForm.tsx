@@ -37,7 +37,7 @@ export default function ShortcutForm({
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4 items-start sm:grid-cols-2">
         <label htmlFor="title" className="grid gap-1">
-          Shortcut Title
+          Shortcut Name
           <input
             type="text"
             id="title"
