@@ -6,6 +6,7 @@ import {
   getUserShortcuts,
   addProfilePicture,
   getUserProfilePicture,
+  addUserFullName,
 } from "../controllers/user/userControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
 import { upload } from "../middleware/multerConfig";
@@ -29,5 +30,7 @@ router.post(
 );
 // returns user's profile picture
 router.get("/profile-picture", authenticateTokens, getUserProfilePicture);
+// updates the users fullName
+router.post("/full-name", authenticateTokens, addUserFullName);
 
 export default router;

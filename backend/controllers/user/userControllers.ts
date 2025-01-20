@@ -184,3 +184,28 @@ export const getUserProfilePicture = async (
     handleControllerError(error, res, "getUserProfilePicture");
   }
 };
+
+export const addUserFullName = async (
+  req: TUserTokenRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!req.body.fullName) {
+      res.status(400).json({ error: "No fullName found" });
+      return;
+    }
+
+    // Update the user's profile picture in the database
+    const userData = await UserModel.findByIdAndUpdate(
+      userId,
+      { fullName: req.body.fullName.toLowerCase() },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ userData, message: "fullName Updated" });
+  } catch (error) {
+    handleControllerError(error, res, "addUserFullName");
+  }
+};

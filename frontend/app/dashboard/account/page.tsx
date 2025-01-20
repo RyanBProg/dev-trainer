@@ -3,7 +3,7 @@
 import { useLogout } from "@/app/_hooks/useLogout";
 import { TUserData } from "@/app/_types/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
 
 const emptyUser = {
@@ -20,6 +20,7 @@ export default function Account() {
   const { logout } = useLogout();
   const [userData, setUserData] = useState<TUserData>(emptyUser);
   const [isLoading, setIsLoading] = useState(true);
+  const [fullName, setFullName] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -32,15 +33,41 @@ export default function Account() {
       if (resData.error) router.push("/login");
 
       setUserData(resData);
+      setFullName(resData.fullName);
       setIsLoading(false);
     };
 
     fetchUserData();
   }, []);
 
+  const handleNameChange = async (e: FormEvent) => {
+    e.preventDefault();
+    if (userData.fullName === fullName) return;
+
+    try {
+      const res = await fetch("http://localhost:4040/api/user/full-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName }),
+        credentials: "include",
+      });
+
+      const newData = await res.json();
+      if (newData.error) {
+        throw new Error(newData.error);
+      }
+
+      setUserData((prev) => ({ ...prev, fullName: newData.userData.fullName }));
+    } catch (error) {
+      alert(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center mt-28">
+      <div className="mt-44 flex justify-center items-center">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
@@ -48,16 +75,30 @@ export default function Account() {
 
   return (
     <>
-      <div className="card bg-base-300 shadow-xl max-w-[600px] mx-auto mt-20 p-10">
+      <div className="card bg-base-300 shadow-xl max-w-[600px] mx-auto my-20 p-10">
         <h1 className="font-bold text-3xl text-white text-center">
           My Account
         </h1>
         <UserProfilePicture />
         <div className="grid gap-4 mt-10">
-          <div className="grid">
-            <span className="font-semibold">Full Name</span>
-            <span className="text-xl capitalize">{userData.fullName}</span>
-          </div>
+          <form onSubmit={handleNameChange}>
+            <label className="font-semibold">Full Name</label>
+            <div className="relative mt-2">
+              <input
+                className="input w-full capitalize text-lg"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              {userData.fullName !== fullName && (
+                <button
+                  type="submit"
+                  className="btn btn-success btn-sm absolute right-2 top-2">
+                  Save
+                </button>
+              )}
+            </div>
+          </form>
           <div className="grid">
             <span className="font-semibold">Email</span>
             <span className="text-xl">{userData.email}</span>
