@@ -7,7 +7,7 @@ export const fullNameSchema = z.object({
     .max(30, "Full Name must be 30 characters or less"),
 });
 
-export const userSigninSchema = z.object({
+export const userLoginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be 8 characters or more"),
 });
@@ -15,9 +15,9 @@ export const userSigninSchema = z.object({
 export const userSignupSchema = z
   .object({
     fullName: fullNameSchema.shape.fullName,
-    email: userSigninSchema.shape.email,
-    password: userSigninSchema.shape.password,
-    confirmPassword: userSigninSchema.shape.password,
+    email: userLoginSchema.shape.email,
+    password: userLoginSchema.shape.password,
+    confirmPassword: userLoginSchema.shape.password,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
