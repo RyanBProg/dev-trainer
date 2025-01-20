@@ -103,13 +103,11 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
     setTokenCookie(res, "accessToken", accessToken);
     setTokenCookie(res, "refreshToken", refreshToken);
 
-    res
-      .status(200)
-      .json({
-        fullName: user.fullName,
-        isAdmin: user.isAdmin,
-        message: "Logged in successfully",
-      });
+    res.status(200).json({
+      fullName: user.fullName,
+      isAdmin: user.isAdmin,
+      message: "Logged in successfully",
+    });
   } catch (error) {
     handleControllerError(error, res, "login");
   }
@@ -150,7 +148,7 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
     const user = await UserModel.findByIdAndUpdate(
       { _id: userId },
       { $set: { isAdmin: true } },
-      { runValidators: true }
+      { new: true, runValidators: true }
     ).lean();
     if (!user) {
       console.log("[server] makeUserAdmin: User cannot be found");

@@ -5,20 +5,14 @@ import { TUserData } from "@/app/_types/types";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
-
-const emptyUser = {
-  fullName: "",
-  email: "",
-  isAdmin: false,
-  tokenVersion: "",
-  createdAt: "",
-  updatedAt: "",
-};
+import AdminRequest from "./_components/AdminRequest";
+import DeleteAccountRequest from "./_components/DeleteAccountRequest";
+import { useUserContext } from "../_context/userContext";
 
 export default function Account() {
   const router = useRouter();
   const { logout } = useLogout();
-  const [userData, setUserData] = useState<TUserData>(emptyUser);
+  const { userData, setUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [fullName, setFullName] = useState("");
 
@@ -117,12 +111,18 @@ export default function Account() {
             />
           </div>
         </div>
-        <div className="mt-16 flex gap-4 mx-auto">
-          <button className="btn btn-accent" onClick={logout}>
-            Logout
-          </button>
-          <button className="btn btn-outline">Admin Request</button>
-          <button className="btn btn-outline btn-error">Delete Account</button>
+        <div className="mt-16 grid gap-10">
+          <div className="grid gap-2">
+            <span className="font-semibold">Logging Out</span>
+            <div className="flex gap-4">
+              <button className="btn btn-outline" onClick={logout}>
+                Logout
+              </button>
+              <button className="btn btn-outline">Logout On All Devices</button>
+            </div>
+          </div>
+          <AdminRequest />
+          <DeleteAccountRequest email={userData.email} />
         </div>
       </div>
     </>
