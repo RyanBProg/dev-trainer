@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useSignup } from "../_hooks/useSignup";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
+import { userSignupSchema } from "../_zod/formSchemas";
+import toast from "react-hot-toast";
 
 const signupDataTemplate = {
   fullName: "",
@@ -18,7 +20,13 @@ export default function Signup() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    // proper form input checking should go here
+
+    const result = userSignupSchema.safeParse(signupData);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message || "Something went wrong");
+      return;
+    }
+
     await signup(signupData);
   }
   return (
