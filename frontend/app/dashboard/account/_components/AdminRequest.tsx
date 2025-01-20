@@ -29,6 +29,7 @@ export default function AdminRequest() {
 
       setUserData((prev) => ({ ...prev, isAdmin: userData.isAdmin }));
       setFormOpen(false);
+      setPassword("");
       alert("You are now an admin");
     } catch (error) {
       alert(
