@@ -9,8 +9,7 @@ export const getKeyDownValue = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (e.ctrlKey) key = "ctrl";
 
   // check for space and enter keys
-  key = e.key.toLowerCase();
-  if (key === " ") {
+  if (e.key.toLowerCase() === " ") {
     key = "space";
   }
 
