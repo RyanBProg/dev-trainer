@@ -1,17 +1,18 @@
 "use client";
 
 import { useLogout } from "@/app/_hooks/useLogout";
-import { TUserData } from "@/app/_types/types";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
 import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
 import { useUserContext } from "../_context/userContext";
+import { useLogoutAll } from "@/app/_hooks/useLogoutAll";
 
 export default function Account() {
   const router = useRouter();
   const { logout } = useLogout();
+  const { logoutAll } = useLogoutAll();
   const { userData, setUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [fullName, setFullName] = useState("");
@@ -118,7 +119,9 @@ export default function Account() {
               <button className="btn btn-outline" onClick={logout}>
                 Logout
               </button>
-              <button className="btn btn-outline">Logout On All Devices</button>
+              <button className="btn btn-outline" onClick={logoutAll}>
+                Logout On All Devices
+              </button>
             </div>
           </div>
           <AdminRequest />
