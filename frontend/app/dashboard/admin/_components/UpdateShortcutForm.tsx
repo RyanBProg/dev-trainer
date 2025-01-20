@@ -2,7 +2,7 @@
 
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { TShortcut, TShortcutForm } from "@/app/_types/types";
-import { shortcutSchema } from "@/app/_zod/shortcutSchema";
+import { shortcutSchema } from "@/app/_zod/formSchemas";
 import ShortcutForm from "./ShortcutForm";
 import { deleteShortcut } from "@/app/dashboard/_utils/deleteShortcut";
 import { updateShortcut } from "@/app/dashboard/_utils/updateShortcut";

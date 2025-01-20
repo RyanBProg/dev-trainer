@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { createShortcut } from "@/app/dashboard/_utils/createShortcut";
 import ShortcutForm from "./ShortcutForm";
-import { shortcutSchema } from "@/app/_zod/shortcutSchema";
+import { shortcutSchema } from "@/app/_zod/formSchemas";
 
 const blankFormData = {
   shortDescription: "",
