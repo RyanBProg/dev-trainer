@@ -16,6 +16,7 @@ import { StaticImageData } from "next/image";
 
 type ContextValue = {
   userData: TUserData;
+  setUserData: Dispatch<SetStateAction<TUserData>>;
   profilePicture: string | StaticImageData;
   setProfilePicture: Dispatch<SetStateAction<string | StaticImageData>>;
 };
@@ -90,7 +91,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <UserContext.Provider
-      value={{ userData, profilePicture, setProfilePicture }}>
+      value={{ userData, setUserData, profilePicture, setProfilePicture }}>
       {isLoading ? (
         <div className="mt-44 flex justify-center items-center">
           <span className="loading loading-spinner loading-lg"></span>
