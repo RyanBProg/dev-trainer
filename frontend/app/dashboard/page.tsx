@@ -9,7 +9,7 @@ export default function Dashboard() {
       </h1>
       <Suspense
         fallback={
-          <div className="flex justify-center items-center mt-28">
+          <div className="mt-44 flex justify-center items-center">
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         }>

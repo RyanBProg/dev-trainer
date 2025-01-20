@@ -9,8 +9,8 @@ export default function Admin() {
       </h1>
       <Suspense
         fallback={
-          <div className="flex justify-center items-center mt-28">
-            <span className="loading loading-spinner loading-sm"></span>
+          <div className="mt-44 flex justify-center items-center">
+            <span className="loading loading-spinner loading-lg"></span>
           </div>
         }>
         <AdminCheckLayer />

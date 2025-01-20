@@ -92,7 +92,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     <UserContext.Provider
       value={{ userData, profilePicture, setProfilePicture }}>
       {isLoading ? (
-        <div className="flex justify-center items-center">
+        <div className="mt-44 flex justify-center items-center">
           <span className="loading loading-spinner loading-lg"></span>
         </div>
       ) : (
