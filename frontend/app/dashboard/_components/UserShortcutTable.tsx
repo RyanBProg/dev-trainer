@@ -14,7 +14,7 @@ export default async function UserShortcutTable() {
         <NewCategoryButton userShortcuts={userShortcuts} />
       </div>
       <div>
-        {shortcutsTable.map((category, index) => {
+        {shortcutsTable.map((category) => {
           return (
             <div key={category.type}>
               <div className="flex gap-4 mt-10 mb-4">
@@ -23,7 +23,6 @@ export default async function UserShortcutTable() {
                 </h2>
                 <NewShortcutButton
                   type={category.type}
-                  index={index}
                   userShortcuts={category.shortcuts}
                 />
               </div>
@@ -39,11 +38,15 @@ export default async function UserShortcutTable() {
                     </tr>
                   </thead>
                   <tbody>
-                    {category.shortcuts.map((shortcut) => {
-                      return (
-                        <TableRow key={shortcut._id} shortcut={shortcut} />
-                      );
-                    })}
+                    {category.shortcuts
+                      .sort((a, b) =>
+                        a.shortDescription.localeCompare(b.shortDescription)
+                      )
+                      .map((shortcut) => {
+                        return (
+                          <TableRow key={shortcut._id} shortcut={shortcut} />
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
