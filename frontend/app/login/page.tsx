@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useLogin } from "../_hooks/useLogin";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
+import { userLoginSchema } from "../_zod/formSchemas";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,13 @@ export default function Login() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const result = userLoginSchema.safeParse({ email, password });
+    if (!result.success) {
+      toast.error(result.error.errors[0].message || "Something went wrong");
+      return;
+    }
+
     // proper form input checking should go here
     await login(email, password);
   }
