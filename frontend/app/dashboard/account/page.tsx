@@ -8,6 +8,8 @@ import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
 import { useUserContext } from "../_context/userContext";
 import { useLogoutAll } from "@/app/_hooks/useLogoutAll";
+import toast from "react-hot-toast";
+import { fullNameSchema } from "@/app/_zod/formSchemas";
 
 export default function Account() {
   const router = useRouter();
@@ -38,6 +40,12 @@ export default function Account() {
   const handleNameChange = async (e: FormEvent) => {
     e.preventDefault();
     if (userData.fullName === fullName) return;
+
+    const result = fullNameSchema.safeParse({ fullName });
+    if (!result.success) {
+      toast.error(result.error.errors[0].message || "Something went wrong");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:4040/api/user/full-name", {
