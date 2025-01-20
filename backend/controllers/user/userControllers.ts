@@ -197,7 +197,7 @@ export const addUserFullName = async (
       return;
     }
 
-    // Update the user's profile picture in the database
+    // Update the user's fullName in the database
     const userData = await UserModel.findByIdAndUpdate(
       userId,
       { fullName: req.body.fullName.toLowerCase() },
@@ -207,5 +207,31 @@ export const addUserFullName = async (
     res.status(200).json({ userData, message: "fullName Updated" });
   } catch (error) {
     handleControllerError(error, res, "addUserFullName");
+  }
+};
+
+export const deleteUser = async (req: TUserTokenRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    await UserModel.deleteOne({ _id: userId });
+
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      path: "/",
+    });
+
+    res.status(200).json({ message: "User Deleted" });
+  } catch (error) {
+    handleControllerError(error, res, "deleteUser");
   }
 };

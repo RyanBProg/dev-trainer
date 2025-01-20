@@ -7,6 +7,7 @@ import {
   addProfilePicture,
   getUserProfilePicture,
   addUserFullName,
+  deleteUser,
 } from "../controllers/user/userControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
 import { upload } from "../middleware/multerConfig";
@@ -32,5 +33,7 @@ router.post(
 router.get("/profile-picture", authenticateTokens, getUserProfilePicture);
 // updates the users fullName
 router.post("/full-name", authenticateTokens, addUserFullName);
+// completely deletes a user from the database
+router.post("/delete-user", authenticateTokens, deleteUser);
 
 export default router;
