@@ -42,7 +42,7 @@ export default function NavMenu() {
   return (
     <div className="relative">
       <button
-        className="btn btn-ghost btn-circle"
+        className="btn btn-accent btn-circle"
         ref={navMenuButtonRef}
         onClick={toggleNavMenu}>
         <svg
@@ -62,7 +62,7 @@ export default function NavMenu() {
 
       {navMenuOpen && (
         <ul
-          className="absolute left-0 menu menu-md bg-base-300 font-medium rounded-box z-[1] mt-3 w-52 p-2 shadow"
+          className="absolute left-0 top-16 menu menu-md bg-base-300 font-medium rounded-box z-[1] mt-3 w-52 p-2"
           ref={navMenuDropdownRef}>
           <li>
             <Link href="/dashboard" onClick={toggleNavMenu}>

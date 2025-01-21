@@ -3,7 +3,7 @@ import NavMenu from "./NavMenu";
 
 export default function Navbar() {
   return (
-    <header className="navbar bg-base-100">
+    <header className="navbar p-3 bg-base-300">
       <nav className="navbar-start">
         <NavMenu />
       </nav>
