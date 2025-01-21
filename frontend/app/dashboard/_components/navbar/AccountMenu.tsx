@@ -45,15 +45,15 @@ export default function AccountMenu() {
   return (
     <div className="relative">
       <button
-        className="btn btn-md btn-circle avatar border-none overflow-clip"
+        className="btn btn-md btn-circle  overflow-clip"
         ref={accountMenuButtonRef}
         onClick={toggleAccountMenu}>
         <Image
           src={profilePicture}
           alt="user profile icon"
           className="object-cover"
-          height={100}
-          width={100}
+          height={46}
+          width={46}
         />
       </button>
       {accountMenuOpen && (

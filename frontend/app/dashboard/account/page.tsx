@@ -84,9 +84,9 @@ export default function Account() {
         <div className="grid gap-4 mt-10">
           <form onSubmit={handleNameChange}>
             <label className="font-semibold">Full Name</label>
-            <div className="relative mt-2">
+            <div className="relative max-w-[400px] mt-2">
               <input
-                className="input input-bordered w-full text-base capitalize max-w-[400px]"
+                className="input input-bordered text-base capitalize w-full"
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
