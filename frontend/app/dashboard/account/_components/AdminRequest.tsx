@@ -60,7 +60,7 @@ export default function AdminRequest() {
             <label>Admin Password</label>
             <div className="relative w-fit">
               <input
-                className="input text-lg text-base-content input-bordered max-w-[500px] pr-9"
+                className="input input-bordered text-base text-base-content max-w-[500px] pr-9"
                 type="password"
                 required
                 value={password}

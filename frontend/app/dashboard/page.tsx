@@ -3,10 +3,8 @@ import UserShortcutTable from "./_components/UserShortcutTable";
 
 export default function Dashboard() {
   return (
-    <div className="px-8 mb-10">
-      <h1 className="font-bold text-2xl text-center mt-10 mb-5 capitalize">
-        My Dashboard
-      </h1>
+    <div className="page-frame">
+      <h1 className="page-title mb-20">My Shortcuts</h1>
       <Suspense
         fallback={
           <div className="mt-44 flex justify-center items-center">

@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.page-title {
+  @apply text-center font-bold text-3xl capitalize;
+}
+
+.page-frame {
+  @apply px-5 sm:px-10 pt-20 pb-32;
+}

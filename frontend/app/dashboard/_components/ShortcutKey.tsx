@@ -8,7 +8,7 @@ export default function ShortcutKey({ value }: { value: string }) {
       <span
         className={`${
           isCaps ? "uppercase" : "lowercase"
-        } text-gray-800 text-lg font-semibold select-none px-1`}>
+        } text-gray-800 text-sm sm:text-lg font-semibold select-none px-1`}>
         {value}
       </span>
     </div>

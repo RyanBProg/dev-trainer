@@ -75,7 +75,10 @@ export default function EditShortcut() {
     <div className="my-10">
       <h2 className="mb-4 font-semibold text-lg">Update a Shortcut</h2>
       <div className="dropdown dropdown-bottom mb-4">
-        <button ref={dropdownButtonRef} onClick={toggleNavMenu} className="btn">
+        <button
+          ref={dropdownButtonRef}
+          onClick={toggleNavMenu}
+          className="btn btn-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -91,7 +94,7 @@ export default function EditShortcut() {
         </button>
         {dropdownOpen && (
           <div
-            className="absolute left-0 translate-y-2 menu bg-base-300 rounded-box z-[1] w-52 p-2 shadow"
+            className="absolute left-0 translate-y-3 menu bg-primary z-[1] w-52 p-2 shadow"
             ref={dropdownRef}>
             <CategoriesDropdownList
               isCategoriesLoading={isCategoriesLoading}

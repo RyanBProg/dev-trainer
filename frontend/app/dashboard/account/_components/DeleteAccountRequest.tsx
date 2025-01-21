@@ -63,7 +63,7 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
             </label>
             <div className="relative w-full">
               <input
-                className="input text-lg input-primary text-base-content w-full pr-9"
+                className="input input-bordered text-base text-base-content w-full pr-9"
                 type="text"
                 required
                 value={deleteString}

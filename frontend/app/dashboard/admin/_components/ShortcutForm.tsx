@@ -71,26 +71,28 @@ export default function ShortcutForm({
             }
           />
         </label>
-        <label htmlFor="keys" className="grid gap-1 relative">
+        <label htmlFor="keys" className="grid gap-1">
           Keys
-          <input
-            type="text"
-            id="keys"
-            placeholder="Press keys here"
-            className="input input-bordered w-full text-base"
-            onKeyDown={handleKeyDown}
-            readOnly
-            required
-            value={formData.keys.join(" + ")}
-          />
-          {formData.keys.length > 0 && (
-            <button
-              type="button"
-              onClick={handleClearKeys}
-              className="btn btn-circle btn-xs btn-error absolute bottom-3 right-2">
-              X
-            </button>
-          )}
+          <div className="relative">
+            <input
+              type="text"
+              id="keys"
+              placeholder="Press keys here"
+              className="input input-bordered w-full text-base pr-9"
+              onKeyDown={handleKeyDown}
+              readOnly
+              required
+              value={formData.keys.join(" + ")}
+            />
+            {formData.keys.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearKeys}
+                className="btn btn-xs btn-error absolute top-0 right-0">
+                X
+              </button>
+            )}
+          </div>
         </label>
         <label htmlFor="type" className="grid gap-1">
           Type

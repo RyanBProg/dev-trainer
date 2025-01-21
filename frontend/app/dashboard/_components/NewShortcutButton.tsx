@@ -18,7 +18,9 @@ export default function NewShortcutButton({
 
   return (
     <>
-      <button className="btn btn-sm" onClick={() => setIsModalOpen(true)}>
+      <button
+        className="btn btn-sm btn-primary"
+        onClick={() => setIsModalOpen(true)}>
         + Add Shortcut
       </button>
 

@@ -27,7 +27,9 @@ export default function CategoriesDropdownList({
     <ul>
       {categories.map((category) => (
         <li key={category}>
-          <button onClick={() => openModal(category)}>{category}</button>
+          <button className="capitalize" onClick={() => openModal(category)}>
+            {category}
+          </button>
         </li>
       ))}
     </ul>

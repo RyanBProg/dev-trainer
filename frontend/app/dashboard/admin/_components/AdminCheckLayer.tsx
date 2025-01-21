@@ -19,7 +19,7 @@ export default async function AdminCheckLayer() {
     <>
       <h2 className="mb-4 font-semibold text-lg">Create a Shortcut</h2>
       <CreateShortcutForm />
-      <hr className="mt-10 border-neutral-600" />
+      <hr className="mt-10 border-primary-content" />
       <EditShortcut />
     </>
   );

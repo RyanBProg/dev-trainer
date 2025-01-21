@@ -58,7 +58,7 @@ export default function AccountMenu() {
       </button>
       {accountMenuOpen && (
         <ul
-          className="absolute right-0 top-16 menu menu-md bg-base-300 font-medium rounded-box z-[1] mt-3 w-52 p-2"
+          className="absolute right-0 top-16 menu menu-md bg-base-300 font-medium z-[1] mt-3 w-52 p-2"
           ref={accountMenuDropdownRef}>
           <li>
             <Link

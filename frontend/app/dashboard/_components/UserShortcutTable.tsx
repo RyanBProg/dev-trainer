@@ -13,46 +13,48 @@ export default async function UserShortcutTable() {
       <div className="flex gap-2">
         <NewCategoryButton userShortcuts={userShortcuts} />
       </div>
-      <div>
-        {shortcutsTable.map((category) => {
-          return (
-            <div key={category.type}>
-              <div className="flex gap-4 mt-10 mb-4">
-                <h2 className="text-xl font-bold capitalize">
-                  {category.type} Shortcuts
-                </h2>
-                <NewShortcutButton
-                  type={category.type}
-                  userShortcuts={category.shortcuts}
-                />
+      <div className="grid gap-16">
+        {shortcutsTable
+          .sort((a, b) => a.type.localeCompare(b.type))
+          .map((category) => {
+            return (
+              <div key={category.type} className="overflow-x-scroll">
+                <div className="flex flex-wrap gap-5 mb-5">
+                  <h2 className="text-xl font-bold capitalize">
+                    {category.type} Shortcuts
+                  </h2>
+                  <NewShortcutButton
+                    type={category.type}
+                    userShortcuts={category.shortcuts}
+                  />
+                </div>
+                <div className="pb-5 overflow-x-scroll">
+                  <table className="table">
+                    {/* head */}
+                    <thead>
+                      <tr className="bg-base-200">
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Keys</th>
+                        <th className="w-6"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {category.shortcuts
+                        .sort((a, b) =>
+                          a.shortDescription.localeCompare(b.shortDescription)
+                        )
+                        .map((shortcut) => {
+                          return (
+                            <TableRow key={shortcut._id} shortcut={shortcut} />
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="overflow-x-auto">
-                <table className="table">
-                  {/* head */}
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Keys</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {category.shortcuts
-                      .sort((a, b) =>
-                        a.shortDescription.localeCompare(b.shortDescription)
-                      )
-                      .map((shortcut) => {
-                        return (
-                          <TableRow key={shortcut._id} shortcut={shortcut} />
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

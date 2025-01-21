@@ -78,15 +78,15 @@ export default function Account() {
 
   return (
     <>
-      <div className="card bg-base-content text-secondary-content shadow-xl max-w-[700px] mx-auto my-20 py-10 px-5 sm:px-10">
-        <h1 className="font-bold text-3xl text-center mb-10">My Account</h1>
+      <div className="card bg-base-200 mt-20 mb-32 py-10 px-5 sm:px-10 container max-w-[700px] mx-auto">
+        <h1 className="page-title mb-10">My Account</h1>
         <UserProfilePicture />
         <div className="grid gap-4 mt-10">
           <form onSubmit={handleNameChange}>
             <label className="font-semibold">Full Name</label>
             <div className="relative mt-2">
               <input
-                className="input input-primary text-base-content w-full capitalize text-lg"
+                className="input input-bordered w-full text-base capitalize max-w-[400px]"
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}

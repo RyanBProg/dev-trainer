@@ -105,9 +105,9 @@ export default function ShortcutsModalSelectList({
 
   return (
     <form onSubmit={handleAddShortcuts}>
-      <ul className="grid gap-3">
+      <ul className="grid gap-5">
         {shortcuts.map((shortcut) => (
-          <li key={shortcut._id} className="capitalize flex gap-2 items-center">
+          <li key={shortcut._id} className="capitalize flex gap-5 items-center">
             <input
               type="checkbox"
               className="checkbox"
@@ -117,7 +117,7 @@ export default function ShortcutsModalSelectList({
           </li>
         ))}
       </ul>
-      <button className="btn mt-8" type="submit">
+      <button className="btn btn-success mt-10" type="submit">
         Add Shortcuts
       </button>
     </form>

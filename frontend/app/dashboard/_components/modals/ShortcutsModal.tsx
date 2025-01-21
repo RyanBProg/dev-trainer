@@ -15,18 +15,18 @@ export default function ShortcutsModal({
 }: ShortcutsModalProps) {
   return (
     <>
-      <div className="fixed inset-0 bg-white/10 backdrop-blur-sm z-10"></div>
+      <div className="fixed inset-0 backdrop-blur-sm z-10"></div>
       <dialog className="modal" open>
         <div className="modal-box relative bg-neutral-900">
           <button
             type="button"
-            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            className="btn btn-sm btn-error absolute right-2 top-2"
             onClick={() => setIsModalOpen(false)}>
             ✕
           </button>
           <div>
-            <h3 className="font-bold text-lg mb-4 capitalize">
-              {type} Shortcut List
+            <h3 className="font-bold text-lg mb-10 capitalize">
+              {type} Shortcuts
             </h3>
             {children}
           </div>

@@ -77,16 +77,16 @@ export default function NewCategoryButton({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative mb-10">
         <button
           ref={dropdownButtonRef}
           onClick={toggleNavMenu}
-          className="btn m-1">
+          className="btn btn-primary">
           + Add New Category
         </button>
         {dropdownOpen && (
           <div
-            className="absolute left-0 translate-y-1 menu bg-base-300 rounded-box z-[1] w-52 p-2 shadow"
+            className="absolute left-0 translate-y-3 menu bg-primary capitalize font-medium z-[1] w-52 p-2"
             ref={dropdownRef}>
             <CategoriesDropdownList
               isCategoriesLoading={isCategoriesLoading}
