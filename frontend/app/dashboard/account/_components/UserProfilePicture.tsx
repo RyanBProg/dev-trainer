@@ -91,7 +91,7 @@ export default function UserProfilePicture() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
-      <div className="my-10 flex gap-10 items-center">
+      <div className="my-10 flex flex-col sm:flex-row gap-10 items-center">
         <div className="rounded-full bg-white h-24 w-24 overflow-clip">
           {previewUrl ? (
             <Image
@@ -111,7 +111,7 @@ export default function UserProfilePicture() {
             />
           )}
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           <label htmlFor="profile-picture" className="btn btn-primary btn-sm">
             Upload Profile Picture
           </label>

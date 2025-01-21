@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function DeleteAccountRequest({ email }: { email: string }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -10,11 +11,16 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
 
   const deletePassword = `delete-${email}`;
 
+  const closeForm = () => {
+    setFormOpen(false);
+    setDeleteString("");
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (deleteString !== deletePassword) {
-      alert("Delete string must match");
+      toast.error("Delete string must match");
       return;
     }
 
@@ -47,15 +53,17 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
         Delete Account
       </button>
       {formOpen && (
-        <form className="flex items-end gap-5 my-4" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col sm:flex-row sm:items-end gap-5 my-4"
+          onSubmit={handleSubmit}>
           <div className="grid gap-3 relative">
             <label>
               Please type<span className="font-bold"> {deletePassword} </span>
               to delete your account
             </label>
-            <div className="relative">
+            <div className="relative w-full">
               <input
-                className="input text-lg input-primary w-full"
+                className="input text-lg input-primary text-base-content w-full pr-9"
                 type="text"
                 required
                 value={deleteString}
@@ -63,13 +71,13 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
               />
               <button
                 type="button"
-                className="absolute -top-3 -right-3 btn btn-error btn-circle btn-xs"
-                onClick={() => setFormOpen(false)}>
+                className="absolute top-0 right-0 btn btn-error btn-xs"
+                onClick={closeForm}>
                 X
               </button>
             </div>
           </div>
-          <button className="btn" type="submit">
+          <button className="btn btn-error btn-outline w-fit" type="submit">
             Submit
           </button>
         </form>

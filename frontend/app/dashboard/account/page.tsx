@@ -78,17 +78,15 @@ export default function Account() {
 
   return (
     <>
-      <div className="card bg-base-300 shadow-xl max-w-[600px] mx-auto my-20 p-10">
-        <h1 className="font-bold text-3xl text-white text-center">
-          My Account
-        </h1>
+      <div className="card bg-base-content text-secondary-content shadow-xl max-w-[700px] mx-auto my-20 py-10 px-5 sm:px-10">
+        <h1 className="font-bold text-3xl text-center mb-10">My Account</h1>
         <UserProfilePicture />
         <div className="grid gap-4 mt-10">
           <form onSubmit={handleNameChange}>
             <label className="font-semibold">Full Name</label>
             <div className="relative mt-2">
               <input
-                className="input w-full capitalize text-lg"
+                className="input input-primary text-base-content w-full capitalize text-lg"
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -115,7 +113,7 @@ export default function Account() {
             <input
               type="checkbox"
               checked={userData.isAdmin}
-              className="checkbox"
+              className="checkbox checkbox-secondary"
               disabled={true}
             />
           </div>
@@ -124,10 +122,12 @@ export default function Account() {
           <div className="grid gap-2">
             <span className="font-semibold">Logging Out</span>
             <div className="flex gap-4">
-              <button className="btn btn-outline" onClick={logout}>
+              <button className="btn  btn-primary" onClick={logout}>
                 Logout
               </button>
-              <button className="btn btn-outline" onClick={logoutAll}>
+              <button
+                className="btn btn-outline btn-primary"
+                onClick={logoutAll}>
                 Logout On All Devices
               </button>
             </div>
