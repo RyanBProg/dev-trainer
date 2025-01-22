@@ -40,9 +40,9 @@ export default function NavMenu() {
   }, [navMenuOpen]);
 
   return (
-    <div className="relative">
+    <nav className="h-min">
       <button
-        className="btn btn-primary"
+        className="btn btn-md btn-square btn-primary"
         ref={navMenuButtonRef}
         onClick={toggleNavMenu}>
         <svg
@@ -59,10 +59,9 @@ export default function NavMenu() {
           />
         </svg>
       </button>
-
       {navMenuOpen && (
         <ul
-          className="absolute left-0 top-16 mt-3 menu menu-md bg-base-300 font-medium z-[1] w-52 p-2"
+          className="absolute left-3 -bottom-3 translate-y-full menu menu-md bg-base-300 font-medium z-[1] w-52 p-2"
           ref={navMenuDropdownRef}>
           <li>
             <Link href="/dashboard" onClick={toggleNavMenu}>
@@ -89,6 +88,6 @@ export default function NavMenu() {
           </li>
         </ul>
       )}
-    </div>
+    </nav>
   );
 }

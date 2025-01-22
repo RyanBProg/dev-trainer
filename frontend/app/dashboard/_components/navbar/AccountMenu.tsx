@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useUserContext } from "../../_context/userContext";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfilePicture } from "../../_requests/getUserProfilePicture";
+import defaultProfilePicture from "@/app/_assets/icons/user.png";
+import LoadingSpinner from "../LoadingSpinner";
 
 export default function AccountMenu() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -12,6 +16,10 @@ export default function AccountMenu() {
   const accountMenuDropdownRef = useRef<HTMLUListElement>(null);
   const { logout } = useLogout();
   const { profilePicture } = useUserContext();
+  const { data, isLoading } = useQuery({
+    queryKey: ["profilePicture"],
+    queryFn: getUserProfilePicture,
+  });
 
   const toggleAccountMenu = () => {
     if (accountMenuOpen) {
@@ -43,22 +51,26 @@ export default function AccountMenu() {
   }, [accountMenuOpen]);
 
   return (
-    <div className="relative">
+    <div className="flex items-center justify-center">
       <button
-        className="btn btn-md btn-circle  overflow-clip"
+        className="btn btn-md btn-circle border-none overflow-clip"
         ref={accountMenuButtonRef}
         onClick={toggleAccountMenu}>
-        <Image
-          src={profilePicture}
-          alt="user profile icon"
-          className="object-cover"
-          height={46}
-          width={46}
-        />
+        {isLoading ? (
+          <LoadingSpinner size="sm" />
+        ) : (
+          <Image
+            src={data?.userPicture || defaultProfilePicture}
+            alt="user profile icon"
+            className="object-cover"
+            height={48}
+            width={48}
+          />
+        )}
       </button>
       {accountMenuOpen && (
         <ul
-          className="absolute right-0 top-16 menu menu-md bg-base-300 font-medium z-[1] mt-3 w-52 p-2"
+          className="absolute right-3 -bottom-3 translate-y-full menu menu-md bg-base-300 font-medium z-[1] w-52 p-2"
           ref={accountMenuDropdownRef}>
           <li>
             <Link

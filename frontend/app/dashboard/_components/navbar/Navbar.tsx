@@ -3,17 +3,10 @@ import NavMenu from "./NavMenu";
 
 export default function Navbar() {
   return (
-    <header className="navbar p-3 bg-base-300">
-      <nav className="navbar-start">
-        <NavMenu />
-      </nav>
-
-      <div className="navbar-center">
-        <span className="text-xl font-bold">Dev Trainer</span>
-      </div>
-      <div className="navbar-end">
-        <AccountMenu />
-      </div>
+    <header className="relative flex justify-between items-center p-3 bg-base-300">
+      <NavMenu />
+      <span className="text-xl font-bold">Dev Trainer</span>
+      <AccountMenu />
     </header>
   );
 }
