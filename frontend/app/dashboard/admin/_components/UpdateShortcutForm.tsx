@@ -4,9 +4,9 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { TShortcut, TShortcutForm } from "@/app/_types/types";
 import { shortcutSchema } from "@/app/_zod/formSchemas";
 import ShortcutForm from "./ShortcutForm";
-import { deleteShortcut } from "@/app/dashboard/_utils/deleteShortcut";
-import { updateShortcut } from "@/app/dashboard/_utils/updateShortcut";
 import toast from "react-hot-toast";
+import { useUpdateShortcut } from "../../_hooks/useUpdateShortcut";
+import { useDeleteShortcut } from "../../_hooks/useDeleteShortcut";
 
 type Props = {
   selectedShortcut: TShortcut;
@@ -20,49 +20,37 @@ export default function UpdateShortcutForm({
   const [formData, setFormData] = useState<TShortcut | TShortcutForm>(
     selectedShortcut
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const updateShortcutMutation = useUpdateShortcut();
+  const deleteShortcutMutation = useDeleteShortcut();
 
   const handleDelete = async () => {
     try {
-      const result = await deleteShortcut(selectedShortcut._id);
-      if (!result) {
-        throw new Error("Failed to delete shortcut");
-      }
-
+      await deleteShortcutMutation.mutateAsync(selectedShortcut._id);
+      toast.success("Shortcut Deleted");
       setSelectedShortcut(undefined);
-      alert("Shortcut Deleted");
-      setIsLoading(false);
     } catch (error) {
-      console.log("handleDelete: ", error);
-      alert("Failed to delete shortcut");
-      setIsLoading(false);
+      toast.error("Failed to Delete Shortcut");
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     const result = shortcutSchema.safeParse(formData);
     if (!result.success) {
       toast.error(result.error.errors[0].message || "Something went wrong");
-      setIsLoading(false);
       return;
     }
 
     try {
-      const result = await updateShortcut(formData, selectedShortcut._id);
-      if (!result) {
-        throw new Error("Failed to update shortcut");
-      }
-
-      setIsLoading(false);
-      setSelectedShortcut(undefined);
+      await updateShortcutMutation.mutateAsync({
+        formData,
+        shortcutId: selectedShortcut._id,
+      });
       toast.success("Shortcut Updated");
+      setSelectedShortcut(undefined);
     } catch (error) {
-      console.log("handleSubmit: ", error);
-      toast.error("Failed to update shortcut");
-      setIsLoading(false);
+      toast.error("Failed to Update Shortcut");
     }
   };
 
@@ -71,7 +59,10 @@ export default function UpdateShortcutForm({
       handleSubmit={handleSubmit}
       formData={formData}
       setFormData={setFormData}>
-      <FormButtons isLoading={isLoading} handleDelete={handleDelete} />
+      <FormButtons
+        isLoading={updateShortcutMutation.isPending}
+        handleDelete={handleDelete}
+      />
     </ShortcutForm>
   );
 }

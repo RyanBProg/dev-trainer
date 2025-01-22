@@ -1,10 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { createShortcut } from "@/app/dashboard/_utils/createShortcut";
 import ShortcutForm from "./ShortcutForm";
 import { shortcutSchema } from "@/app/_zod/formSchemas";
 import toast from "react-hot-toast";
+import { useCreateShortcut } from "../../_hooks/useCreateShortcut";
 
 const blankFormData = {
   shortDescription: "",
@@ -15,32 +15,23 @@ const blankFormData = {
 
 export default function CreateShortcutForm() {
   const [formData, setFormData] = useState(blankFormData);
-  const [isLoading, setIsLoading] = useState(false);
+  const createShortcutMutation = useCreateShortcut();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     const result = shortcutSchema.safeParse(formData);
     if (!result.success) {
       toast.error(result.error.errors[0].message || "Something went wrong");
-      setIsLoading(false);
       return;
     }
 
     try {
-      const result = await createShortcut(formData);
-      if (!result) {
-        throw new Error("Failed to create shortcut");
-      }
-
-      setFormData(blankFormData);
-      setIsLoading(false);
+      await createShortcutMutation.mutateAsync(formData);
       toast.success("Shortcut Created");
+      setFormData(blankFormData);
     } catch (error) {
-      console.log("handleSubmit: ", error);
       toast.error("Failed to create shortcut");
-      setIsLoading(false);
     }
   };
 
@@ -50,7 +41,7 @@ export default function CreateShortcutForm() {
         handleSubmit={handleSubmit}
         formData={formData}
         setFormData={setFormData}>
-        <FormButtons isLoading={isLoading} />
+        <FormButtons isLoading={createShortcutMutation.isPending} />
       </ShortcutForm>
     </div>
   );

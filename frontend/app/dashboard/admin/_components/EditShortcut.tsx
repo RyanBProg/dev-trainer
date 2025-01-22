@@ -1,72 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 import UpdateShortcutForm from "./UpdateShortcutForm";
 import ShortcutsModalButtonList from "../../_components/modals/ShortcutsModalButtonList";
 import CategoriesDropdownList from "../../_components/dropdowns/CategoriesDropdownList";
 import ShortcutsModal from "../../_components/modals/ShortcutsModal";
+import LoadingSpinner from "../../_components/LoadingSpinner";
+import { useCategoryDropdownMenu } from "../../_hooks/useCategoryDropdownMenu";
+import { useShortcutCategories } from "../../_hooks/useShortcutCategories";
 
 export default function EditShortcut() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownButtonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedShortcut, setSelectedShortcut] = useState<TShortcut>();
-  const [categories, setCategories] = useState([]);
   const [type, setType] = useState("");
+  const [selectedShortcut, setSelectedShortcut] = useState<TShortcut>();
   const router = useRouter();
+  const {
+    dropdownMenuOpen,
+    toggleDropdownMenu,
+    menuButtonRef,
+    dropdownMenuRef,
+  } = useCategoryDropdownMenu();
 
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("http://localhost:4040/api/shortcuts/types", {
-        method: "GET",
-        credentials: "include",
-      });
+  const { data, isError, isLoading } = useShortcutCategories();
 
-      const categories = await res.json();
-      if (categories.error) router.push("/login");
-      setCategories(categories);
-      setIsCategoriesLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
-
-  const toggleNavMenu = () => {
-    if (dropdownOpen) {
-      setDropdownOpen(false);
-    } else {
-      fetchCategories();
-      setDropdownOpen(true);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // check if the click is outside the menu dropdown and not the menu button
-      if (
-        dropdownOpen &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        dropdownButtonRef.current &&
-        !dropdownButtonRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  if (isError || (data && data.error)) {
+    router.push("/login");
+    return null;
+  }
 
   const openModal = (category: string) => {
-    toggleNavMenu();
+    toggleDropdownMenu();
     setType(category);
     setIsModalOpen(true);
   };
@@ -76,8 +41,8 @@ export default function EditShortcut() {
       <h2 className="mb-4 font-semibold text-lg">Update a Shortcut</h2>
       <div className="dropdown dropdown-bottom mb-4">
         <button
-          ref={dropdownButtonRef}
-          onClick={toggleNavMenu}
+          ref={menuButtonRef}
+          onClick={toggleDropdownMenu}
           className="btn btn-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -92,16 +57,16 @@ export default function EditShortcut() {
           </svg>
           Find a Shortcut
         </button>
-        {dropdownOpen && (
-          <div
-            className="absolute left-0 translate-y-3 menu bg-primary z-[1] w-52 p-2 shadow"
-            ref={dropdownRef}>
-            <CategoriesDropdownList
-              isCategoriesLoading={isCategoriesLoading}
-              categories={categories}
-              openModal={openModal}
-            />
-          </div>
+        {dropdownMenuOpen && (
+          <ul
+            className="absolute left-0 translate-y-3 menu bg-primary capitalize font-medium z-[1] w-52 p-2"
+            ref={dropdownMenuRef}>
+            {isLoading ? (
+              <LoadingSpinner size="md" />
+            ) : (
+              <CategoriesDropdownList categories={data} openModal={openModal} />
+            )}
+          </ul>
         )}
       </div>
 
