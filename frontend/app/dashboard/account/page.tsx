@@ -1,11 +1,11 @@
 "use client";
 
-import { useLogout } from "@/app/_hooks/useLogout";
+import { logoutRequest } from "@/app/_utils/logoutRequest";
 import { FormEvent, useEffect, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
 import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
-import { useLogoutAll } from "@/app/_hooks/useLogoutAll";
+import { logoutAllRequest } from "@/app/_utils/logoutAllRequest";
 import toast from "react-hot-toast";
 import { fullNameSchema } from "@/app/_zod/formSchemas";
 import { useUserData } from "../_hooks/useUserData";
@@ -13,8 +13,8 @@ import LoadingSpinner from "../_components/LoadingSpinner";
 import { useUpdateFullName } from "../_hooks/useUpdateFullName";
 
 export default function Account() {
-  const { logout } = useLogout();
-  const { logoutAll } = useLogoutAll();
+  const { logout } = logoutRequest();
+  const { logoutAll } = logoutAllRequest();
   const { data, isLoading } = useUserData();
   const [fullName, setFullName] = useState("");
   const updateFullNameMutation = useUpdateFullName();

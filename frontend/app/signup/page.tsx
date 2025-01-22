@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useSignup } from "../_hooks/useSignup";
+import { signupRequest } from "../_utils/signupRequest";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 import { userSignupSchema } from "../_zod/formSchemas";
 import toast from "react-hot-toast";
@@ -16,7 +16,7 @@ const signupDataTemplate = {
 
 export default function Signup() {
   const [signupData, setSignupData] = useState(signupDataTemplate);
-  const { signup } = useSignup();
+  const { signup } = signupRequest();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

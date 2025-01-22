@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export function useLogout() {
+export function logoutRequest() {
   const router = useRouter();
 
   async function logout() {

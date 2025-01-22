@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useLogin } from "../_hooks/useLogin";
+import { loginRequest } from "../_utils/loginRequest";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 import { userLoginSchema } from "../_zod/formSchemas";
 import toast from "react-hot-toast";
@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useLogin();
+  const { login } = loginRequest();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

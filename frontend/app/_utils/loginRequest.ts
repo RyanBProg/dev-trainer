@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export function useLogin() {
+export function loginRequest() {
   const router = useRouter();
 
   async function login(email: string, password: string) {

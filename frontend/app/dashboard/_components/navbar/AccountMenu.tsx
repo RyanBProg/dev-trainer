@@ -1,6 +1,6 @@
 "use client";
 
-import { useLogout } from "@/app/_hooks/useLogout";
+import { logoutRequest } from "@/app/_utils/logoutRequest";
 import Link from "next/link";
 import Image from "next/image";
 import defaultProfilePicture from "@/app/_assets/icons/user.png";
@@ -9,7 +9,7 @@ import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
 import { useDropdownMenu } from "../../_hooks/useDropdownMenu";
 
 export default function AccountMenu() {
-  const { logout } = useLogout();
+  const { logout } = logoutRequest();
   const { data, isLoading, isFetching } = useUserProfilePicture();
   const {
     menuButtonRef,

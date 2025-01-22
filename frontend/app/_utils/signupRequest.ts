@@ -3,7 +3,7 @@
 import { TUserSignup } from "../_types/types";
 import { useRouter } from "next/navigation";
 
-export function useSignup() {
+export function signupRequest() {
   const router = useRouter();
 
   async function signup(signupData: TUserSignup) {
