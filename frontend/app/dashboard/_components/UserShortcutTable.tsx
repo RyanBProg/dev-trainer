@@ -1,11 +1,31 @@
+"use client";
+
 import { createShortcutTable } from "../_utils/createShortcutTable";
 import TableRow from "./TableRow";
 import NewShortcutButton from "./NewShortcutButton";
 import NewCategoryButton from "./NewCategoryButton";
-import { fetchUserShortcuts } from "@/app/dashboard/_utils/fetchUserShorctus";
+import { useRouter } from "next/navigation";
+import LoadingSpinner from "./LoadingSpinner";
+import { useUserShortcuts } from "../_hooks/useUserShortcuts";
 
-export default async function UserShortcutTable() {
-  const userShortcuts = await fetchUserShortcuts();
+export default function UserShortcutTable() {
+  const router = useRouter();
+  const {
+    data: userShortcuts,
+    isError: userShortcutsError,
+    isLoading: userShortcutsLoading,
+    isFetching: userShortcutsFetching,
+  } = useUserShortcuts();
+
+  if (userShortcutsError || (userShortcuts && userShortcuts.error)) {
+    router.push("/login");
+    return null;
+  }
+
+  if (userShortcutsLoading) {
+    return <LoadingSpinner size="lg" />;
+  }
+
   const shortcutsTable = createShortcutTable(userShortcuts);
 
   return (
@@ -27,6 +47,7 @@ export default async function UserShortcutTable() {
                     type={category.type}
                     userShortcuts={category.shortcuts}
                   />
+                  {userShortcutsFetching && <LoadingSpinner size="sm" />}
                 </div>
                 <div className="pb-5 overflow-x-scroll">
                   <table className="table">
@@ -39,7 +60,10 @@ export default async function UserShortcutTable() {
                         <th className="w-6"></th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody
+                      className={`transition-opacity duration-200 ${
+                        userShortcutsFetching ? "opacity-50" : "opacity-100"
+                      }`}>
                       {category.shortcuts
                         .sort((a, b) =>
                           a.shortDescription.localeCompare(b.shortDescription)

@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
 import ShortcutsModal from "./modals/ShortcutsModal";
 import CategoriesDropdownList from "./dropdowns/CategoriesDropdownList";
+import { useShortcutCategories } from "../_hooks/useShortcutCategories";
+import LoadingSpinner from "./LoadingSpinner";
+import { useCategoryDropdownMenu } from "../_hooks/useCategoryDropdownMenu";
 
 type NewCategoryButtonProps = {
   userShortcuts: TShortcut[];
@@ -14,63 +17,25 @@ type NewCategoryButtonProps = {
 export default function NewCategoryButton({
   userShortcuts,
 }: NewCategoryButtonProps) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownButtonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [type, setType] = useState("");
   const router = useRouter();
+  const {
+    dropdownMenuOpen,
+    toggleDropdownMenu,
+    menuButtonRef,
+    dropdownMenuRef,
+  } = useCategoryDropdownMenu();
 
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("http://localhost:4040/api/shortcuts/types", {
-        method: "GET",
-        credentials: "include",
-      });
+  const { data, isError, isLoading } = useShortcutCategories();
 
-      const categories = await res.json();
-      if (categories.error) router.push("/login");
-      setCategories(categories);
-      setIsCategoriesLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
-
-  const toggleNavMenu = () => {
-    if (dropdownOpen) {
-      setDropdownOpen(false);
-    } else {
-      fetchCategories();
-      setDropdownOpen(true);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // check if the click is outside the menu dropdown and not the menu button
-      if (
-        dropdownOpen &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        dropdownButtonRef.current &&
-        !dropdownButtonRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  if (isError || (data && data.error)) {
+    router.push("/login");
+    return null;
+  }
 
   const openModal = (category: string) => {
-    toggleNavMenu();
+    toggleDropdownMenu();
     setType(category);
     setIsModalOpen(true);
   };
@@ -79,21 +44,21 @@ export default function NewCategoryButton({
     <>
       <div className="relative mb-10">
         <button
-          ref={dropdownButtonRef}
-          onClick={toggleNavMenu}
+          ref={menuButtonRef}
+          onClick={toggleDropdownMenu}
           className="btn btn-primary">
           + Add New Category
         </button>
-        {dropdownOpen && (
-          <div
+        {dropdownMenuOpen && (
+          <ul
             className="absolute left-0 translate-y-3 menu bg-primary capitalize font-medium z-[1] w-52 p-2"
-            ref={dropdownRef}>
-            <CategoriesDropdownList
-              isCategoriesLoading={isCategoriesLoading}
-              categories={categories}
-              openModal={openModal}
-            />
-          </div>
+            ref={dropdownMenuRef}>
+            {isLoading ? (
+              <LoadingSpinner size="md" />
+            ) : (
+              <CategoriesDropdownList categories={data} openModal={openModal} />
+            )}
+          </ul>
         )}
       </div>
 

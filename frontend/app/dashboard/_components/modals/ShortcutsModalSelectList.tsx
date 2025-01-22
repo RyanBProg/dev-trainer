@@ -2,13 +2,11 @@
 
 import { TShortcut } from "@/app/_types/types";
 import { useRouter } from "next/navigation";
-import {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { useShortcutsOfType } from "../../_hooks/useShortcutsOfType";
+import LoadingSpinner from "../LoadingSpinner";
+import toast from "react-hot-toast";
+import { useAddUserShortcuts } from "../../_hooks/useAddUserShortcuts";
 
 type Props = {
   type: string;
@@ -21,47 +19,29 @@ export default function ShortcutsModalSelectList({
   userShortcuts,
   setIsModalOpen,
 }: Props) {
-  const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedShortcuts, setSelectedShortcuts] = useState<string[]>([]);
   const router = useRouter();
+  const { data, isError, isLoading } = useShortcutsOfType(type);
+  const addShortcutsMutation = useAddUserShortcuts();
 
-  useEffect(() => {
-    const fetchShortcuts = async () => {
-      try {
-        const encodedType = encodeURIComponent(type);
-        const res = await fetch(
-          `http://localhost:4040/api/shortcuts/type/${encodedType}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+  if (isError || (data && data.error)) {
+    router.push("/login");
+    return null;
+  }
 
-        const data = await res.json();
+  if (isLoading) {
+    return <LoadingSpinner size="md" />;
+  }
 
-        if (data.error) {
-          router.push("/login");
-          return;
-        }
+  // filter the list by what the user already has saved to get unsaved shortcuts only
+  const unsavedShortcuts: TShortcut[] = data.filter(
+    (shortcut: TShortcut) =>
+      !userShortcuts.some((userShortcut) => userShortcut._id === shortcut._id)
+  );
 
-        // filter the list by what the user already has saved to get unsaved shortcuts only
-        const newShortcuts = data.filter(
-          (shortcut: TShortcut) =>
-            !userShortcuts.some(
-              (userShortcut) => userShortcut._id === shortcut._id
-            )
-        );
-
-        setShortcuts(newShortcuts);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch shortcuts:", error);
-      }
-    };
-
-    fetchShortcuts();
-  }, []);
+  if (unsavedShortcuts.length === 0) {
+    return <p>No Shortcuts Found</p>;
+  }
 
   const handleCheckboxChange = (id: string) => {
     setSelectedShortcuts((prev) =>
@@ -72,41 +52,22 @@ export default function ShortcutsModalSelectList({
   async function handleAddShortcuts(e: FormEvent) {
     e.preventDefault();
     if (selectedShortcuts.length === 0) {
-      alert("No shortcut selected");
+      toast.error("No shortcut selected");
       return;
     }
 
     try {
-      await fetch("http://localhost:4040/api/user/shortcuts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shortcutIds: selectedShortcuts }),
-        credentials: "include",
-      });
+      await addShortcutsMutation.mutateAsync(selectedShortcuts);
+      setIsModalOpen(false);
     } catch (error) {
-      console.error("Failed to add shortcut:", error);
+      toast.error("Failed to add shortcuts");
     }
-
-    setIsModalOpen(false);
-    router.refresh();
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
-
-  if (shortcuts.length === 0) {
-    return <p>No More Shortcuts</p>;
   }
 
   return (
     <form onSubmit={handleAddShortcuts}>
       <ul className="grid gap-5">
-        {shortcuts.map((shortcut) => (
+        {unsavedShortcuts.map((shortcut) => (
           <li key={shortcut._id} className="capitalize flex gap-5 items-center">
             <input
               type="checkbox"
