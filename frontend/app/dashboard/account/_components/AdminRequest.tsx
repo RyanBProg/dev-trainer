@@ -1,13 +1,13 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useUserContext } from "../../_context/userContext";
 import toast from "react-hot-toast";
+import { useUserAdminRequest } from "../../_hooks/useUserAdminRequest";
 
 export default function AdminRequest() {
   const [formOpen, setFormOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const { setUserData } = useUserContext();
+  const adminRequestMutation = useUserAdminRequest();
 
   const closeForm = () => {
     setFormOpen(false);
@@ -18,29 +18,16 @@ export default function AdminRequest() {
     e.preventDefault();
 
     try {
-      const res = await fetch(
-        "http://localhost:4040/api/auth/make-user-admin",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminPassword: password }),
-          credentials: "include",
-        }
-      );
-
-      const userData = await res.json();
-      if (userData.error) {
-        throw new Error(userData.error);
+      const res = await adminRequestMutation.mutateAsync(password);
+      if (res.error) {
+        toast.error("Admin password incorrect");
+        return;
       }
-
-      setUserData((prev) => ({ ...prev, isAdmin: userData.isAdmin }));
       setFormOpen(false);
       setPassword("");
-      toast.success("You are now an admin");
+      toast.success("User now an admin");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
+      toast.error("Failed Admin Request");
     }
   };
 
