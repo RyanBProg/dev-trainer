@@ -10,7 +10,7 @@ import { useDropdownMenu } from "../../_hooks/useDropdownMenu";
 
 export default function AccountMenu() {
   const { logout } = useLogout();
-  const { data, isLoading } = useUserProfilePicture();
+  const { data, isLoading, isFetching } = useUserProfilePicture();
   const {
     menuButtonRef,
     dropdownMenuOpen,
@@ -24,7 +24,7 @@ export default function AccountMenu() {
         className="btn btn-md btn-circle border-none overflow-clip"
         ref={menuButtonRef}
         onClick={toggleDropdownMenu}>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <LoadingSpinner size="sm" />
         ) : (
           <Image

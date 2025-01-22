@@ -2,7 +2,7 @@
 
 import { useLogout } from "@/app/_hooks/useLogout";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
 import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
@@ -10,32 +10,16 @@ import { useUserContext } from "../_context/userContext";
 import { useLogoutAll } from "@/app/_hooks/useLogoutAll";
 import toast from "react-hot-toast";
 import { fullNameSchema } from "@/app/_zod/formSchemas";
+import { useUserData } from "../_hooks/useUserData";
 
 export default function Account() {
   const router = useRouter();
   const { logout } = useLogout();
   const { logoutAll } = useLogoutAll();
   const { userData, setUserData } = useUserContext();
-  const [isLoading, setIsLoading] = useState(true);
   const [fullName, setFullName] = useState("");
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const res = await fetch("http://localhost:4040/api/user", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const resData = await res.json();
-      if (resData.error) router.push("/login");
-
-      setUserData(resData);
-      setFullName(resData.fullName);
-      setIsLoading(false);
-    };
-
-    fetchUserData();
-  }, []);
+  const { data, isLoading } = useUserData();
 
   const handleNameChange = async (e: FormEvent) => {
     e.preventDefault();
@@ -91,7 +75,7 @@ export default function Account() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
-              {userData.fullName !== fullName && (
+              {data.fullName !== fullName && (
                 <button
                   type="submit"
                   className="btn btn-success btn-sm absolute right-2 top-2">
@@ -102,17 +86,17 @@ export default function Account() {
           </form>
           <div className="grid">
             <span className="font-semibold">Email</span>
-            <span className="text-xl">{userData.email}</span>
+            <span className="text-xl">{data.email}</span>
           </div>
           <div className="grid">
             <span className="font-semibold">Member Since</span>
-            <span className="text-xl">{userData.createdAt.split("T")[0]}</span>
+            <span className="text-xl">{data.createdAt.split("T")[0]}</span>
           </div>
           <div className="grid gap-2">
             <span className="font-semibold">Admin</span>
             <input
               type="checkbox"
-              checked={userData.isAdmin}
+              checked={data.isAdmin}
               className="checkbox checkbox-secondary"
               disabled={true}
             />
@@ -133,7 +117,7 @@ export default function Account() {
             </div>
           </div>
           <AdminRequest />
-          <DeleteAccountRequest email={userData.email} />
+          <DeleteAccountRequest email={data.email} />
         </div>
       </div>
     </>

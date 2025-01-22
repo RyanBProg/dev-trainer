@@ -2,34 +2,39 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useUserContext } from "../../_context/userContext";
+import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
+import defaultProfilePicture from "@/app/_assets/icons/user.png";
+import toast from "react-hot-toast";
+import LoadingSpinner from "../../_components/LoadingSpinner";
+import { useAddUserProfilePicture } from "../../_hooks/useAddUserProfilePicture";
 
 export default function UserProfilePicture() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const { profilePicture, setProfilePicture } = useUserContext();
+
+  const {
+    data: profilePicture,
+    isLoading: loadingProfilePicture,
+    isFetching: fetchingProfilePicture,
+  } = useUserProfilePicture();
+
+  const addProfilePictureMutation = useAddUserProfilePicture();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-
-    // Reset errors and preview
-    setError(null);
-    setPreviewUrl(null);
-
     if (!selectedFile) return;
 
     // Validate file type
     const validFileTypes = ["image/jpeg", "image/png"];
     if (!validFileTypes.includes(selectedFile.type)) {
-      setError("Only JPEG and PNG files are allowed.");
+      toast.error("Only JPEG and PNG files are allowed.");
       return;
     }
 
     // Validate file size (2MB limit)
     const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
     if (selectedFile.size > maxSizeInBytes) {
-      setError("File size must be less than 2MB.");
+      toast.error("File size must be less than 2MB.");
       return;
     }
 
@@ -40,7 +45,7 @@ export default function UserProfilePicture() {
       .toLowerCase();
 
     if (!validExtensions.includes(fileExtension)) {
-      setError("File extension must be .jpg, .jpeg, or .png.");
+      toast.error("File extension must be .jpg, .jpeg, or .png.");
       return;
     }
 
@@ -59,40 +64,26 @@ export default function UserProfilePicture() {
     e.preventDefault();
 
     if (!file || !previewUrl) {
-      setError("Please upload a valid image.");
+      toast.error("Please upload a valid image.");
       return;
     }
 
     const formData = new FormData();
     formData.append("image", file); // Match the key "image" expected on the backend
 
-    const response = await fetch(
-      "http://localhost:4040/api/user/profile-picture",
-      {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      }
-    );
-
-    const data = await response.json();
-    if (response.ok) {
-      console.log("Profile picture uploaded successfully", data);
-      setProfilePicture(previewUrl);
-    } else {
-      console.error("Error uploading profile picture:", data.error);
-    }
-
-    if (!file) {
-      setError("Please upload a valid image.");
-      return;
+    try {
+      await addProfilePictureMutation.mutateAsync(formData);
+      setPreviewUrl(null);
+      setFile(null);
+    } catch (error) {
+      toast.error("Failed to add profile picture");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
       <div className="my-10 flex flex-col sm:flex-row gap-10 items-center">
-        <div className="rounded-full bg-white h-24 w-24 overflow-clip">
+        <div className="flex justify-center items-center rounded-full h-24 w-24 overflow-clip">
           {previewUrl ? (
             <Image
               src={previewUrl}
@@ -101,10 +92,12 @@ export default function UserProfilePicture() {
               height={96}
               className="object-cover"
             />
+          ) : loadingProfilePicture || fetchingProfilePicture ? (
+            <LoadingSpinner size="md" />
           ) : (
             <Image
               className="object-cover"
-              src={profilePicture}
+              src={profilePicture?.userPicture || defaultProfilePicture}
               alt="user profile icon"
               width={96}
               height={96}
@@ -122,8 +115,6 @@ export default function UserProfilePicture() {
             className="hidden"
             onChange={handleFileChange}
           />
-
-          {error && <p className="text-red-500">{error}</p>}
           {file && (
             <button type="submit" className="btn btn-success btn-sm">
               Submit
