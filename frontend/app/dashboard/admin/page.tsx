@@ -5,7 +5,6 @@ import LoadingSpinner from "../_components/LoadingSpinner";
 import { useUserData } from "../_hooks/useUserData";
 import CreateShortcutForm from "./_components/CreateShortcutForm";
 import EditShortcut from "./_components/EditShortcut";
-import { useEffect } from "react";
 
 export default function Admin() {
   const router = useRouter();
