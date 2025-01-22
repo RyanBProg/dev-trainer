@@ -1,13 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { deleteUserShortcut } from "../_utils/deleteUserShortcut";
+import { useDeleteUserShortcut } from "../_hooks/useDeleteUserShortcut";
+import toast from "react-hot-toast";
 
 export default function DeleteButton({ shortcutId }: { shortcutId: string }) {
-  const router = useRouter();
+  const deleteShortcutsMutation = useDeleteUserShortcut();
+
   const handleDelete = async () => {
-    await deleteUserShortcut(shortcutId);
-    router.refresh();
+    try {
+      await deleteShortcutsMutation.mutateAsync(shortcutId);
+    } catch (error) {
+      toast.error("Failed to delete shortcut");
+    }
   };
 
   return (
