@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "./_components/footer/Footer";
+import Footer from "./_components/navbar/Footer";
 import Navbar from "./_components/navbar/Navbar";
 import ReactQueryProvider from "./_react-query/ReactQueryProvider";
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { TShortcut } from "@/app/_types/types";
 import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
 import ShortcutsModal from "./modals/ShortcutsModal";
-import CategoriesDropdownList from "./dropdowns/CategoriesDropdownList";
+import CategoriesDropdownList from "./CategoriesDropdownList";
 import { useShortcutCategories } from "../_hooks/useShortcutCategories";
 import LoadingSpinner from "./LoadingSpinner";
 import { useCategoryDropdownMenu } from "../_hooks/useCategoryDropdownMenu";
