@@ -3,12 +3,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createShortcut(formData: TShortcutForm) {
   try {
-    const res = await fetch("http://localhost:4040/api/shortcuts/admin", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(formData),
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/shortcuts/admin`,
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       return {

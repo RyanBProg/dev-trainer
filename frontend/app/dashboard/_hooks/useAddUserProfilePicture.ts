@@ -2,11 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function AddUserProfilePicture(formData: FormData) {
   try {
-    const res = await fetch("http://localhost:4040/api/user/profile-picture", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/user/profile-picture`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      }
+    );
 
     if (!res.ok) {
       return {

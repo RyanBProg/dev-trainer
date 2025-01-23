@@ -7,11 +7,14 @@ export function logoutAllRequest() {
 
   async function logoutAll() {
     try {
-      const res = await fetch("http://localhost:4040/api/auth/logout-all", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/logout-all`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
 
       const data = await res.json();
       if (data.error) {

@@ -8,17 +8,20 @@ export function signupRequest() {
 
   async function signup(signupData: TUserSignup) {
     try {
-      const res = await fetch("http://localhost:4040/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: signupData.fullName,
-          email: signupData.email,
-          password: signupData.password,
-          confirmPassword: signupData.confirmPassword,
-        }),
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: signupData.fullName,
+            email: signupData.email,
+            password: signupData.password,
+            confirmPassword: signupData.confirmPassword,
+          }),
+          credentials: "include",
+        }
+      );
 
       const userData = await res.json();
       if (userData.error) {

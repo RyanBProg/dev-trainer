@@ -4,7 +4,7 @@ async function getShortcutsOfType(type: string) {
   try {
     const encodedType = encodeURIComponent(type);
     const res = await fetch(
-      `http://localhost:4040/api/shortcuts/type/${encodedType}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/shortcuts/type/${encodedType}`,
       {
         method: "GET",
         credentials: "include",

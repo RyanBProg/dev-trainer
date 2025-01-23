@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 async function DeleteUserShortcut(shortcutId: string) {
   try {
     const res = await fetch(
-      `http://localhost:4040/api/user/shortcuts/${shortcutId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/user/shortcuts/${shortcutId}`,
       {
         method: "DELETE",
         credentials: "include",

@@ -2,10 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 
 async function getUserShortcuts() {
   try {
-    const res = await fetch("http://localhost:4040/api/user/shortcuts", {
-      method: "GET",
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/user/shortcuts`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       return {

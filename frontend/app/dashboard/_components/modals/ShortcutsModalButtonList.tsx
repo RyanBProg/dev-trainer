@@ -24,7 +24,7 @@ export default function ShortcutsModalButtonList({
       try {
         const encodedType = encodeURIComponent(type);
         const res = await fetch(
-          `http://localhost:4040/api/shortcuts/type/${encodedType}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/shortcuts/type/${encodedType}`,
           {
             method: "GET",
             credentials: "include",
@@ -55,10 +55,13 @@ export default function ShortcutsModalButtonList({
     }
 
     try {
-      const res = await fetch(`http://localhost:4040/api/shortcuts/${eValue}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/shortcuts/${eValue}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const fetchedShortcut = await res.json();
       setSelectedShortcut(fetchedShortcut);
