@@ -32,6 +32,7 @@ export default function CreateShortcutForm() {
       setFormData(blankFormData);
     } catch (error) {
       toast.error("Failed to create shortcut");
+      console.log(error);
     }
   };
 

@@ -11,6 +11,7 @@ export default function DeleteButton({ shortcutId }: { shortcutId: string }) {
       await deleteShortcutsMutation.mutateAsync(shortcutId);
     } catch (error) {
       toast.error("Failed to delete shortcut");
+      console.log(error);
     }
   };
 

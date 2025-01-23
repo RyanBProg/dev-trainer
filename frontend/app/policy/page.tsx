@@ -7,7 +7,7 @@ import PrivacyPolicy from "./_components/PrivacyPolicy";
 
 type Tabs = "cookie" | "privacy";
 
-export default function page() {
+export default function Page() {
   const [activeTab, setActiveTab] = useState<Tabs>("privacy");
 
   return (

@@ -1,4 +1,6 @@
+import Image from "next/image";
 import React from "react";
+import davePortait from "@/app/_assets/images/dave-dover-portait.jpeg";
 
 export default function Testimonials() {
   return (
@@ -17,20 +19,22 @@ export default function Testimonials() {
           </svg>
           <blockquote>
             <p className="text-xl sm:text-2xl font-medium text-neutral-content">
-              "This tool has completely transformed how I work! I used to
+              &quot;This tool has completely transformed how I work! I used to
               struggle remembering shortcuts, but now I can easily access my
-              personalized list and focus on learning the ones I need most. It's
-              a must-have for any developer."
+              personalized list and focus on learning the ones I need most.
+              It&apos;s a must-have for any developer.&quot;
             </p>
           </blockquote>
           <figcaption className="flex items-center justify-center mt-6 space-x-3">
-            <img
+            <Image
               className="w-6 h-6 rounded-full"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+              src={davePortait}
               alt="kim dover portrait"
+              height={24}
+              width={24}
             />
             <div className="flex items-center divide-x-2 divide-gray-700">
-              <div className="pr-3 font-medium text-white">Kim Dover</div>
+              <div className="pr-3 font-medium text-white">Dave Dover</div>
               <div className="pl-3 text-sm font-light text-neutral-content">
                 CEO at DevScope
               </div>

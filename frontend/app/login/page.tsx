@@ -2,15 +2,52 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { loginRequest } from "../_utils/loginRequest";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 import { userLoginSchema } from "../_zod/formSchemas";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../dashboard/_components/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = loginRequest();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function login(email: string, password: string) {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `Failed to login user: HTTP ${res.status} ${res.statusText}`
+        );
+      }
+
+      const resJson = await res.json();
+      if (resJson.error) {
+        throw new Error(resJson.error);
+      }
+
+      setIsLoading(false);
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error("Failed to Login");
+      console.log(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+      setIsLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,7 +58,6 @@ export default function Login() {
       return;
     }
 
-    // proper form input checking should go here
     await login(email, password);
   }
 
@@ -70,11 +106,11 @@ export default function Login() {
             />
           </label>
           <button type="submit" className="btn btn-active btn-accent">
-            Login
+            {isLoading ? <LoadingSpinner size="md" /> : "Login"}
           </button>
         </form>
         <span className="block text-center pt-8">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/signup" className="underline hover:text-gray-300">
             SignUp
           </Link>

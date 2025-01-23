@@ -1,23 +1,23 @@
 "use client";
 
-import { logoutRequest } from "@/app/_utils/logoutRequest";
 import { FormEvent, useEffect, useState } from "react";
 import UserProfilePicture from "./_components/UserProfilePicture";
 import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
-import { logoutAllRequest } from "@/app/_utils/logoutAllRequest";
 import toast from "react-hot-toast";
 import { fullNameSchema } from "@/app/_zod/formSchemas";
 import { useUserData } from "../_hooks/useUserData";
 import LoadingSpinner from "../_components/LoadingSpinner";
 import { useUpdateFullName } from "../_hooks/useUpdateFullName";
+import { useLogout } from "../_hooks/useLogout";
+import { useLogoutAll } from "../_hooks/useLogoutAll";
 
 export default function Account() {
-  const { logout } = logoutRequest();
-  const { logoutAll } = logoutAllRequest();
   const { data, isLoading } = useUserData();
   const [fullName, setFullName] = useState("");
   const updateFullNameMutation = useUpdateFullName();
+  const logoutMutation = useLogout();
+  const logoutAllMutation = useLogoutAll();
 
   useEffect(() => {
     if (data && data.fullName) {
@@ -40,6 +40,7 @@ export default function Account() {
       toast.success("Full Name Updated");
     } catch (error) {
       toast.error("Failed to update Full Name");
+      console.log(error);
     }
   };
 
@@ -93,13 +94,23 @@ export default function Account() {
               <div className="grid gap-2">
                 <span className="font-semibold">Logging Out</span>
                 <div className="flex gap-4">
-                  <button className="btn  btn-primary" onClick={logout}>
-                    Logout
+                  <button
+                    className="btn btn-primary"
+                    onClick={async () => await logoutMutation.mutateAsync()}>
+                    {logoutMutation.isPending ? (
+                      <LoadingSpinner size="md" />
+                    ) : (
+                      "Logout"
+                    )}
                   </button>
                   <button
                     className="btn btn-outline btn-primary"
-                    onClick={logoutAll}>
-                    Logout On All Devices
+                    onClick={async () => await logoutAllMutation.mutateAsync()}>
+                    {logoutAllMutation.isPending ? (
+                      <LoadingSpinner size="md" />
+                    ) : (
+                      "Logout On All Devices"
+                    )}
                   </button>
                 </div>
               </div>

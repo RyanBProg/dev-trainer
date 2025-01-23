@@ -2,10 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { signupRequest } from "../_utils/signupRequest";
 import RootLayoutWrapper from "../_components/RootLayoutWrapper";
 import { userSignupSchema } from "../_zod/formSchemas";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../dashboard/_components/LoadingSpinner";
+import { useRouter } from "next/navigation";
+import { TUserSignup } from "../_types/types";
 
 const signupDataTemplate = {
   fullName: "",
@@ -16,7 +18,48 @@ const signupDataTemplate = {
 
 export default function Signup() {
   const [signupData, setSignupData] = useState(signupDataTemplate);
-  const { signup } = signupRequest();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function signup(signupData: TUserSignup) {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: signupData.fullName,
+            email: signupData.email,
+            password: signupData.password,
+            confirmPassword: signupData.confirmPassword,
+          }),
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `Failed to signup user: HTTP ${res.status} ${res.statusText}`
+        );
+      }
+
+      const resJson = await res.json();
+      if (resJson.error) {
+        throw new Error(resJson.error);
+      }
+
+      setIsLoading(false);
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error("Failed to SignUp");
+      console.log(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
+      setIsLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -124,7 +167,7 @@ export default function Signup() {
             />
           </label>
           <button type="submit" className="btn btn-active btn-accent">
-            SignUp
+            {isLoading ? <LoadingSpinner size="md" /> : "SignUp"}
           </button>
         </form>
         <span className="block text-center pt-8">

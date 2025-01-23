@@ -30,6 +30,7 @@ export default function UpdateShortcutForm({
       setSelectedShortcut(undefined);
     } catch (error) {
       toast.error("Failed to Delete Shortcut");
+      console.log(error);
     }
   };
 
@@ -51,6 +52,7 @@ export default function UpdateShortcutForm({
       setSelectedShortcut(undefined);
     } catch (error) {
       toast.error("Failed to Update Shortcut");
+      console.log(error);
     }
   };
 

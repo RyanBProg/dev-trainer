@@ -61,6 +61,7 @@ export default function ShortcutsModalSelectList({
       setIsModalOpen(false);
     } catch (error) {
       toast.error("Failed to add shortcuts");
+      console.log(error);
     }
   }
 

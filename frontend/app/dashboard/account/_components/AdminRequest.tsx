@@ -28,6 +28,7 @@ export default function AdminRequest() {
       toast.success("User now an admin");
     } catch (error) {
       toast.error("Failed Admin Request");
+      console.log(error);
     }
   };
 

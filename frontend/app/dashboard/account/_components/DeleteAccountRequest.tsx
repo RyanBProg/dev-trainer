@@ -30,6 +30,7 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
       router.push("/signup");
     } catch (error) {
       toast.error("Failed to Delete User");
+      console.log(error);
     }
   };
 

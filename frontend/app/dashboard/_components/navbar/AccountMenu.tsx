@@ -7,9 +7,9 @@ import defaultProfilePicture from "@/app/_assets/icons/user.png";
 import LoadingSpinner from "../LoadingSpinner";
 import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
 import { useDropdownMenu } from "../../_hooks/useDropdownMenu";
+import { useLogout } from "../../_hooks/useLogout";
 
 export default function AccountMenu() {
-  const { logout } = logoutRequest();
   const { data, isLoading, isFetching } = useUserProfilePicture();
   const {
     menuButtonRef,
@@ -17,6 +17,7 @@ export default function AccountMenu() {
     dropdownMenuRef,
     toggleDropdownMenu,
   } = useDropdownMenu();
+  const logoutMutation = useLogout();
 
   return (
     <div className="flex items-center justify-center">
@@ -49,7 +50,13 @@ export default function AccountMenu() {
             </Link>
           </li>
           <li>
-            <button onClick={logout}>Logout</button>
+            <button onClick={async () => await logoutMutation.mutateAsync()}>
+              {logoutMutation.isPending ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                "Logout"
+              )}
+            </button>
           </li>
         </ul>
       )}

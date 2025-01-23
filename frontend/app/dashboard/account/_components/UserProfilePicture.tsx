@@ -77,6 +77,7 @@ export default function UserProfilePicture() {
       setFile(null);
     } catch (error) {
       toast.error("Failed to add profile picture");
+      console.log(error);
     }
   };
 

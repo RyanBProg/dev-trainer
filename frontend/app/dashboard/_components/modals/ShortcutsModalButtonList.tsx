@@ -46,7 +46,7 @@ export default function ShortcutsModalButtonList({
     };
 
     fetchShortcuts();
-  }, []);
+  }, [type]);
 
   async function handleSubmit(eValue: string) {
     if (eValue === "") {
