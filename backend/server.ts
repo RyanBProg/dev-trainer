@@ -8,9 +8,19 @@ import shortcutRoutes from "./routes/shortcutsRoutes";
 import cors from "cors";
 
 const app: Express = express();
-const PORT = process.env.PORT || 4040;
 dotenv.config();
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+const PORT = process.env.PORT || 4040;
+
+// CORS setup
+const corsOptions = {
+  origin: process.env.FRONTEND_URL, // Allow frontend URL
+  credentials: true, // Allow cookies
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
+
 app.use(express.json());
 app.use(cookieParser());
 
