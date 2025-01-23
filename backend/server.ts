@@ -12,14 +12,14 @@ dotenv.config();
 const PORT = process.env.PORT || 4040;
 
 // CORS setup
-const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Allow frontend URL
-  credentials: true, // Allow cookies
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
+// const corsOptions = {
+//   origin: "https://dev-trainer-frontend-ryans-projects-197c1757.vercel.app",
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+// };
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions)); // Handle preflight requests
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
