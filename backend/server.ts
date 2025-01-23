@@ -28,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
 
 app.get("/", (req: Request, res: Response) => {
+  console.log("1");
   res.status(200).send("Welcome");
 });
 
