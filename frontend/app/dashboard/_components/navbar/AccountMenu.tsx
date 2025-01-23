@@ -1,6 +1,5 @@
 "use client";
 
-import { logoutRequest } from "@/app/_utils/logoutRequest";
 import Link from "next/link";
 import Image from "next/image";
 import defaultProfilePicture from "@/app/_assets/icons/user.png";
