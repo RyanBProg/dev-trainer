@@ -36,3 +36,6 @@ app.listen(PORT, () => {
   connectToDB();
   console.log(`[server] Server running on http://localhost:${PORT}`);
 });
+
+// export for vercel
+export default app;
