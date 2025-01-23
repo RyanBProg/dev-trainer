@@ -16,6 +16,7 @@ export default function Login() {
 
   async function login(email: string, password: string) {
     setIsLoading(true);
+    console.log(process.env.NEXT_PUBLIC_BACKEND_BASE_URL);
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/login`,
