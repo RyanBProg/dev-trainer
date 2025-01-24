@@ -13,8 +13,10 @@ const PORT = process.env.PORT || 4040;
 
 // CORS setup
 const corsOptions = {
-  // origin: process.env.FRONTEND_URL,
-  origin: "https://dev-trainer-backend-ryans-projects-197c1757.vercel.app/",
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.BACKEND_URL
+      : process.env.FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
