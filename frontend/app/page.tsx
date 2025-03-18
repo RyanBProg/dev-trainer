@@ -1,6 +1,6 @@
 import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
 import Image from "next/image";
-import dashboardImage from "@/app/_assets/images/dashboard-screenshot.png";
+import dashboardImage from "@/public/assets/images/dashboard-screenshot.png";
 import CTABanner from "@/components/landing-page/CTABanner";
 import Testimonials from "@/components/landing-page/Testimonials";
 

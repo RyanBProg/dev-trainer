@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
-import CookiePolicy from "./_components/CookiePolicy";
-import PrivacyPolicy from "./_components/PrivacyPolicy";
+import CookiePolicy from "@/components/policy/CookiePolicy";
+import PrivacyPolicy from "@/components/policy/PrivacyPolicy";
 
 type Tabs = "cookie" | "privacy";
 

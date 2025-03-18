@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import defaultProfilePicture from "@/app/_assets/icons/user.png";
+import defaultProfilePicture from "@/public/assets/icons/user.png";
 import LoadingSpinner from "../LoadingSpinner";
 import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
 import { useDropdownMenu } from "../../_hooks/useDropdownMenu";

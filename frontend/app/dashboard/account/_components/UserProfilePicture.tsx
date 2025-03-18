@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
-import defaultProfilePicture from "@/app/_assets/icons/user.png";
+import defaultProfilePicture from "@/public/assets/icons/user.png";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../_components/LoadingSpinner";
 import { useAddUserProfilePicture } from "../../_hooks/useAddUserProfilePicture";

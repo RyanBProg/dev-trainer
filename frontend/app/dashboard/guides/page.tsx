@@ -1,4 +1,4 @@
-import roadworkImage from "@/app/_assets/images/roadwork-sign.png";
+import roadworkImage from "@/public/assets/images/roadwork-sign.png";
 import Image from "next/image";
 
 export default function page() {

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import davePortait from "@/app/_assets/images/dave-dover-portait.jpeg";
+import davePortait from "@/public/assets/images/dave-dover-portait.jpeg";
 
 export default function Testimonials() {
   return (

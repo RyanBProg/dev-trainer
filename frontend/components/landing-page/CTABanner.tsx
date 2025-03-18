@@ -1,5 +1,5 @@
-import githubIcon from "@/app/_assets/icons/github-icon-60x60.svg";
-import linkedinIcon from "@/app/_assets/icons/linkedin-icon-60x60.svg";
+import githubIcon from "@/public/assets/icons/github-icon-60x60.svg";
+import linkedinIcon from "@/public/assets/icons/linkedin-icon-60x60.svg";
 import Image from "next/image";
 
 export default function CTABanner() {
