@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import ShortcutForm from "./ShortcutForm";
-import { shortcutSchema } from "@/app/_zod/formSchemas";
+import { shortcutSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
 import { useCreateShortcut } from "../../_hooks/useCreateShortcut";
 

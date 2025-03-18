@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import RootLayoutWrapper from "../_components/RootLayoutWrapper";
+import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
 import CookiePolicy from "./_components/CookiePolicy";
 import PrivacyPolicy from "./_components/PrivacyPolicy";
 

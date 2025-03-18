@@ -5,7 +5,7 @@ import UserProfilePicture from "./_components/UserProfilePicture";
 import AdminRequest from "./_components/AdminRequest";
 import DeleteAccountRequest from "./_components/DeleteAccountRequest";
 import toast from "react-hot-toast";
-import { fullNameSchema } from "@/app/_zod/formSchemas";
+import { fullNameSchema } from "@/utils/zod/formSchemas";
 import { useUserData } from "../_hooks/useUserData";
 import LoadingSpinner from "../_components/LoadingSpinner";
 import { useUpdateFullName } from "../_hooks/useUpdateFullName";

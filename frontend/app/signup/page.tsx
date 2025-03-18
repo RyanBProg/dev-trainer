@@ -2,8 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import RootLayoutWrapper from "../_components/RootLayoutWrapper";
-import { userSignupSchema } from "../_zod/formSchemas";
+import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
+import { userSignupSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../dashboard/_components/LoadingSpinner";
 import { useRouter } from "next/navigation";
