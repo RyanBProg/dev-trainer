@@ -1,8 +1,8 @@
-import RootLayoutWrapper from "./_components/RootLayoutWrapper";
+import RootLayoutWrapper from "../components/root/RootLayoutWrapper";
 import Image from "next/image";
 import dashboardImage from "@/app/_assets/images/dashboard-screenshot.png";
-import CTABanner from "./_components/home/CTABanner";
-import Testimonials from "./_components/home/Testimonials";
+import CTABanner from "../components/landing-page/CTABanner";
+import Testimonials from "../components/landing-page/Testimonials";
 
 export default function Home() {
   return (
