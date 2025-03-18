@@ -2,7 +2,7 @@
 
 import { Dispatch, FormEvent, ReactNode, SetStateAction } from "react";
 import { getKeyDownValue } from "../../_utils/getKeyDownValue";
-import { TShortcut, TShortcutForm } from "@/app/_types/types";
+import { TShortcut, TShortcutForm } from "@/utils/types/types";
 
 type Props = {
   handleSubmit: (e: FormEvent) => Promise<void>;

@@ -7,7 +7,7 @@ import { userSignupSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../dashboard/_components/LoadingSpinner";
 import { useRouter } from "next/navigation";
-import { TUserSignup } from "../_types/types";
+import { TUserSignup } from "../../utils/types/types";
 
 const signupDataTemplate = {
   fullName: "",

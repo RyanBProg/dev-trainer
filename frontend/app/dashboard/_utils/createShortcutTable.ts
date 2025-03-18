@@ -1,4 +1,4 @@
-import { TShortcut } from "@/app/_types/types";
+import { TShortcut } from "@/utils/types/types";
 
 type TTableCategory = {
   type: string;

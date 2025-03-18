@@ -1,4 +1,4 @@
-import { TShortcutForm } from "@/app/_types/types";
+import { TShortcutForm } from "@/utils/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function createShortcut(formData: TShortcutForm) {

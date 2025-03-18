@@ -1,4 +1,4 @@
-import { TShortcut } from "@/app/_types/types";
+import { TShortcut } from "@/utils/types/types";
 import ShortcutKey from "./ShortcutKey";
 import DeleteButton from "./DeleteButton";
 

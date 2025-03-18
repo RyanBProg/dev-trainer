@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TShortcut } from "@/app/_types/types";
+import { TShortcut } from "@/utils/types/types";
 import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
 import ShortcutsModal from "./modals/ShortcutsModal";
 

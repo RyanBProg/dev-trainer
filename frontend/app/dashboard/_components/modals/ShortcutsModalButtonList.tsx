@@ -1,6 +1,6 @@
 "use client";
 
-import { TShortcut } from "@/app/_types/types";
+import { TShortcut } from "@/utils/types/types";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 

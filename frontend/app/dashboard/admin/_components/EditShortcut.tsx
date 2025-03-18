@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TShortcut } from "@/app/_types/types";
+import { TShortcut } from "@/utils/types/types";
 import UpdateShortcutForm from "./UpdateShortcutForm";
 import ShortcutsModalButtonList from "../../_components/modals/ShortcutsModalButtonList";
 import CategoriesDropdownList from "../../_components/CategoriesDropdownList";

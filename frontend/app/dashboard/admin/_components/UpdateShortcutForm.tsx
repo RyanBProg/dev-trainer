@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
-import { TShortcut, TShortcutForm } from "@/app/_types/types";
+import { TShortcut, TShortcutForm } from "@/utils/types/types";
 import { shortcutSchema } from "@/utils/zod/formSchemas";
 import ShortcutForm from "./ShortcutForm";
 import toast from "react-hot-toast";
