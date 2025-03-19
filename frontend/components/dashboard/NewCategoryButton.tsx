@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/utils/types/types";
-import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
-import ShortcutsModal from "./modals/ShortcutsModal";
-import CategoriesDropdownList from "./CategoriesDropdownList";
-import { useShortcutCategories } from "../_hooks/useShortcutCategories";
-import LoadingSpinner from "./LoadingSpinner";
-import { useCategoryDropdownMenu } from "../_hooks/useCategoryDropdownMenu";
+import ShortcutsModalSelectList from "@/components/dashboard/modals/ShortcutsModalSelectList";
+import ShortcutsModal from "@/components/dashboard/modals/ShortcutsModal";
+import CategoriesDropdownList from "@/components/dashboard/CategoriesDropdownList";
+import { useShortcutCategories } from "@/hooks/useShortcutCategories";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useCategoryDropdownMenu } from "@/hooks/useCategoryDropdownMenu";
 
 type NewCategoryButtonProps = {
   userShortcuts: TShortcut[];

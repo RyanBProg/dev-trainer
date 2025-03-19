@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
+import { useUserProfilePicture } from "@/hooks/useUserProfilePicture";
 import defaultProfilePicture from "@/public/assets/icons/user.png";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../../_components/LoadingSpinner";
-import { useAddUserProfilePicture } from "../../_hooks/useAddUserProfilePicture";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useAddUserProfilePicture } from "@/hooks/useAddUserProfilePicture";
 
 export default function UserProfilePicture() {
   const [file, setFile] = useState<File | null>(null);

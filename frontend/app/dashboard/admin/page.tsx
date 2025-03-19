@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "../_components/LoadingSpinner";
-import { useUserData } from "../_hooks/useUserData";
-import CreateShortcutForm from "./_components/CreateShortcutForm";
-import EditShortcut from "./_components/EditShortcut";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useUserData } from "@/hooks/useUserData";
+import CreateShortcutForm from "@/components/dashboard/admin/CreateShortcutForm";
+import EditShortcut from "@/components/dashboard/admin/EditShortcut";
 
 export default function Admin() {
   const router = useRouter();

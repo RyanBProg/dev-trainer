@@ -1,10 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import ShortcutForm from "./ShortcutForm";
+import ShortcutForm from "@/components/dashboard/admin/ShortcutForm";
 import { shortcutSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
-import { useCreateShortcut } from "../../_hooks/useCreateShortcut";
+import { useCreateShortcut } from "@/hooks/useCreateShortcut";
 
 const blankFormData = {
   shortDescription: "",

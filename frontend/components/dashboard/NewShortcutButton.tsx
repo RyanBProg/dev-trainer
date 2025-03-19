@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { TShortcut } from "@/utils/types/types";
-import ShortcutsModalSelectList from "./modals/ShortcutsModalSelectList";
-import ShortcutsModal from "./modals/ShortcutsModal";
+import ShortcutsModalSelectList from "@/components/dashboard/modals/ShortcutsModalSelectList";
+import ShortcutsModal from "@/components/dashboard/modals/ShortcutsModal";
 
 type NewShortcutButtonProps = {
   type: string;

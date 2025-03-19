@@ -1,16 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import UserProfilePicture from "./_components/UserProfilePicture";
-import AdminRequest from "./_components/AdminRequest";
-import DeleteAccountRequest from "./_components/DeleteAccountRequest";
+import UserProfilePicture from "@/components/dashboard/account/UserProfilePicture";
+import AdminRequest from "@/components/dashboard/account/AdminRequest";
+import DeleteAccountRequest from "@/components/dashboard/account/DeleteAccountRequest";
 import toast from "react-hot-toast";
 import { fullNameSchema } from "@/utils/zod/formSchemas";
-import { useUserData } from "../_hooks/useUserData";
-import LoadingSpinner from "../_components/LoadingSpinner";
-import { useUpdateFullName } from "../_hooks/useUpdateFullName";
-import { useLogout } from "../_hooks/useLogout";
-import { useLogoutAll } from "../_hooks/useLogoutAll";
+import { useUserData } from "@/hooks/useUserData";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useUpdateFullName } from "@/hooks/useUpdateFullName";
+import { useLogout } from "@/hooks/useLogout";
+import { useLogoutAll } from "@/hooks/useLogoutAll";
 
 export default function Account() {
   const { data, isLoading } = useUserData();

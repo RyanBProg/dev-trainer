@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
-import { useDeleteUser } from "../../_hooks/useDeleteUser";
+import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRouter } from "next/navigation";
 
 export default function DeleteAccountRequest({ email }: { email: string }) {

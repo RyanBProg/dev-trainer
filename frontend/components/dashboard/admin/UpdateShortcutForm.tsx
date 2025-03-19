@@ -5,8 +5,8 @@ import { TShortcut, TShortcutForm } from "@/utils/types/types";
 import { shortcutSchema } from "@/utils/zod/formSchemas";
 import ShortcutForm from "./ShortcutForm";
 import toast from "react-hot-toast";
-import { useUpdateShortcut } from "../../_hooks/useUpdateShortcut";
-import { useDeleteShortcut } from "../../_hooks/useDeleteShortcut";
+import { useUpdateShortcut } from "@/hooks/useUpdateShortcut";
+import { useDeleteShortcut } from "@/hooks/useDeleteShortcut";
 
 type Props = {
   selectedShortcut: TShortcut;

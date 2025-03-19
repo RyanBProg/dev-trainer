@@ -5,7 +5,7 @@ import Link from "next/link";
 import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
 import { userLoginSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
-import LoadingSpinner from "../dashboard/_components/LoadingSpinner";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
 import { useRouter } from "next/navigation";
 
 export default function Login() {

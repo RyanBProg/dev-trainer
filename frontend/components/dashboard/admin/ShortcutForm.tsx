@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, FormEvent, ReactNode, SetStateAction } from "react";
-import { getKeyDownValue } from "../../_utils/getKeyDownValue";
+import { getKeyDownValue } from "@/utils/getKeyDownValue";
 import { TShortcut, TShortcutForm } from "@/utils/types/types";
 
 type Props = {

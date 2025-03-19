@@ -3,10 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import defaultProfilePicture from "@/public/assets/icons/user.png";
-import LoadingSpinner from "../LoadingSpinner";
-import { useUserProfilePicture } from "../../_hooks/useUserProfilePicture";
-import { useDropdownMenu } from "../../_hooks/useDropdownMenu";
-import { useLogout } from "../../_hooks/useLogout";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useUserProfilePicture } from "@/hooks/useUserProfilePicture";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { useLogout } from "@/hooks/useLogout";
 
 export default function AccountMenu() {
   const { data, isLoading, isFetching } = useUserProfilePicture();

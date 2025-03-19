@@ -1,12 +1,12 @@
 "use client";
 
-import { createShortcutTable } from "../_utils/createShortcutTable";
-import TableRow from "./TableRow";
-import NewShortcutButton from "./NewShortcutButton";
-import NewCategoryButton from "./NewCategoryButton";
+import { createShortcutTable } from "@/utils/createShortcutTable";
+import TableRow from "@/components/dashboard/TableRow";
+import NewShortcutButton from "@/components/dashboard/NewShortcutButton";
+import NewCategoryButton from "@/components/dashboard/NewCategoryButton";
 import { useRouter } from "next/navigation";
-import LoadingSpinner from "./LoadingSpinner";
-import { useUserShortcuts } from "../_hooks/useUserShortcuts";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useUserShortcuts } from "@/hooks/useUserShortcuts";
 
 export default function UserShortcutTable() {
   const router = useRouter();

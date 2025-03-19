@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useUserData } from "../../_hooks/useUserData";
-import { useDropdownMenu } from "../../_hooks/useDropdownMenu";
+import { useUserData } from "@/hooks/useUserData";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 import LoadingSpinner from "../LoadingSpinner";
 
 export default function NavMenu() {

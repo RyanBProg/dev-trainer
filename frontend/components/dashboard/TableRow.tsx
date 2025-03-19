@@ -1,6 +1,6 @@
 import { TShortcut } from "@/utils/types/types";
-import ShortcutKey from "./ShortcutKey";
-import DeleteButton from "./DeleteButton";
+import ShortcutKey from "@/components/dashboard/ShortcutKey";
+import DeleteButton from "@/components/dashboard/DeleteButton";
 
 export default function TableRow({ shortcut }: { shortcut: TShortcut }) {
   return (

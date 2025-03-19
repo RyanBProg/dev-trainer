@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
-import { useUserAdminRequest } from "../../_hooks/useUserAdminRequest";
+import { useUserAdminRequest } from "@/hooks/useUserAdminRequest";
 
 export default function AdminRequest() {
   const [formOpen, setFormOpen] = useState(false);

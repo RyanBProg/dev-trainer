@@ -1,8 +1,8 @@
 "use client";
 
-import Footer from "./_components/navbar/Footer";
-import Navbar from "./_components/navbar/Navbar";
-import ReactQueryProvider from "./_react-query/ReactQueryProvider";
+import Footer from "@/components/dashboard/navbar/Footer";
+import Navbar from "@/components/dashboard/navbar/Navbar";
+import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 
 export default function RootLayout({
   children,

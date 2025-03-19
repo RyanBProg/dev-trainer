@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteUserShortcut } from "../_hooks/useDeleteUserShortcut";
+import { useDeleteUserShortcut } from "@/hooks/useDeleteUserShortcut";
 import toast from "react-hot-toast";
 
 export default function DeleteButton({ shortcutId }: { shortcutId: string }) {

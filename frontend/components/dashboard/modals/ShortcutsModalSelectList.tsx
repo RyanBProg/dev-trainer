@@ -3,10 +3,10 @@
 import { TShortcut } from "@/utils/types/types";
 import { useRouter } from "next/navigation";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
-import { useShortcutsOfType } from "../../_hooks/useShortcutsOfType";
-import LoadingSpinner from "../LoadingSpinner";
+import { useShortcutsOfType } from "@/hooks/useShortcutsOfType";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
 import toast from "react-hot-toast";
-import { useAddUserShortcuts } from "../../_hooks/useAddUserShortcuts";
+import { useAddUserShortcuts } from "@/hooks/useAddUserShortcuts";
 
 type Props = {
   type: string;

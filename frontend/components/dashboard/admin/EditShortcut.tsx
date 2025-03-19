@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TShortcut } from "@/utils/types/types";
-import UpdateShortcutForm from "./UpdateShortcutForm";
-import ShortcutsModalButtonList from "../../_components/modals/ShortcutsModalButtonList";
-import CategoriesDropdownList from "../../_components/CategoriesDropdownList";
-import ShortcutsModal from "../../_components/modals/ShortcutsModal";
-import LoadingSpinner from "../../_components/LoadingSpinner";
-import { useCategoryDropdownMenu } from "../../_hooks/useCategoryDropdownMenu";
-import { useShortcutCategories } from "../../_hooks/useShortcutCategories";
+import UpdateShortcutForm from "@/components/dashboard/admin/UpdateShortcutForm";
+import ShortcutsModalButtonList from "@/components/dashboard/modals/ShortcutsModalButtonList";
+import CategoriesDropdownList from "@/components/dashboard/CategoriesDropdownList";
+import ShortcutsModal from "@/components/dashboard/modals/ShortcutsModal";
+import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
+import { useCategoryDropdownMenu } from "@/hooks/useCategoryDropdownMenu";
+import { useShortcutCategories } from "@/hooks/useShortcutCategories";
 
 export default function EditShortcut() {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,4 +1,4 @@
-import UserShortcutTable from "./_components/UserShortcutTable";
+import UserShortcutTable from "@/components/dashboard/UserShortcutTable";
 
 export default function Dashboard() {
   return (
