@@ -77,7 +77,9 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
     const parsedData = signinSchema.parse(req.body);
     const { email, password } = parsedData;
     console.log("2");
-    const user = await UserModel.findOne({ email: email.toLowerCase() }).lean();
+    const user = await UserModel.findOne({ email: email.toLowerCase() })
+      .lean()
+      .setOptions({ sanitizeFilter: true });
     if (!user) {
       res.status(400).json({ error: "Invalid login details" });
       return;

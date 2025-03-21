@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
 import cors from "cors";
 import connectToDB from "./db/connectToDB";
-import rateLimit from "express-rate-limit";
+import { appRequestLimiter } from "./utils/rateLimits";
 
 const app: Express = express();
 dotenv.config();
@@ -24,14 +24,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Handle preflight requests
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: "Too many requests, please try again later.",
-  headers: true,
-});
-app.use(limiter);
-
+app.use(appRequestLimiter);
 app.use(express.json());
 app.use(cookieParser());
 
