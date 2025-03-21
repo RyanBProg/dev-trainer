@@ -73,24 +73,31 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   res
 ) => {
   try {
-    console.log("1");
     const parsedData = signinSchema.parse(req.body);
     const { email, password } = parsedData;
-    console.log("2");
+
     const user = await UserModel.findOne({ email: email.toLowerCase() })
       .lean()
       .setOptions({ sanitizeFilter: true });
     if (!user) {
-      res.status(400).json({ error: "Invalid login details" });
+      res.status(400).json({
+        message: "Email or password is incorrect",
+        code: "AUTH_INVALID_CREDENTIALS",
+        status: 400,
+      });
       return;
     }
-    console.log("3");
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      res.status(400).json({ error: "Invalid login details" });
+      res.status(400).json({
+        message: "Email or password is incorrect",
+        code: "AUTH_INVALID_CREDENTIALS",
+        status: 400,
+      });
       return;
     }
-    console.log("4");
+
     const accessToken = generateAccessToken(
       user._id.toString(),
       user.isAdmin,
@@ -102,10 +109,10 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       user.tokenVersion,
       res
     ) as string;
-    console.log("5");
+
     setTokenCookie(res, "accessToken", accessToken);
     setTokenCookie(res, "refreshToken", refreshToken);
-    console.log("6");
+
     res.status(200).json({
       fullName: user.fullName,
       isAdmin: user.isAdmin,

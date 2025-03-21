@@ -16,6 +16,7 @@ export default function Login() {
 
   async function login(email: string, password: string) {
     setIsLoading(true);
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/login`,
@@ -27,24 +28,18 @@ export default function Login() {
         }
       );
 
-      if (!res.ok) {
-        throw new Error(
-          `Failed to login user: HTTP ${res.status} ${res.statusText}`
-        );
-      }
+      const data = await res.json();
 
-      const resJson = await res.json();
-      if (resJson.error) {
-        throw new Error(resJson.error);
+      if (!res.ok) {
+        throw new Error(data.message || "An error occurred during login");
       }
 
       setIsLoading(false);
       router.push("/dashboard");
     } catch (error) {
-      toast.error("Failed to Login");
-      console.log(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to login";
+      toast.error(message);
       setIsLoading(false);
     }
   }
