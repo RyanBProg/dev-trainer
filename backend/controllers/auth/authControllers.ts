@@ -21,14 +21,32 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   res
 ) => {
   try {
-    const parsedData = userSignupSchema.parse(req.body);
-    const normalisedData = normaliseRequestBody(parsedData);
+    // zod validation
+    const parsedResult = userSignupSchema.safeParse(req.body);
+    if (!parsedResult.success) {
+      res.status(422).json({
+        message:
+          parsedResult.error.errors[0]?.message ||
+          "Invalid sign up input field(s)",
+        code: "INVALID_REQUEST_DATA",
+        status: 422,
+      });
+      return;
+    }
+
+    const normalisedData = normaliseRequestBody(parsedResult.data);
     const { fullName, email, password } = normalisedData;
 
     // check if the user already exists
-    const existingUser = await UserModel.findOne({ email }).lean();
+    const existingUser = await UserModel.findOne({ email })
+      .lean()
+      .setOptions({ sanitizeFilter: true });
     if (existingUser) {
-      res.status(400).json({ error: "Email already exists" });
+      res.status(409).json({
+        message: "User email already exists",
+        code: "USER_EMAIL_ALREADY_EXISTS",
+        status: 409,
+      });
       return;
     }
 
@@ -61,7 +79,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     res.status(201).json({
       fullName: savedUser.fullName,
       isAdmin: savedUser.isAdmin,
-      message: "Signed in successfully",
+      message: "Signed up successfully",
     });
   } catch (error) {
     handleControllerError(error, res, "signup");
@@ -73,27 +91,39 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   res
 ) => {
   try {
-    const parsedData = signinSchema.parse(req.body);
-    const { email, password } = parsedData;
+    // zod validation
+    const parsedResult = signinSchema.safeParse(req.body);
+    if (!parsedResult.success) {
+      res.status(422).json({
+        message:
+          parsedResult.error.errors[0]?.message ||
+          "Invalid login input field(s)",
+        code: "INVALID_REQUEST_DATA",
+        status: 422,
+      });
+      return;
+    }
+
+    const { email, password } = parsedResult.data;
 
     const user = await UserModel.findOne({ email: email.toLowerCase() })
       .lean()
       .setOptions({ sanitizeFilter: true });
     if (!user) {
-      res.status(400).json({
+      res.status(401).json({
         message: "Email or password is incorrect",
         code: "AUTH_INVALID_CREDENTIALS",
-        status: 400,
+        status: 401,
       });
       return;
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      res.status(400).json({
+      res.status(401).json({
         message: "Email or password is incorrect",
         code: "AUTH_INVALID_CREDENTIALS",
-        status: 400,
+        status: 401,
       });
       return;
     }

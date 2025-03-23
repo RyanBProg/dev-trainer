@@ -23,6 +23,7 @@ export default function Signup() {
 
   async function signup(signupData: TUserSignup) {
     setIsLoading(true);
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/signup`,
@@ -39,24 +40,18 @@ export default function Signup() {
         }
       );
 
-      if (!res.ok) {
-        throw new Error(
-          `Failed to signup user: HTTP ${res.status} ${res.statusText}`
-        );
-      }
+      const data = await res.json();
 
-      const resJson = await res.json();
-      if (resJson.error) {
-        throw new Error(resJson.error);
+      if (!res.ok) {
+        throw new Error(data.message || "An error occurred during sign up");
       }
 
       setIsLoading(false);
       router.push("/dashboard");
     } catch (error) {
-      toast.error("Failed to SignUp");
-      console.log(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
+      const message =
+        error instanceof Error ? error.message : "Failed to sign up";
+      toast.error(message);
       setIsLoading(false);
     }
   }
