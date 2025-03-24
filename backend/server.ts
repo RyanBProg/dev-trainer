@@ -5,12 +5,25 @@ import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
 import cors from "cors";
+import helmet from "helmet";
 import connectToDB from "./db/connectToDB";
 import { appRequestLimiter } from "./utils/rateLimits";
 
 const app: Express = express();
 dotenv.config();
 const PORT = process.env.PORT || 4040;
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", process.env.FRONTEND_URL!],
+      },
+    },
+  })
+);
 
 // CORS setup
 const corsOptions = {
