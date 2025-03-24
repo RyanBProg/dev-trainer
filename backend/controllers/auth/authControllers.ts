@@ -63,18 +63,29 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
 
     const accessToken = generateAccessToken(
       savedUser._id.toString(),
-      savedUser.isAdmin,
+      savedUser.isAdmin
+    );
+    if (accessToken.error || !accessToken.token) {
       res
-    ) as string;
+        .status(500)
+        .json({ error: accessToken.error || "Internal server error" });
+      return;
+    }
+
     const refreshToken = generateRefreshToken(
       savedUser._id.toString(),
       savedUser.isAdmin,
-      savedUser.tokenVersion,
+      savedUser.tokenVersion
+    );
+    if (refreshToken.error || !refreshToken.token) {
       res
-    ) as string;
+        .status(500)
+        .json({ error: refreshToken.error || "Internal server error" });
+      return;
+    }
 
-    setTokenCookie(res, "accessToken", accessToken);
-    setTokenCookie(res, "refreshToken", refreshToken);
+    setTokenCookie(res, "accessToken", accessToken.token);
+    setTokenCookie(res, "refreshToken", refreshToken.token);
 
     res.status(201).json({
       fullName: savedUser.fullName,
@@ -128,20 +139,28 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    const accessToken = generateAccessToken(
-      user._id.toString(),
-      user.isAdmin,
+    const accessToken = generateAccessToken(user._id.toString(), user.isAdmin);
+    if (accessToken.error || !accessToken.token) {
       res
-    ) as string;
+        .status(500)
+        .json({ error: accessToken.error || "Internal server error" });
+      return;
+    }
+
     const refreshToken = generateRefreshToken(
       user._id.toString(),
       user.isAdmin,
-      user.tokenVersion,
+      user.tokenVersion
+    );
+    if (refreshToken.error || !refreshToken.token) {
       res
-    ) as string;
+        .status(500)
+        .json({ error: refreshToken.error || "Internal server error" });
+      return;
+    }
 
-    setTokenCookie(res, "accessToken", accessToken);
-    setTokenCookie(res, "refreshToken", refreshToken);
+    setTokenCookie(res, "accessToken", accessToken.token);
+    setTokenCookie(res, "refreshToken", refreshToken.token);
 
     res.status(200).json({
       fullName: user.fullName,

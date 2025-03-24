@@ -58,19 +58,16 @@ export async function authenticateTokens(
       // create new access token
       const accessToken = generateAccessToken(
         refreshDecoded.userId,
-        refreshDecoded.isAdmin,
+        refreshDecoded.isAdmin
+      );
+      if (accessToken.error || !accessToken.token) {
         res
-      ) as string;
-      if (!accessToken) {
-        console.log(
-          "[server] authenticateTokens: failed to generate access token"
-        );
-        res.status(500).json({ error: "Internal server error" });
+          .status(500)
+          .json({ error: accessToken.error || "Internal server error" });
         return;
       }
 
-      // set acces token in cookie
-      setTokenCookie(res, "accessToken", accessToken);
+      setTokenCookie(res, "accessToken", accessToken.token);
 
       // attach user to the request
       req.user = {
