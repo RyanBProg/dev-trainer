@@ -15,6 +15,7 @@ import {
   generateRefreshToken,
 } from "../../utils/generateTokens";
 import { setTokenCookie } from "../../utils/setTokenCookie";
+import { env } from "../../zod/envSchema";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -176,15 +177,15 @@ export const logout: RequestHandler = async (_, res) => {
   try {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 
@@ -197,7 +198,7 @@ export const logout: RequestHandler = async (_, res) => {
 export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
   try {
     const { adminPassword } = req.body;
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    if (adminPassword !== env.ADMIN_PASSWORD) {
       res.status(400).json({ error: "Invalid admin password" });
       return;
     }
@@ -245,15 +246,15 @@ export const logOutOnAllDevices = async (
 
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 

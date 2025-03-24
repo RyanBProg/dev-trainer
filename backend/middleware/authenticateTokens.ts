@@ -5,6 +5,7 @@ import { handleControllerError } from "../utils/handleControllerError";
 import { generateAccessToken } from "../utils/generateTokens";
 import { setTokenCookie } from "../utils/setTokenCookie";
 import UserModel from "../db/models/UserModel";
+import { env } from "../zod/envSchema";
 
 export async function authenticateTokens(
   req: TUserTokenRequest,
@@ -12,14 +13,14 @@ export async function authenticateTokens(
   next: NextFunction
 ) {
   try {
-    const accessSecretKey = process.env.ACCESS_SECRET_KEY;
+    const accessSecretKey = env.ACCESS_SECRET_KEY;
     if (!accessSecretKey) {
       console.log("[server] generateAccessToken: No ACCESS_SECRET_KEY found");
       res.status(500).json({ error: "Internal server error" });
       return;
     }
 
-    const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
+    const refreshSecretKey = env.REFRESH_SECRET_KEY;
     if (!refreshSecretKey) {
       console.log("[server] generateAccessToken: No REFRESH_SECRET_KEY found");
       res.status(500).json({ error: "Internal server error" });

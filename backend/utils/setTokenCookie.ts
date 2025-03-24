@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { env } from "../zod/envSchema";
 
 type TokenName = "accessToken" | "refreshToken";
 
@@ -14,8 +15,8 @@ export function setTokenCookie(
     maxAge:
       tokenName === "accessToken" ? maxAgeAccessToken : maxAgeRefreshToken,
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production" ? true : false,
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    secure: env.NODE_ENV === "production" ? true : false,
     path: "/",
   });
 }

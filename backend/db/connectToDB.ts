@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import { env } from "../zod/envSchema";
 
 async function connectToDB() {
   try {
-    const mongoUrl = process.env.MONGO_URL;
+    const mongoUrl = env.MONGO_URL;
     if (!mongoUrl) throw new Error("No mongodb url found in .env");
 
     await mongoose.connect(mongoUrl);

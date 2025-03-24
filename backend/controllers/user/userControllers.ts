@@ -4,6 +4,7 @@ import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 import ShortcutModel from "../../db/models/ShortcutModel";
 import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
+import { env } from "../../zod/envSchema";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -218,15 +219,15 @@ export const deleteUser = async (req: TUserTokenRequest, res: Response) => {
 
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      secure: env.NODE_ENV === "production" ? true : false,
       path: "/",
     });
 

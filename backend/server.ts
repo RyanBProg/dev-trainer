@@ -1,5 +1,4 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+import express, { Express } from "express";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
@@ -8,10 +7,10 @@ import cors from "cors";
 import helmet from "helmet";
 import connectToDB from "./db/connectToDB";
 import { appRequestLimiter } from "./utils/rateLimits";
+import { env } from "./zod/envSchema";
 
 const app: Express = express();
-dotenv.config();
-const PORT = process.env.PORT || 4040;
+const PORT = env.PORT;
 
 app.use(
   helmet({
@@ -19,7 +18,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        connectSrc: ["'self'", process.env.FRONTEND_URL!],
+        connectSrc: ["'self'", env.FRONTEND_URL],
       },
     },
   })
@@ -27,10 +26,7 @@ app.use(
 
 // CORS setup
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.BACKEND_URL
-      : process.env.FRONTEND_URL,
+  origin: env.NODE_ENV === "production" ? env.BACKEND_URL : env.FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
@@ -46,11 +42,6 @@ connectToDB();
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
-
-app.get("/", (req: Request, res: Response) => {
-  console.log("1");
-  res.status(200).send("Welcome");
-});
 
 app.listen(PORT, () => {
   console.log(`[server] Server running on http://localhost:${PORT}`);
