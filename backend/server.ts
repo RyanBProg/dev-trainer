@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, Response } from "express";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
@@ -42,6 +42,10 @@ connectToDB();
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
+
+app.get("/", (_, res: Response) => {
+  res.status(200).send("Welcome to the Dev Trainer API");
+});
 
 app.listen(PORT, () => {
   console.log(`[server] Server running on http://localhost:${PORT}`);
