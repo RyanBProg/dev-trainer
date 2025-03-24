@@ -12,6 +12,9 @@ import { env } from "./zod/envSchema";
 const app: Express = express();
 const PORT = env.PORT;
 
+// Only trust one proxy (Vercel)
+app.set("trust proxy", 1);
+
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
