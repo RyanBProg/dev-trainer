@@ -66,27 +66,15 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       savedUser._id.toString(),
       savedUser.isAdmin
     );
-    if (accessToken.error || !accessToken.token) {
-      res
-        .status(500)
-        .json({ error: accessToken.error || "Internal server error" });
-      return;
-    }
 
     const refreshToken = generateRefreshToken(
       savedUser._id.toString(),
       savedUser.isAdmin,
       savedUser.tokenVersion
     );
-    if (refreshToken.error || !refreshToken.token) {
-      res
-        .status(500)
-        .json({ error: refreshToken.error || "Internal server error" });
-      return;
-    }
 
-    setTokenCookie(res, "accessToken", accessToken.token);
-    setTokenCookie(res, "refreshToken", refreshToken.token);
+    setTokenCookie(res, "accessToken", accessToken);
+    setTokenCookie(res, "refreshToken", refreshToken);
 
     res.status(201).json({
       fullName: savedUser.fullName,
@@ -141,27 +129,15 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
     }
 
     const accessToken = generateAccessToken(user._id.toString(), user.isAdmin);
-    if (accessToken.error || !accessToken.token) {
-      res
-        .status(500)
-        .json({ error: accessToken.error || "Internal server error" });
-      return;
-    }
 
     const refreshToken = generateRefreshToken(
       user._id.toString(),
       user.isAdmin,
       user.tokenVersion
     );
-    if (refreshToken.error || !refreshToken.token) {
-      res
-        .status(500)
-        .json({ error: refreshToken.error || "Internal server error" });
-      return;
-    }
 
-    setTokenCookie(res, "accessToken", accessToken.token);
-    setTokenCookie(res, "refreshToken", refreshToken.token);
+    setTokenCookie(res, "accessToken", accessToken);
+    setTokenCookie(res, "refreshToken", refreshToken);
 
     res.status(200).json({
       fullName: user.fullName,

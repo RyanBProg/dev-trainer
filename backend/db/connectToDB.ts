@@ -3,10 +3,7 @@ import { env } from "../zod/envSchema";
 
 async function connectToDB() {
   try {
-    const mongoUrl = env.MONGO_URL;
-    if (!mongoUrl) throw new Error("No mongodb url found in .env");
-
-    await mongoose.connect(mongoUrl);
+    await mongoose.connect(env.MONGO_URL);
     console.log("[server] Connected to MongoDB");
   } catch (error) {
     if (error instanceof Error) {

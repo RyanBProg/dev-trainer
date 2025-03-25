@@ -13,20 +13,6 @@ export async function authenticateTokens(
   next: NextFunction
 ) {
   try {
-    const accessSecretKey = env.ACCESS_SECRET_KEY;
-    if (!accessSecretKey) {
-      console.log("[server] generateAccessToken: No ACCESS_SECRET_KEY found");
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-
-    const refreshSecretKey = env.REFRESH_SECRET_KEY;
-    if (!refreshSecretKey) {
-      console.log("[server] generateAccessToken: No REFRESH_SECRET_KEY found");
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-
     // check for an access token on the request
     const accessToken = req.cookies.accessToken;
 
@@ -41,7 +27,7 @@ export async function authenticateTokens(
       // check that refresh token is valid
       const refreshDecoded = jwt.verify(
         refreshToken,
-        refreshSecretKey
+        env.REFRESH_SECRET_KEY
       ) as JwtPayload;
       if (!refreshDecoded || !refreshDecoded.userId) {
         res.status(403).json({ error: "Unauthorized - Invalid Token" });
@@ -57,18 +43,12 @@ export async function authenticateTokens(
       }
 
       // create new access token
-      const accessToken = generateAccessToken(
+      const newAccessToken = generateAccessToken(
         refreshDecoded.userId,
         refreshDecoded.isAdmin
       );
-      if (accessToken.error || !accessToken.token) {
-        res
-          .status(500)
-          .json({ error: accessToken.error || "Internal server error" });
-        return;
-      }
 
-      setTokenCookie(res, "accessToken", accessToken.token);
+      setTokenCookie(res, "accessToken", newAccessToken);
 
       // attach user to the request
       req.user = {
@@ -80,7 +60,7 @@ export async function authenticateTokens(
     } else {
       const accessDecoded = jwt.verify(
         accessToken,
-        accessSecretKey
+        env.ACCESS_SECRET_KEY
       ) as JwtPayload;
       if (!accessDecoded || !accessDecoded.userId) {
         res.status(403).json({ error: "Unauthorized - Invalid Token" });
