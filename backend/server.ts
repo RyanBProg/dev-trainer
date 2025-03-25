@@ -17,6 +17,9 @@ app.set("trust proxy", 1);
 
 app.use(
   helmet({
+    noSniff: true,
+    hidePoweredBy: true,
+    xssFilter: true,
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: {
       directives: {

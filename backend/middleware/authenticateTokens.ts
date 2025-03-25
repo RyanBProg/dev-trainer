@@ -25,10 +25,9 @@ export async function authenticateTokens(
       }
 
       // check that refresh token is valid
-      const refreshDecoded = jwt.verify(
-        refreshToken,
-        env.REFRESH_SECRET_KEY
-      ) as JwtPayload;
+      const refreshDecoded = jwt.verify(refreshToken, env.REFRESH_SECRET_KEY, {
+        algorithms: ["HS256"],
+      }) as JwtPayload;
       if (!refreshDecoded || !refreshDecoded.userId) {
         res.status(403).json({ error: "Unauthorized - Invalid Token" });
         return;
@@ -58,10 +57,9 @@ export async function authenticateTokens(
 
       next();
     } else {
-      const accessDecoded = jwt.verify(
-        accessToken,
-        env.ACCESS_SECRET_KEY
-      ) as JwtPayload;
+      const accessDecoded = jwt.verify(accessToken, env.ACCESS_SECRET_KEY, {
+        algorithms: ["HS256"],
+      }) as JwtPayload;
       if (!accessDecoded || !accessDecoded.userId) {
         res.status(403).json({ error: "Unauthorized - Invalid Token" });
         return;
