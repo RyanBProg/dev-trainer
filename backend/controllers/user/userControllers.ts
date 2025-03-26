@@ -5,6 +5,7 @@ import ShortcutModel from "../../db/models/ShortcutModel";
 import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
 import { env } from "../../zod/envSchema";
+import { shortcutIdSchema } from "../../zod/shortcutSchema";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -14,7 +15,9 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
       .select("-password -custom -_id -__v -profilePicture")
       .lean();
     if (!userData) {
-      res.status(400).json({ error: "User not found" });
+      res
+        .status(404)
+        .json({ message: "User not found", code: "USER_NOT_FOUND" });
       return;
     }
 
@@ -29,30 +32,40 @@ export const addUserShortcuts = async (
   res: Response
 ) => {
   try {
-    const shortcutIds = req.body.shortcutIds;
-
-    if (!Array.isArray(shortcutIds) || shortcutIds.length === 0) {
-      res.status(400).json({ error: "Shortcut IDs are required" });
+    const parsedShortcutIds = shortcutIdSchema.safeParse(req.body);
+    if (!parsedShortcutIds.success) {
+      res.status(400).json({
+        message:
+          parsedShortcutIds.error.errors[0]?.message || "Invalid shortcut IDs",
+        code: "INVALID_SHORTCUT_IDS",
+      });
       return;
     }
 
     const userId = req.user?.userId;
-    const user = await UserModel.findById(userId).select("custom.shortcuts");
 
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-
-    await UserModel.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       {
-        $addToSet: { "custom.shortcuts": { $each: shortcutIds } },
+        $addToSet: {
+          "custom.shortcuts": { $each: parsedShortcutIds.data.shortcutIds },
+        },
       },
       { new: true }
     );
 
-    res.status(200).json({ message: "User shortcuts updated" });
+    if (!updatedUser) {
+      res.status(404).json({
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "User shortcuts updated",
+      code: "USER_SHORTCUTS_UPDATED",
+    });
   } catch (error) {
     handleControllerError(error, res, "addUserShortcuts");
   }

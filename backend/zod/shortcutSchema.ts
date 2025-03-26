@@ -10,3 +10,7 @@ export const shortcutSchema = z.object({
     .nonempty("At least one key is required"),
   type: z.string(),
 });
+
+export const shortcutIdSchema = z.object({
+  shortcutIds: z.array(z.string()).min(1, "At least one id is required"),
+});
