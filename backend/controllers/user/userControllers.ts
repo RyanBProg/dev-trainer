@@ -1,11 +1,12 @@
 import { Response } from "express";
+import { Types } from "mongoose";
 import UserModel from "../../db/models/UserModel";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 import ShortcutModel from "../../db/models/ShortcutModel";
 import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
 import { env } from "../../zod/envSchema";
-import { shortcutIdSchema } from "../../zod/shortcutSchema";
+import { shortcutIdSchema, shortcutIdsSchema } from "../../zod/shortcutSchema";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -32,7 +33,7 @@ export const addUserShortcuts = async (
   res: Response
 ) => {
   try {
-    const parsedShortcutIds = shortcutIdSchema.safeParse(req.body);
+    const parsedShortcutIds = shortcutIdsSchema.safeParse(req.body);
     if (!parsedShortcutIds.success) {
       res.status(400).json({
         message:
@@ -76,26 +77,28 @@ export const deleteUserShortcut = async (
   res: Response
 ) => {
   try {
-    const shortcutId = req.params.shortcutId;
-    if (!shortcutId) {
-      res.status(400).json({ error: "Shortcut ID is required" });
+    const parsedShortcutId = shortcutIdSchema.safeParse(req.params.shortcutId);
+    if (!parsedShortcutId.success) {
+      res.status(400).json({
+        message:
+          parsedShortcutId.error.errors[0]?.message || "Invalid shortcut ID",
+        code: "INVALID_SHORTCUT_ID",
+      });
       return;
     }
 
     const userId = req.user?.userId;
-    if (!userId) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
 
     const updatedUser = await UserModel.findOneAndUpdate(
       { _id: userId },
-      { $pull: { "custom.shortcuts": shortcutId } },
+      { $pull: { "custom.shortcuts": parsedShortcutId.data } },
       { new: true, runValidators: true }
     ).select("-password");
 
     if (!updatedUser) {
-      res.status(400).json({ error: "User not found" });
+      res
+        .status(404)
+        .json({ message: "User not found", code: "USER_NOT_FOUND" });
       return;
     }
 
@@ -112,21 +115,42 @@ export const getUserShortcuts = async (
   try {
     const userId = req.user?.userId;
 
-    const userCustom = await UserModel.findOne({ _id: userId })
-      .select("custom.shortcuts")
-      .lean();
-    if (!userCustom) {
-      res.status(400).json({ error: "User not found" });
+    const userWithShortcuts = await UserModel.aggregate([
+      { $match: { _id: new Types.ObjectId(userId) } },
+      {
+        $unwind: {
+          path: "$custom.shortcuts",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "shortcuts",
+          localField: "custom.shortcuts",
+          foreignField: "_id",
+          as: "shortcutDetails",
+        },
+      },
+      {
+        $unwind: { path: "$shortcutDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          shortcuts: { $push: "$shortcutDetails" },
+        },
+      },
+    ]);
+
+    if (!userWithShortcuts.length) {
+      res.status(404).json({
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
       return;
     }
 
-    const shortcutIds = userCustom.custom?.shortcuts || [];
-
-    const shortcuts = await ShortcutModel.find({
-      _id: { $in: shortcutIds },
-    }).lean();
-
-    res.status(200).json(shortcuts);
+    res.status(200).json(userWithShortcuts[0].shortcuts || []);
   } catch (error) {
     handleControllerError(error, res, "getUserShortcuts");
   }

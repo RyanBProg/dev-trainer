@@ -202,10 +202,9 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
       { new: true, runValidators: true }
     ).lean();
     if (!user) {
-      console.log("[server] makeUserAdmin: User cannot be found");
-      res.status(500).json({
-        message: "Internal server error",
-        code: "INTERNAL_SERVER_ERROR",
+      res.status(404).json({
+        message: "User not found",
+        code: "USER_NOT_FOUND",
       });
       return;
     }
