@@ -2,7 +2,6 @@ import { Response } from "express";
 import { Types } from "mongoose";
 import UserModel from "../../db/models/UserModel";
 import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
-import ShortcutModel from "../../db/models/ShortcutModel";
 import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
 import { env } from "../../zod/envSchema";
@@ -297,7 +296,7 @@ export const deleteUser = async (req: TUserTokenRequest, res: Response) => {
       path: "/",
     });
 
-    res.status(200).json({ message: "User Deleted" });
+    res.status(200).json({ message: "User Deleted", code: "USER_DELETED" });
   } catch (error) {
     handleControllerError(error, res, "deleteUser");
   }
