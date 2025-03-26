@@ -20,7 +20,8 @@ export async function authenticateTokens(
       // check for a refresh token on the request
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        res.status(401).json({ error: "Unauthorized - No Refresh Token" });
+        console.log("[server] No Refresh Token Provided");
+        res.status(401).json({ error: "Unauthorized - No Token Provided" });
         return;
       }
 
@@ -28,16 +29,23 @@ export async function authenticateTokens(
       const refreshDecoded = jwt.verify(refreshToken, env.REFRESH_SECRET_KEY, {
         algorithms: ["HS256"],
       }) as JwtPayload;
-      if (!refreshDecoded || !refreshDecoded.userId) {
-        res.status(403).json({ error: "Unauthorized - Invalid Token" });
+      if (!refreshDecoded.userId) {
+        console.log("[server] Invalid Refresh Token Credentials");
+        res.status(401).json({ error: "Unauthorized - Invalid Token" });
         return;
       }
 
       // check refresh token matches version in db
       const user = await UserModel.findById(refreshDecoded.userId).lean();
-      if (!user || user.tokenVersion !== refreshDecoded.tokenVersion) {
-        console.log("[server] User could not be found");
-        res.status(403).json({ error: "Invalid refresh token" });
+      if (!user) {
+        console.log("[server] User could not be found in the database");
+        res.status(401).json({ error: "Unauthorized - Invalid Token" });
+        return;
+      }
+
+      if (user.tokenVersion !== refreshDecoded.tokenVersion) {
+        console.log("[server] Invalid Refresh Token Version");
+        res.status(401).json({ error: "Unauthorized - Invalid Token" });
         return;
       }
 
@@ -60,8 +68,9 @@ export async function authenticateTokens(
       const accessDecoded = jwt.verify(accessToken, env.ACCESS_SECRET_KEY, {
         algorithms: ["HS256"],
       }) as JwtPayload;
-      if (!accessDecoded || !accessDecoded.userId) {
-        res.status(403).json({ error: "Unauthorized - Invalid Token" });
+      if (!accessDecoded.userId) {
+        console.log("[server] Invalid Access Token Credentials");
+        res.status(401).json({ error: "Unauthorized - Invalid Token" });
         return;
       }
 
