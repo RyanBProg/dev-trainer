@@ -16,6 +16,7 @@ import {
 } from "../../utils/generateTokens";
 import { setTokenCookie } from "../../utils/setTokenCookie";
 import { env } from "../../zod/envSchema";
+import { adminPasswordSchema } from "../../zod/adminRequestSchema";
 
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
@@ -29,8 +30,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
         message:
           parsedResult.error.errors[0]?.message ||
           "Invalid sign up input field(s)",
-        code: "INVALID_REQUEST_DATA",
-        status: 422,
+        code: "AUTH_INVALID_REQUEST_DATA",
       });
       return;
     }
@@ -45,8 +45,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     if (existingUser) {
       res.status(409).json({
         message: "User email already exists",
-        code: "USER_EMAIL_ALREADY_EXISTS",
-        status: 409,
+        code: "AUTH_USER_EMAIL_ALREADY_EXISTS",
       });
       return;
     }
@@ -80,6 +79,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       fullName: savedUser.fullName,
       isAdmin: savedUser.isAdmin,
       message: "Signed up successfully",
+      code: "AUTH_USER_SIGNED_UP",
     });
   } catch (error) {
     handleControllerError(error, res, "signup");
@@ -98,8 +98,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
         message:
           parsedResult.error.errors[0]?.message ||
           "Invalid login input field(s)",
-        code: "INVALID_REQUEST_DATA",
-        status: 422,
+        code: "AUTH_INVALID_REQUEST_DATA",
       });
       return;
     }
@@ -113,7 +112,6 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       res.status(401).json({
         message: "Email or password is incorrect",
         code: "AUTH_INVALID_CREDENTIALS",
-        status: 401,
       });
       return;
     }
@@ -123,7 +121,6 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       res.status(401).json({
         message: "Email or password is incorrect",
         code: "AUTH_INVALID_CREDENTIALS",
-        status: 401,
       });
       return;
     }
@@ -143,6 +140,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       fullName: user.fullName,
       isAdmin: user.isAdmin,
       message: "Logged in successfully",
+      code: "AUTH_USER_LOGGED_IN",
     });
   } catch (error) {
     handleControllerError(error, res, "login");
@@ -165,7 +163,10 @@ export const logout: RequestHandler = async (_, res) => {
       path: "/",
     });
 
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({
+      message: "Logged out successfully",
+      code: "AUTH_USER_LOGGED_OUT",
+    });
   } catch (error) {
     handleControllerError(error, res, "logout");
   }
@@ -173,9 +174,23 @@ export const logout: RequestHandler = async (_, res) => {
 
 export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
   try {
-    const { adminPassword } = req.body;
+    const parsedResult = adminPasswordSchema.safeParse(req.body);
+    if (!parsedResult.success) {
+      res.status(422).json({
+        message:
+          parsedResult.error.errors[0]?.message ||
+          "Invalid admin password format",
+        code: "AUTH_INVALID_ADMIN_PASSWORD_FORMAT",
+      });
+      return;
+    }
+
+    const { adminPassword } = parsedResult.data;
     if (adminPassword !== env.ADMIN_PASSWORD) {
-      res.status(400).json({ error: "Invalid admin password" });
+      res.status(403).json({
+        message: "Invalid admin password",
+        code: "AUTH_INVALID_ADMIN_PASSWORD",
+      });
       return;
     }
 
@@ -188,7 +203,10 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
     ).lean();
     if (!user) {
       console.log("[server] makeUserAdmin: User cannot be found");
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({
+        message: "Internal server error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
       return;
     }
 
@@ -196,6 +214,7 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
       fullName: user.fullName,
       isAdmin: user.isAdmin,
       message: "User now admin",
+      code: "AUTH_USER_NOW_ADMIN",
     });
   } catch (error) {
     handleControllerError(error, res, "makeUserAdmin");
@@ -216,7 +235,9 @@ export const logOutOnAllDevices = async (
     );
 
     if (!updatedUser) {
-      res.status(404).json({ error: "User not found" });
+      res
+        .status(404)
+        .json({ message: "User not found", code: "USER_NOT_FOUND" });
       return;
     }
 
@@ -234,7 +255,10 @@ export const logOutOnAllDevices = async (
       path: "/",
     });
 
-    res.status(200).json({ message: "Logged out on all devices successfully" });
+    res.status(200).json({
+      message: "Logged out on all devices successfully",
+      code: "AUTH_LOGGED_OUT_ON_ALL_DEVICES",
+    });
   } catch (error) {
     handleControllerError(error, res, "logOutOnAllDevices");
   }
