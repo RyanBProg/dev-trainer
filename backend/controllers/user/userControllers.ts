@@ -7,6 +7,7 @@ import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
 import { env } from "../../zod/envSchema";
 import { shortcutIdSchema, shortcutIdsSchema } from "../../zod/shortcutSchema";
+import { userFullNameSchema } from "../../zod/userSignupSchema";
 
 export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   try {
@@ -165,7 +166,10 @@ export const addProfilePicture = async (
 
     // Ensure a file is uploaded
     if (!req.file) {
-      res.status(400).json({ error: "No image file uploaded" });
+      res.status(400).json({
+        message: "No image file uploaded",
+        code: "NO_IMAGE_FILE_UPLOADED",
+      });
       return;
     }
 
@@ -176,7 +180,7 @@ export const addProfilePicture = async (
       .toBuffer();
 
     // Update the user's profile picture in the database
-    await UserModel.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       {
         profilePicture: {
@@ -187,7 +191,18 @@ export const addProfilePicture = async (
       { new: true, runValidators: true }
     );
 
-    res.status(200).json({ message: "Profile picture updated successfully" });
+    if (!updatedUser) {
+      res.status(404).json({
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Profile picture updated successfully",
+      code: "PROFILE_PICTURE_UPDATED",
+    });
   } catch (error) {
     handleControllerError(error, res, "addProfilePicture");
   }
@@ -204,7 +219,9 @@ export const getUserProfilePicture = async (
       .select("profilePicture")
       .lean();
     if (!userData) {
-      res.status(400).json({ error: "User not found" });
+      res
+        .status(400)
+        .json({ message: "User not found", code: "USER_NOT_FOUND" });
       return;
     }
 
@@ -230,19 +247,31 @@ export const addUserFullName = async (
   try {
     const userId = req.user?.userId;
 
-    if (!req.body.fullName) {
-      res.status(400).json({ error: "No fullName found" });
+    const parsedFullName = userFullNameSchema.safeParse(req.body.fullName);
+    if (!parsedFullName.success) {
+      res.status(400).json({
+        message: parsedFullName.error.errors[0]?.message || "Invalid Full Name",
+        code: "INVALID_FULL_NAME",
+      });
       return;
     }
 
-    // Update the user's fullName in the database
-    const userData = await UserModel.findByIdAndUpdate(
+    // Update the user's Full Name in the database
+    const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      { fullName: req.body.fullName.toLowerCase() },
+      { fullName: parsedFullName.data.toLowerCase() },
       { new: true, runValidators: true }
     );
 
-    res.status(200).json({ userData, message: "fullName Updated" });
+    if (!updatedUser) {
+      res.status(404).json({
+        message: "User not found",
+        code: "USER_NOT_FOUND",
+      });
+      return;
+    }
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     handleControllerError(error, res, "addUserFullName");
   }

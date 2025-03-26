@@ -12,20 +12,15 @@ async function updateFullName(fullName: string) {
       }
     );
 
+    const data = await res.json();
+
     if (!res.ok) {
-      return {
-        error: `Failed to add shortcuts: HTTP ${res.status} ${res.statusText}`,
-      };
+      throw new Error(data.message || "User update failed");
     }
 
-    const data = await res.json();
     return data;
   } catch (error) {
-    return {
-      error: `updateFullName: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
-    };
+    throw error;
   }
 }
 

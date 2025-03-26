@@ -31,7 +31,7 @@ export default function Account() {
 
     const result = fullNameSchema.safeParse({ fullName });
     if (!result.success) {
-      toast.error(result.error.errors[0].message || "Something went wrong");
+      toast.error(result.error.errors[0].message || "User update failed");
       return;
     }
 
@@ -39,8 +39,11 @@ export default function Account() {
       await updateFullNameMutation.mutateAsync(fullName);
       toast.success("Full Name Updated");
     } catch (error) {
-      toast.error("Failed to update Full Name");
-      console.log(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to update Full Name");
+      }
     }
   };
 
