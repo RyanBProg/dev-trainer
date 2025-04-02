@@ -1,9 +1,10 @@
 import { Request, RequestHandler, Response } from "express";
 import ShortcutModel from "../../db/models/ShortcutModel";
-import { shortcutSchema } from "../../zod/shortcutSchema";
+import { queryParamSchema, shortcutSchema } from "../../zod/shortcutSchema";
 import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
 import { checkKeysConflict, normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../../utils/handleControllerError";
+import { Types } from "mongoose";
 
 export const getShortcuts = async (req: Request, res: Response) => {
   try {
@@ -12,9 +13,10 @@ export const getShortcuts = async (req: Request, res: Response) => {
     const limitNumber = parseInt(limit as string, 10);
 
     if (pageNumber < 1 || limitNumber < 1) {
-      res
-        .status(400)
-        .json({ error: "Page and limit must be positive integers" });
+      res.status(400).json({
+        message: "Page and limit must be positive integers",
+        code: "INVALID_PAGE_LIMIT",
+      });
       return;
     }
 
@@ -45,8 +47,10 @@ export const getShortcutTypes = async (_: Request, res: Response) => {
   try {
     const types = await ShortcutModel.distinct("type").lean();
 
-    if (!types || types.length === 0) {
-      res.status(404).json({ error: "No types found" });
+    if (types.length === 0) {
+      res
+        .status(404)
+        .json({ message: "No types found", code: "NO_TYPES_FOUND" });
       return;
     }
 
@@ -59,16 +63,21 @@ export const getShortcutTypes = async (_: Request, res: Response) => {
 export const getShortcutsOfType = async (req: Request, res: Response) => {
   try {
     const type = decodeURIComponent(req.params.type);
-    if (!type) {
-      res.status(400).json({ error: "Type parameter is required" });
+    const result = queryParamSchema.safeParse(type);
+    if (!result.success) {
+      res.status(400).json({
+        message: "Invalid type format",
+        code: "INVALID_TYPE_FORMAT",
+      });
       return;
     }
 
     const shortcuts = await ShortcutModel.find({ type }).lean();
-    if (!shortcuts || shortcuts.length === 0) {
-      res
-        .status(404)
-        .json({ error: "No shortcuts found for the specified type" });
+    if (shortcuts.length === 0) {
+      res.status(404).json({
+        message: "No shortcuts found for the specified type",
+        code: "NO_SHORTCUTS_FOUND",
+      });
       return;
     }
 
@@ -81,11 +90,21 @@ export const getShortcutsOfType = async (req: Request, res: Response) => {
 export const getShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
+
+    if (!Types.ObjectId.isValid(shortcutId)) {
+      res.status(400).json({
+        message: "Invalid shortcut ID format",
+        code: "INVALID_ID_FORMAT",
+      });
+      return;
+    }
     const shortcutData = await ShortcutModel.findOne({
       _id: shortcutId,
     }).lean();
     if (!shortcutData) {
-      res.status(400).json({ error: "Shortcut not found" });
+      res
+        .status(404)
+        .json({ message: "Shortcut not found", code: "SHORTCUT_NOT_FOUND" });
       return;
     }
 
@@ -109,7 +128,10 @@ export const createNewShortcut: RequestHandler<
     // Check for conflicting keys
     const conflict = await checkKeysConflict(keys);
     if (conflict) {
-      res.status(400).json({ error: "Keys matches an existing shortcut" });
+      res.status(400).json({
+        message: "Keys matches an existing shortcut",
+        code: "KEY_CONFLICT",
+      });
       return;
     }
 
@@ -141,7 +163,9 @@ export const updateShortcut: RequestHandler<
       _id: shortcutId,
     }).lean();
     if (!shortcutData) {
-      res.status(400).json({ error: "Shortcut not found" });
+      res
+        .status(404)
+        .json({ message: "Shortcut not found", code: "NOT_FOUND" });
       return;
     }
 
@@ -155,9 +179,10 @@ export const updateShortcut: RequestHandler<
     // Check for conflicting keys, excluding the current shortcut
     const conflict = await checkKeysConflict(keys, shortcutId);
     if (conflict) {
-      res
-        .status(400)
-        .json({ error: "Keys array matches an existing shortcut" });
+      res.status(400).json({
+        message: "Keys array matches an existing shortcut",
+        code: "KEY_CONFLICT",
+      });
       return;
     }
 
@@ -168,7 +193,10 @@ export const updateShortcut: RequestHandler<
       { new: true, runValidators: true }
     ).lean();
     if (!updatedShortcut) {
-      res.status(400).json({ error: "Failed to update the shortcut" });
+      res.status(400).json({
+        message: "Failed to update the shortcut",
+        code: "UPDATE_FAILED",
+      });
       return;
     }
 
@@ -182,15 +210,28 @@ export const updateShortcut: RequestHandler<
 export const deleteShortcut = async (req: Request, res: Response) => {
   try {
     const shortcutId = req.params.id;
-    const result = await ShortcutModel.deleteOne({ _id: shortcutId });
-    if (!result.deletedCount) {
-      res
-        .status(400)
-        .json({ error: "Shortcut ID couldn't be found or deleted" });
+
+    if (!Types.ObjectId.isValid(shortcutId)) {
+      res.status(400).json({
+        message: "Invalid shortcut ID format",
+        code: "INVALID_ID_FORMAT",
+      });
       return;
     }
 
-    res.status(200).json({ message: "Successfully deleted shortcut" });
+    const result = await ShortcutModel.deleteOne({ _id: shortcutId });
+    if (!result.deletedCount) {
+      res.status(404).json({
+        message: "Shortcut ID couldn't be found or deleted",
+        code: "NOT_FOUND",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Successfully deleted shortcut",
+      code: "SHORTCUT_DELETED",
+    });
   } catch (error) {
     handleControllerError(error, res, "deleteShortcut");
   }

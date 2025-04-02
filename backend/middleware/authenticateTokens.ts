@@ -21,7 +21,12 @@ export async function authenticateTokens(
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
         console.log("[server] No Refresh Token Provided");
-        res.status(401).json({ error: "Unauthorized - No Token Provided" });
+        res
+          .status(401)
+          .json({
+            message: "Unauthorized - No Token Provided",
+            code: "AUTH_NO_TOKEN",
+          });
         return;
       }
 
@@ -31,7 +36,12 @@ export async function authenticateTokens(
       }) as JwtPayload;
       if (!refreshDecoded.userId) {
         console.log("[server] Invalid Refresh Token Credentials");
-        res.status(401).json({ error: "Unauthorized - Invalid Token" });
+        res
+          .status(401)
+          .json({
+            message: "Unauthorized - Invalid Token",
+            code: "AUTH_INVALID_TOKEN",
+          });
         return;
       }
 
@@ -39,13 +49,23 @@ export async function authenticateTokens(
       const user = await UserModel.findById(refreshDecoded.userId).lean();
       if (!user) {
         console.log("[server] User could not be found in the database");
-        res.status(401).json({ error: "Unauthorized - Invalid Token" });
+        res
+          .status(401)
+          .json({
+            message: "Unauthorized - Invalid Token",
+            code: "AUTH_INVALID_TOKEN",
+          });
         return;
       }
 
       if (user.tokenVersion !== refreshDecoded.tokenVersion) {
         console.log("[server] Invalid Refresh Token Version");
-        res.status(401).json({ error: "Unauthorized - Invalid Token" });
+        res
+          .status(401)
+          .json({
+            message: "Unauthorized - Invalid Token",
+            code: "AUTH_INVALID_TOKEN",
+          });
         return;
       }
 
@@ -70,7 +90,12 @@ export async function authenticateTokens(
       }) as JwtPayload;
       if (!accessDecoded.userId) {
         console.log("[server] Invalid Access Token Credentials");
-        res.status(401).json({ error: "Unauthorized - Invalid Token" });
+        res
+          .status(401)
+          .json({
+            message: "Unauthorized - Invalid Token",
+            code: "AUTH_INVALID_TOKEN",
+          });
         return;
       }
 
