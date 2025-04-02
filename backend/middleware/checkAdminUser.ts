@@ -10,7 +10,7 @@ export default async function checkAdminUser(
   try {
     // check for a token on the request
     if (!req.user?.isAdmin) {
-      res.status(401).json({ error: "Unauthorized - User is not an admin" });
+      res.status(401).json({ message: "Unauthorized - User is not an admin" });
       return;
     }
 
