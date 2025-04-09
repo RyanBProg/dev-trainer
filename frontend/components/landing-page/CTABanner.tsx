@@ -1,6 +1,8 @@
 import githubIcon from "@/public/assets/icons/github-icon-60x60.svg";
 import linkedinIcon from "@/public/assets/icons/linkedin-icon-60x60.svg";
+import googleIcon from "@/public/assets/icons/googel-icon.png";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function CTABanner() {
   return (
@@ -15,33 +17,31 @@ export default function CTABanner() {
           want to learn. Access a comprehensive database, create a personalized
           list, and boost your productivity.
         </p>
-        <div className="flex gap-5 mt-5">
-          <a href="/login" className="btn btn-primary">
-            Login
-          </a>
-          <a href="/signup" className="btn btn-primary btn-outline">
-            Sign Up
-          </a>
-        </div>
+        <Link
+          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-login`}
+          className="btn btn-primary flex gap-4 mt-5">
+          <Image src={googleIcon} alt="google icon" height={24} width={24} />
+          <span>Get Started</span>
+        </Link>
         <div className="mt-20">
           <span className="font-semibold text-neutral-content uppercase">
             FEATURED IN
           </span>
           <div className="flex flex-wrap gap-8 justify-center items-center text-black mt-5">
-            <a
+            <Link
               href="https://github.com/RyanBProg"
               target="_blank"
               className="btn btn-ghost inline-flex items-center gap-2 h-fit w-fit">
               <Image src={githubIcon} alt="github icon" />
               <span className="font-semibold text-2xl">GitHub</span>
-            </a>
-            <a
+            </Link>
+            <Link
               href="https://www.linkedin.com/in/ryan-bowler-601919170/"
               target="_blank"
               className="btn btn-ghost flex items-center gap-2 h-fit w-fit">
               <Image src={linkedinIcon} alt="linkedin icon" />
               <span className="font-semibold text-2xl">LinkedIn</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
