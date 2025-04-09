@@ -70,7 +70,7 @@ export default function Signup() {
   return (
     <RootLayoutWrapper>
       <div className="pt-20">
-        <h1 className="text-center font-bold text-3xl pb-8">User SignUp</h1>
+        <h1 className="text-center font-bold text-3xl pb-8">User Sign Up</h1>
         <form onSubmit={handleSubmit} className="mx-auto w-96 grid gap-4">
           <label className="input input-bordered flex items-center gap-2">
             <svg
@@ -162,7 +162,7 @@ export default function Signup() {
             />
           </label>
           <button type="submit" className="btn btn-active btn-accent">
-            {isLoading ? <LoadingSpinner size="md" /> : "SignUp"}
+            {isLoading ? <LoadingSpinner size="md" /> : "Sign Up"}
           </button>
         </form>
         <span className="block text-center pt-8">

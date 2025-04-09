@@ -107,7 +107,7 @@ export default function Login() {
         <span className="block text-center pt-8">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="underline hover:text-gray-300">
-            SignUp
+            Sign Up
           </Link>
         </span>
       </div>
