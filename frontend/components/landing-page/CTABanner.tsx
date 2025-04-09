@@ -18,7 +18,7 @@ export default function CTABanner() {
           list, and boost your productivity.
         </p>
         <Link
-          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-login`}
+          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-signin`}
           className="btn btn-primary flex gap-4 mt-5">
           <Image src={googleIcon} alt="google icon" height={24} width={24} />
           <span>Get Started</span>

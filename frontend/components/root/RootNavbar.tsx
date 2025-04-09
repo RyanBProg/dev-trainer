@@ -10,7 +10,7 @@ export default function RootNavbar() {
       </Link>
       <div className="flex gap-3">
         <Link
-          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-login`}
+          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-signin`}
           className="btn btn-primary flex gap-4">
           <Image src={googleIcon} alt="google icon" height={24} width={24} />
           <span>Sign In</span>

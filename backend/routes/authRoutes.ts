@@ -5,12 +5,14 @@ import {
   logout,
   makeUserAdmin,
   logOutOnAllDevices,
+  oAuthSignIn,
 } from "../controllers/auth/authControllers";
 import { authenticateTokens } from "../middleware/authenticateTokens";
 import { loginAttemptLimiter } from "../utils/rateLimits";
 
 const router = express.Router();
 
+router.get("/oauth-signin", oAuthSignIn);
 router.post("/signup", signup);
 router.post("/login", loginAttemptLimiter, login);
 router.post("/logout", logout);

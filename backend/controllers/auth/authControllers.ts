@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { RequestHandler, Response } from "express";
+import { RequestHandler, Response, Request } from "express";
 import { userSignupSchema } from "../../zod/userSignupSchema";
 import UserModel from "../../db/models/UserModel";
 import {
@@ -17,7 +17,89 @@ import {
 import { setTokenCookie } from "../../utils/setTokenCookie";
 import { env } from "../../zod/envSchema";
 import { adminPasswordSchema } from "../../zod/adminRequestSchema";
+import { OAuth2Client } from "google-auth-library";
 
+const client = new OAuth2Client(
+  env.OAUTH_CLIENT_ID,
+  env.OAUTH_CLIENT_SECRET,
+  env.OAUTH_REDIRECT_URL
+);
+
+const scopes = [
+  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/userinfo.profile",
+];
+
+export const oAuthSignIn = async (_: Request, res: Response) => {
+  try {
+    const authUrl = client.generateAuthUrl({
+      access_type: "offline", // This will ensure you get a refresh token
+      scope: scopes,
+      redirect_uri: env.OAUTH_REDIRECT_URL,
+    });
+
+    res.redirect(authUrl);
+  } catch (error) {
+    handleControllerError(error, res, "oAuthSignIn");
+  }
+};
+
+export const oAuthCallback = async (req: Request, res: Response) => {
+  try {
+    const { code } = req.query; // The authorization code sent from the frontend
+    if (!code) {
+      res.status(400).json({ message: "Missing authorization code" });
+      return;
+    }
+    // Exchange authorization code for tokens
+    const { tokens } = await client.getToken(code as string);
+    if (!tokens) {
+      res.status(400).json({ message: "Failed to get tokens" });
+      return;
+    }
+
+    // Set the credentials for the client
+    client.setCredentials(tokens);
+
+    // Get user info
+    const userInfo = await client.getTokenInfo(tokens.access_token as string);
+    if (!userInfo) {
+      res.status(400).json({ message: "Failed to get user info" });
+      return;
+    }
+
+    const url = "https://www.googleapis.com/oauth2/v3/userinfo";
+    const userProfile = await client.request({ url });
+
+    // Save to DB
+    // await saveUser({
+    //   googleId: userInfo.sub,
+    //   email: userInfo.email,
+    //   name: userProfile.data.name,
+    //   accessToken: tokens.access_token,
+    //   refreshToken: tokens.refresh_token,
+    //   tokenExpiry: new Date(tokens.expiry_date),
+    // });
+
+    // Set session
+    // req.session.userId = userInfo.sub;
+
+    // Wait for session to be saved
+    // await new Promise((resolve, reject) => {
+    //   req.session.save((err) => {
+    //     if (err) reject(err);
+    //     resolve();
+    //   });
+    // });
+
+    // Redirect to frontend
+    res.redirect(`${env.FRONTEND_URL}`);
+  } catch (error) {
+    handleControllerError(error, res, "oAuthCallback");
+  }
+};
+
+// legacy
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
   res
@@ -86,6 +168,7 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   }
 };
 
+// legacy
 export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   req,
   res
