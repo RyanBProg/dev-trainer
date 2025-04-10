@@ -1,6 +1,5 @@
 import githubIcon from "@/public/assets/icons/github-icon-60x60.svg";
 import linkedinIcon from "@/public/assets/icons/linkedin-icon-60x60.svg";
-import googleIcon from "@/public/assets/icons/googel-icon.png";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,12 +16,14 @@ export default function CTABanner() {
           want to learn. Access a comprehensive database, create a personalized
           list, and boost your productivity.
         </p>
-        <Link
-          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-signin`}
-          className="btn btn-primary flex gap-4 mt-5">
-          <Image src={googleIcon} alt="google icon" height={24} width={24} />
-          <span>Get Started</span>
-        </Link>
+        <div className="flex gap-5 mt-5">
+          <Link href="/login" className="btn btn-primary">
+            Login
+          </Link>
+          <Link href="/signup" className="btn btn-primary btn-outline">
+            Sign Up
+          </Link>
+        </div>
         <div className="mt-20">
           <span className="font-semibold text-neutral-content uppercase">
             FEATURED IN
