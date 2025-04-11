@@ -108,7 +108,7 @@ export const oAuthCallback: RequestHandler = async (req, res) => {
     }
 
     req.session.save();
-    res.redirect(`${env.FRONTEND_URL}/dashboard`);
+    res.redirect(`${env.FRONTEND_URL}/auth-success`);
   } catch (error) {
     handleControllerError(error, res, "oAuthCallback");
   }
