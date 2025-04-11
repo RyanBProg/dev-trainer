@@ -1,18 +1,21 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
 import { userLoginSchema } from "@/utils/zod/formSchemas";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/dashboard/LoadingSpinner";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import googleIcon from "@/public/assets/icons/googel-icon.png";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { TUserLogin } from "@/utils/types/types";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm<TUserLogin>();
 
   async function login(email: string, password: string) {
     setIsLoading(true);
@@ -44,23 +47,34 @@ export default function Login() {
     }
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const result = userLoginSchema.safeParse({ email, password });
+  const onSubmit: SubmitHandler<TUserLogin> = async (data) => {
+    const result = userLoginSchema.safeParse(data);
     if (!result.success) {
       toast.error(result.error.errors[0].message || "Something went wrong");
       return;
     }
 
-    await login(email, password);
-  }
+    await login(result.data.email, result.data.password);
+  };
 
   return (
     <RootLayoutWrapper>
       <div className="pt-20">
-        <h1 className="text-center font-bold text-3xl pb-8">User Login</h1>
-        <form onSubmit={handleSubmit} className="mx-auto w-96 grid gap-4">
+        <h1 className="text-center font-bold text-3xl pb-12">User Login</h1>
+        <Link
+          href={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/auth/oauth-signin`}
+          className="btn btn-primary flex gap-4 w-96 mx-auto">
+          <Image src={googleIcon} alt="google icon" height={24} width={24} />
+          <span>Sign In with Google</span>
+        </Link>
+        <div className="mx-auto my-16 text-center flex justify-center  items-center gap-3">
+          <div className="h-px w-10 bg-white"></div>
+          <span>OR</span>
+          <div className="h-px w-10 bg-white"></div>
+        </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto w-96 grid gap-4">
           <label className="input input-bordered flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,8 +89,7 @@ export default function Login() {
               className="grow"
               placeholder="Email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email")}
             />
           </label>
           <label className="input input-bordered flex items-center gap-2">
@@ -96,8 +109,7 @@ export default function Login() {
               className="grow"
               placeholder="Password"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
             />
           </label>
           <button type="submit" className="btn btn-active btn-accent">

@@ -1,7 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import ShortcutModel from "../../db/models/ShortcutModel";
-import { queryParamSchema, shortcutSchema } from "../../zod/shortcutSchema";
-import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
+import { queryParamSchema, shortcutSchema } from "../../zod/schemas";
+import { TCreateShortcutRequestBody } from "../../types/types";
 import { checkKeysConflict, normaliseRequestBody } from "./utils";
 import { handleControllerError } from "../../utils/handleControllerError";
 import { Types } from "mongoose";

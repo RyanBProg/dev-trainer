@@ -3,8 +3,8 @@ import { useState, useRef, useEffect, RefObject } from "react";
 type UseDropdownMenu = {
   dropdownMenuOpen: boolean;
   toggleDropdownMenu: () => void;
-  menuButtonRef: RefObject<HTMLButtonElement>;
-  dropdownMenuRef: RefObject<HTMLUListElement>;
+  menuButtonRef: RefObject<HTMLButtonElement | null>;
+  dropdownMenuRef: RefObject<HTMLUListElement | null>;
 };
 
 export const useDropdownMenu = (): UseDropdownMenu => {

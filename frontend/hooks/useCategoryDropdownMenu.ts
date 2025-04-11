@@ -3,9 +3,9 @@ import { useShortcutCategories } from "./useShortcutCategories";
 
 type UseCategoryDropdownMenu = {
   dropdownMenuOpen: boolean;
-  toggleDropdownMenu: () => void;
-  menuButtonRef: RefObject<HTMLButtonElement>;
-  dropdownMenuRef: RefObject<HTMLUListElement>;
+  toggleDropdownMenu: () => Promise<void>;
+  menuButtonRef: RefObject<HTMLButtonElement | null>;
+  dropdownMenuRef: RefObject<HTMLUListElement | null>;
 };
 
 export const useCategoryDropdownMenu = (): UseCategoryDropdownMenu => {

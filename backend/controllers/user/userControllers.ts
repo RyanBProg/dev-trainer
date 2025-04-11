@@ -1,14 +1,16 @@
-import { Response } from "express";
+import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import UserModel from "../../db/models/UserModel";
-import { TUserTokenRequest } from "../../types/requestBodyControllersTypes";
 import { handleControllerError } from "../../utils/handleControllerError";
 import sharp from "sharp";
 import { env } from "../../zod/envSchema";
-import { shortcutIdSchema, shortcutIdsSchema } from "../../zod/shortcutSchema";
-import { userFullNameSchema } from "../../zod/userSignupSchema";
+import {
+  userFullNameSchema,
+  shortcutIdSchema,
+  shortcutIdsSchema,
+} from "../../zod/schemas";
 
-export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
+export const getUserInfo: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
@@ -28,10 +30,7 @@ export const getUserInfo = async (req: TUserTokenRequest, res: Response) => {
   }
 };
 
-export const addUserShortcuts = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const addUserShortcuts: RequestHandler = async (req, res) => {
   try {
     const parsedShortcutIds = shortcutIdsSchema.safeParse(req.body);
     if (!parsedShortcutIds.success) {
@@ -72,10 +71,7 @@ export const addUserShortcuts = async (
   }
 };
 
-export const deleteUserShortcut = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const deleteUserShortcut: RequestHandler = async (req, res) => {
   try {
     const parsedShortcutId = shortcutIdSchema.safeParse(req.params.shortcutId);
     if (!parsedShortcutId.success) {
@@ -108,10 +104,7 @@ export const deleteUserShortcut = async (
   }
 };
 
-export const getUserShortcuts = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const getUserShortcuts: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
@@ -156,10 +149,7 @@ export const getUserShortcuts = async (
   }
 };
 
-export const addProfilePicture = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const addProfilePicture: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
@@ -207,10 +197,7 @@ export const addProfilePicture = async (
   }
 };
 
-export const getUserProfilePicture = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const getUserProfilePicture: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
@@ -239,10 +226,7 @@ export const getUserProfilePicture = async (
   }
 };
 
-export const addUserFullName = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const addUserFullName: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
@@ -276,7 +260,7 @@ export const addUserFullName = async (
   }
 };
 
-export const deleteUser = async (req: TUserTokenRequest, res: Response) => {
+export const deleteUser: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 

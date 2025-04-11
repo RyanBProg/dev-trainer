@@ -3,15 +3,20 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema(
   {
-    fullName: { type: String, required: true },
+    givenName: { type: String },
+    familyName: { type: String },
+    fullName: { type: String },
+    googleId: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, minLength: 8 },
+    password: { type: String },
+    oAuth_access_token: { type: String },
+    oAuth_token_expiry: { type: String },
+    oAuth_refresh_token: { type: String },
     isAdmin: { type: Boolean, default: false },
     profilePicture: {
-      data: { type: Buffer, required: false },
-      contentType: { type: String, required: false },
+      data: { type: Buffer },
+      contentType: { type: String },
     },
-    tokenVersion: { type: Number, default: 1 },
     custom: {
       shortcuts: [
         { type: Schema.Types.ObjectId, ref: "shortcuts", default: [] },

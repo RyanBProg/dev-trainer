@@ -1,4 +1,4 @@
-import { TSignupRequestBody } from "../../types/requestBodyControllersTypes";
+import { TSignupRequestBody } from "../../types/types";
 
 export const normaliseRequestBody = (body: TSignupRequestBody) => {
   return {
