@@ -221,8 +221,26 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
+    // req.session.userId = user._id.toString();
+    // req.session.save();
+
     req.session.userId = user._id.toString();
-    req.session.save();
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        resolve(true);
+      });
+    });
+
+    // Explicitly set cookie options
+    res.cookie("session-id", req.sessionID, {
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      domain: env.NODE_ENV === "production" ? "devtrainer.net" : undefined,
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       fullName: user.fullName,
