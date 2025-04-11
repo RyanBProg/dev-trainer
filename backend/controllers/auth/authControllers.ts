@@ -103,11 +103,31 @@ export const oAuthCallback: RequestHandler = async (req, res) => {
 
       const savedUser = await newUser.save();
       req.session.userId = savedUser._id.toString();
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          resolve(true);
+        });
+      });
     } else {
       req.session.userId = updatedUser._id.toString();
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          resolve(true);
+        });
+      });
     }
 
-    req.session.save();
+    // Explicitly set cookie options
+    res.cookie("session-id", req.sessionID, {
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      domain: env.NODE_ENV === "production" ? "devtrainer.net" : undefined,
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
     res.redirect(`${env.FRONTEND_URL}/dashboard`);
   } catch (error) {
     handleControllerError(error, res, "oAuthCallback");
@@ -279,7 +299,13 @@ export const logout: RequestHandler = async (req, res) => {
       return;
     }
 
-    res.clearCookie("session-id");
+    res.clearCookie("session-id", {
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      domain: env.NODE_ENV === "production" ? "devtrainer.net" : undefined,
+      path: "/",
+    });
     res.json({ message: "Logged out successfully" });
   });
 };
