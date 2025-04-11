@@ -1,30 +1,33 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useUserAdminRequest } from "@/hooks/useUserAdminRequest";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type TAdminString = {
+  input: string;
+};
 
 export default function AdminRequest() {
   const [formOpen, setFormOpen] = useState(false);
-  const [password, setPassword] = useState("");
   const adminRequestMutation = useUserAdminRequest();
+  const { register, handleSubmit, reset } = useForm<TAdminString>();
 
   const closeForm = () => {
     setFormOpen(false);
-    setPassword("");
+    reset();
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit: SubmitHandler<TAdminString> = async (data) => {
     try {
-      const res = await adminRequestMutation.mutateAsync(password);
+      const res = await adminRequestMutation.mutateAsync(data.input);
       if (res.error) {
         toast.error("Admin password incorrect");
         return;
       }
       setFormOpen(false);
-      setPassword("");
+      reset();
       toast.success("User now an admin");
     } catch (error) {
       toast.error("Failed Admin Request");
@@ -43,7 +46,7 @@ export default function AdminRequest() {
       {formOpen && (
         <form
           className="flex flex-col sm:flex-row sm:items-end gap-5 my-4"
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-3">
             <label>Admin Password</label>
             <div className="relative w-fit">
@@ -51,8 +54,7 @@ export default function AdminRequest() {
                 className="input input-bordered text-base text-base-content max-w-[500px] pr-9"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("input")}
               />
               <button
                 type="button"

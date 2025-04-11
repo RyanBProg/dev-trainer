@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const refreshToken = req.cookies.get("refreshToken");
+  const session = req.cookies.get("session-id");
 
-  if (!refreshToken) {
+  if (!session) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 

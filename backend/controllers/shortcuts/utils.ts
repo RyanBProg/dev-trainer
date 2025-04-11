@@ -1,6 +1,6 @@
 import { FilterQuery } from "mongoose";
 import ShortcutModel from "../../db/models/ShortcutModel";
-import { TCreateShortcutRequestBody } from "../../types/requestBodyControllersTypes";
+import { TCreateShortcutRequestBody } from "../../types/types";
 
 export const normaliseRequestBody = (body: TCreateShortcutRequestBody) => {
   return {

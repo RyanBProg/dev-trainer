@@ -1,23 +1,17 @@
 import bcrypt from "bcryptjs";
-import { RequestHandler, Response, Request } from "express";
-import { userSignupSchema } from "../../zod/userSignupSchema";
+import { RequestHandler } from "express";
 import UserModel from "../../db/models/UserModel";
-import {
-  TLoginRequestBody,
-  TSignupRequestBody,
-  TUserTokenRequest,
-} from "../../types/requestBodyControllersTypes";
+import { TLoginRequestBody, TSignupRequestBody } from "../../types/types";
 import { handleControllerError } from "../../utils/handleControllerError";
 import { normaliseRequestBody } from "./utils";
-import { signinSchema } from "../../zod/signinSchema";
 import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../../utils/generateTokens";
-import { setTokenCookie } from "../../utils/setTokenCookie";
+  signinSchema,
+  adminPasswordSchema,
+  userSignupSchema,
+} from "../../zod/schemas";
 import { env } from "../../zod/envSchema";
-import { adminPasswordSchema } from "../../zod/adminRequestSchema";
 import { OAuth2Client } from "google-auth-library";
+import { TOAUTH_USER_DATA } from "../../types/types";
 
 const client = new OAuth2Client(
   env.OAUTH_CLIENT_ID,
@@ -30,12 +24,14 @@ const scopes = [
   "https://www.googleapis.com/auth/userinfo.profile",
 ];
 
-export const oAuthSignIn = async (_: Request, res: Response) => {
+export const oAuthSignIn: RequestHandler = async (_, res) => {
   try {
     const authUrl = client.generateAuthUrl({
-      access_type: "offline", // This will ensure you get a refresh token
+      access_type: "offline", // For a refresh token
       scope: scopes,
       redirect_uri: env.OAUTH_REDIRECT_URL,
+      // prompt: "consent",
+      // include_granted_scopes: true,
     });
 
     res.redirect(authUrl);
@@ -44,7 +40,7 @@ export const oAuthSignIn = async (_: Request, res: Response) => {
   }
 };
 
-export const oAuthCallback = async (req: Request, res: Response) => {
+export const oAuthCallback: RequestHandler = async (req, res) => {
   try {
     const { code } = req.query; // The authorization code sent from the frontend
     if (!code) {
@@ -62,8 +58,10 @@ export const oAuthCallback = async (req: Request, res: Response) => {
     client.setCredentials(tokens);
 
     // Get user info
-    const userInfo = await client.getTokenInfo(tokens.access_token as string);
-    if (!userInfo) {
+    const userTokenInfo = await client.getTokenInfo(
+      tokens.access_token as string
+    );
+    if (!userTokenInfo) {
       res.status(400).json({ message: "Failed to get user info" });
       return;
     }
@@ -71,35 +69,51 @@ export const oAuthCallback = async (req: Request, res: Response) => {
     const url = "https://www.googleapis.com/oauth2/v3/userinfo";
     const userProfile = await client.request({ url });
 
-    // Save to DB
-    // await saveUser({
-    //   googleId: userInfo.sub,
-    //   email: userInfo.email,
-    //   name: userProfile.data.name,
-    //   accessToken: tokens.access_token,
-    //   refreshToken: tokens.refresh_token,
-    //   tokenExpiry: new Date(tokens.expiry_date),
-    // });
+    // Update user tokens if one exists
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email: userTokenInfo.email },
+      {
+        $set: {
+          oAuth_access_token: tokens.access_token,
+          oAuth_refresh_token: tokens.refresh_token,
+          oAuth_token_expiry: new Date(tokens.expiry_date!),
+        },
+      },
+      {
+        new: true,
+        sanitizeFilter: true,
+      }
+    );
 
-    // Set session
-    // req.session.userId = userInfo.sub;
+    if (!updatedUser) {
+      // Create and save new user
+      const newUser = new UserModel({
+        googleId: userTokenInfo.sub,
+        email: userTokenInfo.email,
+        fullName:
+          (userProfile.data as TOAUTH_USER_DATA).name || "Anonymous User",
+        givenName:
+          (userProfile.data as TOAUTH_USER_DATA).given_name || "Anonymous",
+        familyName:
+          (userProfile.data as TOAUTH_USER_DATA).family_name || "User",
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        tokenExpiry: new Date(tokens.expiry_date!),
+      });
 
-    // Wait for session to be saved
-    // await new Promise((resolve, reject) => {
-    //   req.session.save((err) => {
-    //     if (err) reject(err);
-    //     resolve();
-    //   });
-    // });
+      const savedUser = await newUser.save();
+      req.session.userId = savedUser._id.toString();
+    } else {
+      req.session.userId = updatedUser._id.toString();
+    }
 
-    // Redirect to frontend
-    res.redirect(`${env.FRONTEND_URL}`);
+    req.session.save();
+    res.redirect(`${env.FRONTEND_URL}/dashboard`);
   } catch (error) {
     handleControllerError(error, res, "oAuthCallback");
   }
 };
 
-// legacy
 export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   req,
   res
@@ -120,14 +134,17 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     const normalisedData = normaliseRequestBody(parsedResult.data);
     const { fullName, email, password } = normalisedData;
 
-    // check if the user already exists
+    // Check if user exists and has password set
     const existingUser = await UserModel.findOne({ email })
-      .lean()
-      .setOptions({ sanitizeFilter: true });
-    if (existingUser) {
+      .select("password")
+      .setOptions({
+        sanitizeFilter: true,
+      });
+
+    if (existingUser?.password && existingUser.password.length > 0) {
       res.status(409).json({
-        message: "User email already exists",
-        code: "AUTH_USER_EMAIL_ALREADY_EXISTS",
+        message: "User already exists",
+        code: "AUTH_USER_ALREADY_EXISTS",
       });
       return;
     }
@@ -136,30 +153,27 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new UserModel({
-      fullName,
-      email,
-      password: hashedPassword,
-    });
-    const savedUser = await newUser.save();
-
-    const accessToken = generateAccessToken(
-      savedUser._id.toString(),
-      savedUser.isAdmin
+    // upsert new or existing user
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          password: hashedPassword,
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+        sanitizeFilter: true,
+      }
     );
 
-    const refreshToken = generateRefreshToken(
-      savedUser._id.toString(),
-      savedUser.isAdmin,
-      savedUser.tokenVersion
-    );
-
-    setTokenCookie(res, "accessToken", accessToken);
-    setTokenCookie(res, "refreshToken", refreshToken);
+    req.session.userId = updatedUser._id.toString();
+    req.session.save();
 
     res.status(201).json({
-      fullName: savedUser.fullName,
-      isAdmin: savedUser.isAdmin,
+      fullName: updatedUser.fullName,
+      isAdmin: updatedUser.isAdmin,
       message: "Signed up successfully",
       code: "AUTH_USER_SIGNED_UP",
     });
@@ -168,7 +182,6 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   }
 };
 
-// legacy
 export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   req,
   res
@@ -199,7 +212,7 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password!);
     if (!isPasswordCorrect) {
       res.status(401).json({
         message: "Email or password is incorrect",
@@ -208,16 +221,8 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    const accessToken = generateAccessToken(user._id.toString(), user.isAdmin);
-
-    const refreshToken = generateRefreshToken(
-      user._id.toString(),
-      user.isAdmin,
-      user.tokenVersion
-    );
-
-    setTokenCookie(res, "accessToken", accessToken);
-    setTokenCookie(res, "refreshToken", refreshToken);
+    req.session.userId = user._id.toString();
+    req.session.save();
 
     res.status(200).json({
       fullName: user.fullName,
@@ -230,32 +235,20 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
   }
 };
 
-export const logout: RequestHandler = async (_, res) => {
-  try {
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
-      path: "/",
-    });
+export const logout: RequestHandler = async (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Session destruction failed:", err);
+      res.status(500).json({ error: "Logout failed" });
+      return;
+    }
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
-      path: "/",
-    });
-
-    res.status(200).json({
-      message: "Logged out successfully",
-      code: "AUTH_USER_LOGGED_OUT",
-    });
-  } catch (error) {
-    handleControllerError(error, res, "logout");
-  }
+    res.clearCookie("session-id");
+    res.json({ message: "Logged out successfully" });
+  });
 };
 
-export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
+export const makeUserAdmin: RequestHandler = async (req, res) => {
   try {
     const parsedResult = adminPasswordSchema.safeParse(req.body);
     if (!parsedResult.success) {
@@ -303,39 +296,11 @@ export const makeUserAdmin = async (req: TUserTokenRequest, res: Response) => {
   }
 };
 
-export const logOutOnAllDevices = async (
-  req: TUserTokenRequest,
-  res: Response
-) => {
+export const logOutOnAllDevices: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      { $inc: { tokenVersion: 1 } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      res
-        .status(404)
-        .json({ message: "User not found", code: "USER_NOT_FOUND" });
-      return;
-    }
-
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
-      path: "/",
-    });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
-      path: "/",
-    });
+    // [todo] - implement
 
     res.status(200).json({
       message: "Logged out on all devices successfully",

@@ -6,7 +6,7 @@ const storage = multer.memoryStorage();
 
 // File type validation and size limits
 const fileFilter = (
-  req: Request,
+  _: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {

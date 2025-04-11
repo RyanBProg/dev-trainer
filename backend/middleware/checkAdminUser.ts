@@ -1,9 +1,8 @@
-import { Response, NextFunction } from "express";
-import { TUserTokenRequest } from "../types/requestBodyControllersTypes";
+import { Request, Response, NextFunction } from "express";
 import { handleControllerError } from "../utils/handleControllerError";
 
 export default async function checkAdminUser(
-  req: TUserTokenRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {

@@ -1,32 +1,36 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDeleteUser } from "@/hooks/useDeleteUser";
 import { useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type TDeleteString = {
+  input: string;
+};
 
 export default function DeleteAccountRequest({ email }: { email: string }) {
   const [formOpen, setFormOpen] = useState(false);
-  const [deleteString, setDeleteString] = useState("");
   const deleteUserMutation = useDeleteUser();
   const router = useRouter();
   const deletePassword = `delete-${email}`;
+  const { register, handleSubmit, reset } = useForm<TDeleteString>();
 
   const closeForm = () => {
     setFormOpen(false);
-    setDeleteString("");
+    reset();
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (deleteString !== deletePassword) {
+  const onSubmit: SubmitHandler<TDeleteString> = async (data) => {
+    if (data.input !== deletePassword) {
       toast.error("Delete string must match");
       return;
     }
 
     try {
       await deleteUserMutation.mutateAsync();
+      toast.success("Account Deleted");
       router.push("/signup");
     } catch (error) {
       toast.error("Failed to Delete User");
@@ -45,7 +49,7 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
       {formOpen && (
         <form
           className="flex flex-col sm:flex-row sm:items-end gap-5 my-4"
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-3 relative">
             <label>
               Please type<span className="font-bold"> {deletePassword} </span>
@@ -56,8 +60,7 @@ export default function DeleteAccountRequest({ email }: { email: string }) {
                 className="input input-bordered text-base text-base-content w-full pr-9"
                 type="text"
                 required
-                value={deleteString}
-                onChange={(e) => setDeleteString(e.target.value)}
+                {...register("input")}
               />
               <button
                 type="button"

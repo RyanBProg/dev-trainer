@@ -9,14 +9,26 @@ export const fullNameSchema = z.object({
 
 export const userLoginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be 8 characters or more"),
+  password: z
+    .string()
+    .min(8, "Password must be 8 characters or more")
+    .max(100, "Password must be less than 100 characters"),
 });
+
+const strongPasswordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .max(100, "Password must be less than 100 characters")
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]/,
+    "Password must contain at least one uppercase letter, one lowercase letter and one number"
+  );
 
 export const userSignupSchema = z
   .object({
     fullName: fullNameSchema.shape.fullName,
     email: userLoginSchema.shape.email,
-    password: userLoginSchema.shape.password,
+    password: strongPasswordSchema,
     confirmPassword: userLoginSchema.shape.password,
   })
   .refine((data) => data.password === data.confirmPassword, {

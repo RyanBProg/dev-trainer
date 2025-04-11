@@ -8,13 +8,15 @@ import helmet from "helmet";
 import connectToDB from "./db/connectToDB";
 import { appRequestLimiter } from "./utils/rateLimits";
 import { env } from "./zod/envSchema";
+import session from "express-session";
+import { connectToRedis } from "./db/connectToRedis";
 
 const app: Express = express();
-const PORT = env.PORT;
 
 // Only trust one proxy (Vercel)
 app.set("trust proxy", 1);
 
+// Helmet headers setup
 app.use(
   helmet({
     noSniff: true,
@@ -32,29 +34,56 @@ app.use(
 
 // CORS setup
 const corsOptions = {
-  origin: env.NODE_ENV === "production" ? env.BACKEND_URL : env.FRONTEND_URL,
+  origin: env.NODE_ENV === "production" ? env.BACKEND_URL : env.FRONTEND_URL, // using reverse proxy in prod
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Handle preflight requests
 
-app.use(appRequestLimiter);
+// Parsing
 app.use(express.json());
 app.use(cookieParser());
 
+// Mongoose DB connection
 connectToDB();
 
+// Connect to Redis
+const { redisStore } = connectToRedis();
+
+// sessions setup
+app.use(
+  session({
+    secret: env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: redisStore,
+    name: "session-id",
+    rolling: true, // Resets expiry on each request
+    cookie: {
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Rate limiting for all routes
+app.use(appRequestLimiter);
+
+// Route handlers
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
 
+// Welcome route
 app.get("/", (_, res: Response) => {
   res.status(200).send("Welcome to the Dev Trainer API");
 });
 
-app.listen(PORT, () => {
-  console.log(`[server] Server running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`[server] Server running on http://localhost:${env.PORT}`);
 });
 
 // export for vercel

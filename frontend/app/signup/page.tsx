@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import RootLayoutWrapper from "@/components/root/RootLayoutWrapper";
 import { userSignupSchema } from "@/utils/zod/formSchemas";
@@ -10,18 +10,12 @@ import { useRouter } from "next/navigation";
 import { TUserSignup } from "../../utils/types/types";
 import Image from "next/image";
 import googleIcon from "@/public/assets/icons/googel-icon.png";
-
-const signupDataTemplate = {
-  fullName: "",
-  email: "",
-  confirmPassword: "",
-  password: "",
-};
+import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function Signup() {
-  const [signupData, setSignupData] = useState(signupDataTemplate);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm<TUserSignup>();
 
   async function signup(signupData: TUserSignup) {
     setIsLoading(true);
@@ -58,17 +52,16 @@ export default function Signup() {
     }
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-
-    const result = userSignupSchema.safeParse(signupData);
+  const onSubmit: SubmitHandler<TUserSignup> = async (data) => {
+    const result = userSignupSchema.safeParse(data);
     if (!result.success) {
       toast.error(result.error.errors[0].message || "Something went wrong");
       return;
     }
 
-    await signup(signupData);
-  }
+    await signup(result.data);
+  };
+
   return (
     <RootLayoutWrapper>
       <div className="pt-20">
@@ -84,7 +77,9 @@ export default function Signup() {
           <span>OR</span>
           <div className="h-px w-10 bg-white"></div>
         </div>
-        <form onSubmit={handleSubmit} className="mx-auto w-96 grid gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto w-96 grid gap-4">
           <label className="input input-bordered flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -99,10 +94,7 @@ export default function Signup() {
               className="grow"
               placeholder="Full Name"
               required
-              value={signupData.fullName}
-              onChange={(e) =>
-                setSignupData({ ...signupData, fullName: e.target.value })
-              }
+              {...register("fullName")}
             />
           </label>
           <label className="input input-bordered flex items-center gap-2">
@@ -119,10 +111,7 @@ export default function Signup() {
               className="grow"
               placeholder="Email"
               required
-              value={signupData.email}
-              onChange={(e) =>
-                setSignupData({ ...signupData, email: e.target.value })
-              }
+              {...register("email")}
             />
           </label>
           <label className="input input-bordered flex items-center gap-2">
@@ -142,10 +131,7 @@ export default function Signup() {
               className="grow"
               placeholder="Password"
               required
-              value={signupData.password}
-              onChange={(e) =>
-                setSignupData({ ...signupData, password: e.target.value })
-              }
+              {...register("password")}
             />
           </label>
           <label className="input input-bordered flex items-center gap-2">
@@ -165,13 +151,7 @@ export default function Signup() {
               className="grow"
               placeholder="Confirm Password"
               required
-              value={signupData.confirmPassword}
-              onChange={(e) =>
-                setSignupData({
-                  ...signupData,
-                  confirmPassword: e.target.value,
-                })
-              }
+              {...register("confirmPassword")}
             />
           </label>
           <button type="submit" className="btn btn-active btn-accent">

@@ -1,5 +1,8 @@
 // client request types
 
+import { z } from "zod";
+import { userLoginSchema, userSignupSchema } from "../zod/formSchemas";
+
 export type TUserData = {
   fullName: string;
   email: string;
@@ -9,12 +12,8 @@ export type TUserData = {
   updatedAt: string;
 };
 
-export type TUserSignup = {
-  fullName: string;
-  email: string;
-  confirmPassword: string;
-  password: string;
-};
+export type TUserSignup = z.infer<typeof userSignupSchema>;
+export type TUserLogin = z.infer<typeof userLoginSchema>;
 
 // server response types
 
