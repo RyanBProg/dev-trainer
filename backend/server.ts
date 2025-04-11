@@ -34,7 +34,7 @@ app.use(
 
 // CORS setup
 const corsOptions = {
-  origin: env.NODE_ENV === "production" ? env.BACKEND_URL : env.FRONTEND_URL, // using reverse proxy in prod
+  origin: env.FRONTEND_URL,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
