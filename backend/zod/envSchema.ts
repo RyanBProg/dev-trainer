@@ -15,6 +15,7 @@ const envSchema = z.object({
   OAUTH_CLIENT_ID: z.string(),
   OAUTH_CLIENT_SECRET: z.string(),
   OAUTH_REDIRECT_URL: z.string(),
+  CRON_SECRET: z.string().min(1, "CRON_SECRET must be set"),
 });
 
 export const env = envSchema.parse(process.env);

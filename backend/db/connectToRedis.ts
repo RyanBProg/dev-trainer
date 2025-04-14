@@ -2,9 +2,11 @@ import Redis from "ioredis";
 import { RedisStore } from "connect-redis";
 import { env } from "../zod/envSchema";
 
+let redisClient: Redis;
+
 export function connectToRedis() {
   try {
-    const redisClient = new Redis(env.REDIS_URL);
+    redisClient = new Redis(env.REDIS_URL);
 
     redisClient.on("connect", () => {
       console.log("[server] Connected to Redis");
@@ -28,4 +30,11 @@ export function connectToRedis() {
     }
     throw error;
   }
+}
+
+export function getRedisClient(): Redis {
+  if (!redisClient) {
+    throw new Error("Redis client not initialized");
+  }
+  return redisClient;
 }
