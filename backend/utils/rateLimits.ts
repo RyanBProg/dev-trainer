@@ -25,3 +25,16 @@ export const loginAttemptLimiter = rateLimit({
   },
   headers: true,
 });
+
+export const snippetRequestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15,
+  handler: (_, res) => {
+    res.status(429).json({
+      message: "Too many requests, please try again later.",
+      code: "RATE_LIMIT_EXCEEDED",
+      status: 429,
+    });
+  },
+  headers: true,
+});

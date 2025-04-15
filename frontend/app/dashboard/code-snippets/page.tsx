@@ -57,8 +57,9 @@ export default function Page() {
 
       setInput("");
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong!");
+      const message =
+        error instanceof Error ? error.message : "Failed to login";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
