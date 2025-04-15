@@ -16,7 +16,7 @@ const languageOptions = [
   "typescript",
 ];
 
-export default function page() {
+export default function Page() {
   const [input, setInput] = useState("");
   const [sentMessage, setSentMessage] = useState("");
   const [reply, setReply] = useState("");
@@ -86,9 +86,9 @@ export default function page() {
             </p>
             <p className="text-sm sm:text-lg text-accent mt-10">
               <span className="font-semibold">Try</span>
-              <br /> "How do I implement merge sort?"
+              <br /> &quot;How do I implement merge sort?&quot;
               <br /> or <br />
-              "Write function to check if a number is prime"
+              &quot;Write function to check if a number is prime&quot;
             </p>
           </div>
         )}
