@@ -51,7 +51,6 @@ export default function NavMenu() {
                 <li>
                   <Link href="/dashboard/admin" onClick={toggleDropdownMenu}>
                     Admin Panel
-                    <span className="badge badge-info">New</span>
                   </Link>
                 </li>
               )}
@@ -60,6 +59,7 @@ export default function NavMenu() {
                   href="/dashboard/code-snippets"
                   onClick={toggleDropdownMenu}>
                   Code Snippets
+                  <span className="badge badge-info">New</span>
                 </Link>
               </li>
               <li>

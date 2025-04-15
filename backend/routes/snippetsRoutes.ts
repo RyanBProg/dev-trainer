@@ -4,6 +4,6 @@ import { checkSession } from "../middleware/checkSession";
 
 const router = Router();
 
-router.post("/", getGenerateSnippet);
+router.post("/", checkSession, getGenerateSnippet);
 
 export default router;
