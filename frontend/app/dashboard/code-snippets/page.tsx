@@ -93,7 +93,7 @@ export default function Page() {
           </div>
         )}
         {reply && (
-          <div className="mockup-code w-full mt-10">
+          <div className="mx-auto mockup-code max-w-4xl mt-10">
             <SyntaxHighlighter language={language} style={a11yDark}>
               {reply}
             </SyntaxHighlighter>
