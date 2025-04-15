@@ -54,16 +54,3 @@ def inorder_traversal(root):
 
 Generate a clean, efficient solution for the above request following these guidelines.`;
 };
-
-// Usage types
-export type SnippetRequest = {
-  prompt: string;
-  language?: string;
-  complexity?: "basic" | "intermediate" | "advanced";
-};
-
-// Example usage:
-// const prompt = generateSnippetPrompt(
-//   "How do I implement quicksort?",
-//   "typescript"
-// );
