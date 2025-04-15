@@ -11,7 +11,6 @@ import { appRequestLimiter } from "./utils/rateLimits";
 import { env } from "./zod/envSchema";
 import session from "express-session";
 import { connectToRedis } from "./db/connectToRedis";
-import { healthCheck } from "./controllers/status/healthCheckContorllers";
 
 const app: Express = express();
 
@@ -81,7 +80,6 @@ app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
 app.use("/api/snippets", snippetRoutes);
-app.get("/api/health", healthCheck);
 
 // Welcome route
 app.get("/", (_, res: Response) => {
