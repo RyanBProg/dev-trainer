@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function page() {
   return (
-    <div className="px-8 mt-32">
+    <div className="px-8 mt-32 flex-1">
       <div className="container mx-auto flex flex-col gap-20 items-center">
         <Image src={roadworkImage} alt="roadworks icon" />
         <div className="flex flex-col gap-4 items-center">

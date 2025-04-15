@@ -16,6 +16,7 @@ const envSchema = z.object({
   OAUTH_CLIENT_SECRET: z.string(),
   OAUTH_REDIRECT_URL: z.string(),
   CRON_SECRET: z.string().min(1, "CRON_SECRET must be set"),
+  GEMINI_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import shortcutRoutes from "./routes/shortcutsRoutes";
+import snippetRoutes from "./routes/snippetsRoutes";
 import cors from "cors";
 import helmet from "helmet";
 import connectToDB from "./db/connectToDB";
@@ -79,6 +80,7 @@ app.use(appRequestLimiter);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/shortcuts", shortcutRoutes);
+app.use("/api/snippets", snippetRoutes);
 app.get("/api/health", healthCheck);
 
 // Welcome route
