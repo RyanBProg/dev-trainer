@@ -188,9 +188,6 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       }
     );
 
-    // req.session.userId = updatedUser._id.toString();
-    // req.session.save();
-
     req.session.userId = updatedUser._id.toString();
     await new Promise((resolve, reject) => {
       req.session.save((err) => {
@@ -259,9 +256,6 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    // req.session.userId = user._id.toString();
-    // req.session.save();
-
     req.session.userId = user._id.toString();
     await new Promise((resolve, reject) => {
       req.session.save((err) => {
@@ -312,6 +306,14 @@ export const logout: RequestHandler = async (req, res) => {
 
 export const makeUserAdmin: RequestHandler = async (req, res) => {
   try {
+    if (req.user?.isAdmin) {
+      res.status(400).json({
+        message: "User is already an admin",
+        code: "USER_ALREADY_IS_ADMIN",
+      });
+      return;
+    }
+
     const parsedResult = adminPasswordSchema.safeParse(req.body);
     if (!parsedResult.success) {
       res.status(422).json({

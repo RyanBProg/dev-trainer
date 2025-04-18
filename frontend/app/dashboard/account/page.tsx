@@ -117,7 +117,7 @@ export default function Account() {
                   </button>
                 </div>
               </div>
-              <AdminRequest />
+              {!data.isAdmin && <AdminRequest />}
               <DeleteAccountRequest email={data.email} />
             </div>
           </>
