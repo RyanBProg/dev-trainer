@@ -363,13 +363,81 @@ export const makeUserAdmin: RequestHandler = async (req, res) => {
 export const logOutOnAllDevices: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({
+        message: "Unauthorized - No user ID",
+        code: "AUTH_NO_USER_ID",
+      });
+      return;
+    }
 
-    // [todo] - implement
+    // Get Redis store from session
+    const redisStore = req.sessionStore as any;
+
+    // Get all sessions more efficiently
+    const deleteUserSessions = () =>
+      new Promise((resolve, reject) => {
+        // Use Redis scan instead of getting all sessions at once
+        redisStore.ids((error: Error | null, ids: string[]) => {
+          if (error) {
+            return reject(error);
+          }
+
+          // Process sessions in batches
+          const batchSize = 100;
+          const batches = [];
+
+          for (let i = 0; i < ids.length; i += batchSize) {
+            const batch = ids.slice(i, i + batchSize).map(
+              (sid) =>
+                new Promise<void>((resolveSession) => {
+                  redisStore.get(sid, (err: Error | null, session: any) => {
+                    if (err || !session) {
+                      resolveSession();
+                      return;
+                    }
+
+                    if (session.userId === userId) {
+                      redisStore.destroy(sid, (destroyErr: Error | null) => {
+                        if (destroyErr) {
+                          console.error(
+                            `Failed to destroy session ${sid}:`,
+                            destroyErr
+                          );
+                        }
+                        resolveSession();
+                      });
+                    } else {
+                      resolveSession();
+                    }
+                  });
+                })
+            );
+
+            batches.push(Promise.all(batch));
+          }
+
+          Promise.all(batches).then(resolve).catch(reject);
+        });
+      });
+
+    await deleteUserSessions();
+
+    // Clear the current session cookie
+    res.clearCookie("session-id", {
+      secure: env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      domain: env.NODE_ENV === "production" ? "devtrainer.net" : undefined,
+      path: "/",
+    });
 
     res.status(200).json({
       message: "Logged out on all devices successfully",
       code: "AUTH_LOGGED_OUT_ON_ALL_DEVICES",
     });
+
+    return;
   } catch (error) {
     handleControllerError(error, res, "logOutOnAllDevices");
   }
