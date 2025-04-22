@@ -512,15 +512,127 @@ const vsCodeShortcuts = [
   },
 ];
 
+const terminalShortcuts = [
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Clear Terminal",
+    description: "Clear the terminal screen",
+    keys: ["ctrl", "l"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "End of Line",
+    description: "Move cursor to end of line",
+    keys: ["ctrl", "e"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Start of Line",
+    description: "Move cursor to start of line",
+    keys: ["ctrl", "a"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Delete Line",
+    description: "Delete entire line",
+    keys: ["ctrl", "u"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Delete Word",
+    description: "Delete word before cursor",
+    keys: ["ctrl", "w"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Search History",
+    description: "Search through command history",
+    keys: ["ctrl", "r"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Next Command",
+    description: "Go to next command in history",
+    keys: ["ctrl", "n"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Previous Command",
+    description: "Go to previous command in history",
+    keys: ["ctrl", "p"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Clear Screen Forward",
+    description: "Clear the screen from cursor forward",
+    keys: ["ctrl", "k"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Interrupt Process",
+    description: "Stop/interrupt current process",
+    keys: ["ctrl", "c"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Exit Terminal",
+    description: "Exit current terminal session",
+    keys: ["ctrl", "d"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Word Forward",
+    description: "Move cursor forward one word",
+    keys: ["option", "f"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Word Backward",
+    description: "Move cursor backward one word",
+    keys: ["option", "b"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Clear Word Forward",
+    description: "Delete word after cursor",
+    keys: ["option", "d"],
+    type: "terminal",
+  },
+  {
+    _id: new Types.ObjectId(),
+    shortDescription: "Paste Last Argument",
+    description: "Paste last argument from previous command",
+    keys: ["option", "."],
+    type: "terminal",
+  },
+];
+
 async function seedDB() {
   try {
     await mongoose.connect(env.MONGO_URL);
 
     await ShortcutModel.deleteMany({
-      type: { $in: ["mac", "vs code"] },
+      type: { $in: ["mac", "vs code", "terminal"] },
     });
 
-    await ShortcutModel.insertMany([...macShortcuts, ...vsCodeShortcuts]);
+    await ShortcutModel.insertMany([
+      ...macShortcuts,
+      ...vsCodeShortcuts,
+      ...terminalShortcuts,
+    ]);
 
     console.log("Shortcuts seeded successfully!");
   } catch (error) {
