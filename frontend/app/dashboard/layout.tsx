@@ -1,8 +1,8 @@
 "use client";
 
-import Footer from "@/components/dashboard/navbar/Footer";
 import Navbar from "@/components/dashboard/navbar/Navbar";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
+import RootFooter from "@/components/root/RootFooter";
 
 export default function RootLayout({
   children,
@@ -14,7 +14,7 @@ export default function RootLayout({
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 flex min-w-screen">{children}</main>
-        <Footer />
+        <RootFooter />
       </div>
     </ReactQueryProvider>
   );
