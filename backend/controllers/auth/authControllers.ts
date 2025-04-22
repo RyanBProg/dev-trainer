@@ -12,6 +12,7 @@ import {
 import { env } from "../../zod/envSchema";
 import { OAuth2Client } from "google-auth-library";
 import { TOAUTH_USER_DATA } from "../../types/types";
+import { encryptToken } from "../../utils/encryptToken";
 
 const client = new OAuth2Client(
   env.OAUTH_CLIENT_ID,
@@ -24,14 +25,13 @@ const scopes = [
   "https://www.googleapis.com/auth/userinfo.profile",
 ];
 
-export const oAuthSignIn: RequestHandler = async (_, res) => {
+export const oAuthSignIn: RequestHandler = async (req, res) => {
   try {
     const authUrl = client.generateAuthUrl({
       access_type: "offline", // For a refresh token
       scope: scopes,
       redirect_uri: env.OAUTH_REDIRECT_URL,
       // prompt: "consent",
-      // include_granted_scopes: true,
     });
 
     res.redirect(authUrl);
@@ -42,22 +42,19 @@ export const oAuthSignIn: RequestHandler = async (_, res) => {
 
 export const oAuthCallback: RequestHandler = async (req, res) => {
   try {
-    const { code } = req.query; // The authorization code sent from the frontend
+    const { code } = req.query;
     if (!code) {
       res.status(400).json({ message: "Missing authorization code" });
       return;
     }
-    // Exchange authorization code for tokens
+
     const { tokens } = await client.getToken(code as string);
     if (!tokens) {
       res.status(400).json({ message: "Failed to get tokens" });
       return;
     }
 
-    // Set the credentials for the client
     client.setCredentials(tokens);
-
-    // Get user info
     const userTokenInfo = await client.getTokenInfo(
       tokens.access_token as string
     );
@@ -66,60 +63,68 @@ export const oAuthCallback: RequestHandler = async (req, res) => {
       return;
     }
 
-    const url = "https://www.googleapis.com/oauth2/v3/userinfo";
-    const userProfile = await client.request({ url });
+    // Check if user exists and was deleted
+    const existingUser = await UserModel.findOne({
+      email: userTokenInfo.email,
+    })
+      .select("wasDeleted oAuth_refresh_token")
+      .lean();
 
-    // Update user tokens if one exists
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { email: userTokenInfo.email },
-      {
-        $set: {
-          oAuth_access_token: tokens.access_token,
-          oAuth_refresh_token: tokens.refresh_token,
-          oAuth_token_expiry: new Date(tokens.expiry_date!),
-        },
-      },
-      {
-        new: true,
-        sanitizeFilter: true,
-      }
-    );
-
-    if (!updatedUser) {
-      // Create and save new user
-      const newUser = new UserModel({
-        googleId: userTokenInfo.sub,
-        email: userTokenInfo.email,
-        fullName:
-          (userProfile.data as TOAUTH_USER_DATA).name || "Anonymous User",
-        givenName:
-          (userProfile.data as TOAUTH_USER_DATA).given_name || "Anonymous",
-        familyName:
-          (userProfile.data as TOAUTH_USER_DATA).family_name || "User",
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        tokenExpiry: new Date(tokens.expiry_date!),
+    // If user was deleted but we didn't get a refresh token, redirect to sign in again
+    if (
+      existingUser &&
+      !tokens.refresh_token &&
+      !existingUser.oAuth_refresh_token
+    ) {
+      const newAuthUrl = client.generateAuthUrl({
+        access_type: "offline",
+        scope: scopes,
+        redirect_uri: env.OAUTH_REDIRECT_URL,
+        prompt: "consent", // Force consent only for previously deleted users
       });
-
-      const savedUser = await newUser.save();
-      req.session.userId = savedUser._id.toString();
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => {
-          if (err) reject(err);
-          resolve(true);
-        });
-      });
-    } else {
-      req.session.userId = updatedUser._id.toString();
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => {
-          if (err) reject(err);
-          resolve(true);
-        });
-      });
+      return res.redirect(newAuthUrl);
     }
 
-    // Explicitly set cookie options
+    const url = "https://www.googleapis.com/oauth2/v3/userinfo";
+    const userProfile = await client.request({ url });
+    const userData = userProfile.data as TOAUTH_USER_DATA;
+
+    const updateData = {
+      googleId: userTokenInfo.sub,
+      email: userTokenInfo.email,
+      fullName: userData.name || "Anonymous User",
+      givenName: userData.given_name || "Anonymous",
+      familyName: userData.family_name || "User",
+      oAuth_access_token: encryptToken(tokens.access_token!),
+      oAuth_refresh_token: encryptToken(
+        tokens.refresh_token || existingUser?.oAuth_refresh_token!
+      ),
+      oAuth_token_expiry: new Date(tokens.expiry_date!),
+      wasDeleted: false, // reset
+    };
+
+    // If user was deleted, update timestamps
+    const options = existingUser?.wasDeleted
+      ? { new: true, timestamps: true }
+      : { new: true, setDefaultsOnInsert: true };
+
+    // Update or create user
+    const user = await UserModel.findOneAndUpdate(
+      { email: userTokenInfo.email },
+      { $set: updateData },
+      { ...options, upsert: true }
+    );
+
+    // Set session
+    req.session.userId = user?._id.toString();
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        resolve(true);
+      });
+    });
+
+    // Set cookie
     res.cookie("session-id", req.sessionID, {
       secure: env.NODE_ENV === "production",
       httpOnly: true,
@@ -128,6 +133,7 @@ export const oAuthCallback: RequestHandler = async (req, res) => {
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
+
     res.redirect(`${env.FRONTEND_URL}/dashboard`);
   } catch (error) {
     handleControllerError(error, res, "oAuthCallback");
@@ -139,13 +145,11 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
   res
 ) => {
   try {
-    // zod validation
     const parsedResult = userSignupSchema.safeParse(req.body);
     if (!parsedResult.success) {
       res.status(422).json({
         message:
-          parsedResult.error.errors[0]?.message ||
-          "Invalid sign up input field(s)",
+          parsedResult.error.errors[0]?.message || "Invalid sign up data",
         code: "AUTH_INVALID_REQUEST_DATA",
       });
       return;
@@ -154,14 +158,11 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     const normalisedData = normaliseRequestBody(parsedResult.data);
     const { fullName, email, password } = normalisedData;
 
-    // Check if user exists and has password set
+    // Check existing user
     const existingUser = await UserModel.findOne({ email })
-      .select("password")
-      .setOptions({
-        sanitizeFilter: true,
-      });
-
-    if (existingUser?.password && existingUser.password.length > 0) {
+      .select("wasDeleted")
+      .lean();
+    if (existingUser && !existingUser.wasDeleted) {
       res.status(409).json({
         message: "User already exists",
         code: "AUTH_USER_ALREADY_EXISTS",
@@ -169,26 +170,33 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       return;
     }
 
-    // hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // upsert new or existing user
-    const updatedUser = await UserModel.findOneAndUpdate(
+    // Update or create user
+    const user = await UserModel.findOneAndUpdate(
       { email },
       {
         $set: {
           password: hashedPassword,
+          fullName,
+          wasDeleted: false,
         },
+        ...(existingUser?.wasDeleted && {
+          $currentDate: {
+            updatedAt: true,
+            createdAt: true,
+          },
+        }),
       },
       {
         upsert: true,
         new: true,
-        sanitizeFilter: true,
+        setDefaultsOnInsert: true,
       }
     );
 
-    req.session.userId = updatedUser._id.toString();
+    req.session.userId = user._id.toString();
     await new Promise((resolve, reject) => {
       req.session.save((err) => {
         if (err) reject(err);
@@ -196,7 +204,6 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
       });
     });
 
-    // Explicitly set cookie options
     res.cookie("session-id", req.sessionID, {
       secure: env.NODE_ENV === "production",
       httpOnly: true,
@@ -207,8 +214,8 @@ export const signup: RequestHandler<{}, {}, TSignupRequestBody, {}> = async (
     });
 
     res.status(201).json({
-      fullName: updatedUser.fullName,
-      isAdmin: updatedUser.isAdmin,
+      fullName: user.fullName,
+      isAdmin: user.isAdmin,
       message: "Signed up successfully",
       code: "AUTH_USER_SIGNED_UP",
     });
@@ -247,7 +254,16 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       return;
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password!);
+    if (!user.password) {
+      res.status(401).json({
+        message:
+          "Login with Google - Login with your Google account and set a password to use password login",
+        code: "ACCOUNT_ALREADY_REGISTERED",
+      });
+      return;
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       res.status(401).json({
         message: "Email or password is incorrect",
@@ -255,6 +271,8 @@ export const login: RequestHandler<{}, {}, TLoginRequestBody, {}> = async (
       });
       return;
     }
+
+    console.log("3");
 
     req.session.userId = user._id.toString();
     await new Promise((resolve, reject) => {

@@ -264,23 +264,41 @@ export const deleteUser: RequestHandler = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    await UserModel.deleteOne({ _id: userId });
+    // Only keep email and wasDeleted flag
+    await UserModel.findByIdAndUpdate(userId, {
+      $set: {
+        givenName: null,
+        familyName: null,
+        fullName: null,
+        googleId: null,
+        password: null,
+        profilePicture: null,
+        isAdmin: false,
+        custom: { shortcuts: [] },
+        wasDeleted: true,
+        oAuth_refresh_token: null,
+        oAuth_access_token: null,
+        oAuth_token_expiry: null,
+      },
+    });
 
-    res.clearCookie("accessToken", {
+    // Handle session cleanup
+    req.session.destroy((err) => {
+      if (err) console.error("Session destruction failed:", err);
+    });
+
+    res.clearCookie("session-id", {
+      secure: env.NODE_ENV === "production",
       httpOnly: true,
       sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
+      domain: env.NODE_ENV === "production" ? "devtrainer.net" : undefined,
       path: "/",
     });
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      secure: env.NODE_ENV === "production" ? true : false,
-      path: "/",
+    res.status(200).json({
+      message: "User deleted successfully",
+      code: "USER_DELETED",
     });
-
-    res.status(200).json({ message: "User Deleted", code: "USER_DELETED" });
   } catch (error) {
     handleControllerError(error, res, "deleteUser");
   }
