@@ -7,6 +7,7 @@
     "start": "node dist/server.js",
     "dev": "nodemon server.ts",
     "dev-nots": "nodemon --exec ts-node --transpile-only server.ts",
+    "seed": "ts-node db/seeds/seed.ts",
     "vercel-build": "echo vercel-build"
   },
   "keywords": [],

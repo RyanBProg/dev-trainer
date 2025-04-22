@@ -109,7 +109,6 @@ export default function ShortcutForm({
             <option value="">Select an option</option>
             <option value="mac">Mac</option>
             <option value="vs code">VS Code</option>
-            <option value="git">Git</option>
             <option value="terminal">Terminal</option>
           </select>
         </label>
