@@ -1,6 +1,6 @@
 # Dev Trainer - Full Stack Application
 
-A comprehensive full stack application designed to help developers improve their skills. Built with Next.js for the frontend and Node.js for the backend.
+Master keyboard shortcuts through personalised lists. Features include custom shortcut organisation, an admin panel for content management and AI for generating code snippets.
 
 ### 🚀 Live Demo
 

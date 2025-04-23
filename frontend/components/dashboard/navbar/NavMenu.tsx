@@ -44,7 +44,15 @@ export default function NavMenu() {
             <>
               <li>
                 <Link href="/dashboard" onClick={toggleDropdownMenu}>
-                  Dashboard
+                  Shortcuts
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/code-snippets"
+                  onClick={toggleDropdownMenu}>
+                  Code Snippets
+                  <span className="badge badge-info">New</span>
                 </Link>
               </li>
               {data.isAdmin && (
@@ -54,14 +62,6 @@ export default function NavMenu() {
                   </Link>
                 </li>
               )}
-              <li>
-                <Link
-                  href="/dashboard/code-snippets"
-                  onClick={toggleDropdownMenu}>
-                  Code Snippets
-                  <span className="badge badge-info">New</span>
-                </Link>
-              </li>
               <li>
                 <Link href="/dashboard/guides" onClick={toggleDropdownMenu}>
                   Guides
