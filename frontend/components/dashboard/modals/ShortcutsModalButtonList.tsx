@@ -1,10 +1,9 @@
 "use client";
 
-import { useAddUserShortcuts } from "@/hooks/useAddUserShortcuts";
 import { useShortcutsOfType } from "@/hooks/useShortcutsOfType";
 import { TShortcut } from "@/utils/types/types";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
 
 type Props = {
