@@ -63,6 +63,10 @@ export const getShortcutTypes = async (_: Request, res: Response) => {
 export const getShortcutsOfType = async (req: Request, res: Response) => {
   try {
     const type = decodeURIComponent(req.params.type);
+    const { page = 1, limit = 15 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
+
     const result = queryParamSchema.safeParse(type);
     if (!result.success) {
       res.status(400).json({
@@ -72,16 +76,32 @@ export const getShortcutsOfType = async (req: Request, res: Response) => {
       return;
     }
 
-    const shortcuts = await ShortcutModel.find({ type }).lean();
-    if (shortcuts.length === 0) {
-      res.status(404).json({
-        message: "No shortcuts found for the specified type",
-        code: "NO_SHORTCUTS_FOUND",
+    if (pageNumber < 1 || limitNumber < 1) {
+      res.status(400).json({
+        message: "Page and limit must be positive integers",
+        code: "INVALID_PAGE_LIMIT",
       });
       return;
     }
 
-    res.status(200).json(shortcuts);
+    const shortcuts = await ShortcutModel.find({ type })
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const totalItems = await ShortcutModel.countDocuments({ type });
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    res.status(200).json({
+      shortcuts,
+      pagination: {
+        currentPage: pageNumber,
+        totalPages,
+        totalItems,
+        limit: limitNumber,
+      },
+    });
   } catch (error) {
     handleControllerError(error, res, "getShortcutsTypeOfType");
   }

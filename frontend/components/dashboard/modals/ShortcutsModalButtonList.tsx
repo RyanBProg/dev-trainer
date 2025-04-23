@@ -1,8 +1,11 @@
 "use client";
 
+import { useAddUserShortcuts } from "@/hooks/useAddUserShortcuts";
+import { useShortcutsOfType } from "@/hooks/useShortcutsOfType";
 import { TShortcut } from "@/utils/types/types";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 
 type Props = {
   type: string;
@@ -15,38 +18,26 @@ export default function ShortcutsModalButtonList({
   setSelectedShortcut,
   setIsModalOpen,
 }: Props) {
-  const [shortcuts, setShortcuts] = useState<TShortcut[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [page, setPage] = useState(1);
+  const limit = 15;
+  const { data, isError, isLoading } = useShortcutsOfType(type, {
+    page,
+    limit,
+  });
 
-  useEffect(() => {
-    const fetchShortcuts = async () => {
-      try {
-        const encodedType = encodeURIComponent(type);
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/shortcuts/type/${encodedType}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+  if (isError || (data && data.error)) {
+    router.push("/login");
+    return null;
+  }
 
-        const data = await res.json();
+  if (isLoading) {
+    return <LoadingSpinner size="md" />;
+  }
 
-        if (data.error) {
-          router.push("/login");
-          return;
-        }
-
-        setShortcuts(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch shortcuts:", error);
-      }
-    };
-
-    fetchShortcuts();
-  }, [type, router]);
+  if (data.shortcuts.length < 1) {
+    return <p>No Shortcuts Found</p>;
+  }
 
   async function handleSubmit(eValue: string) {
     if (eValue === "") {
@@ -72,31 +63,72 @@ export default function ShortcutsModalButtonList({
     setIsModalOpen(false);
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
-
-  if (shortcuts.length === 0) {
-    return <p>No More Shortcuts</p>;
-  }
-
   return (
-    <ul className="grid gap-3">
-      {shortcuts.map((shortcut) => (
-        <li key={shortcut._id} className="capitalize flex gap-2 items-center">
+    <>
+      <ul className="grid gap-3">
+        {data.shortcuts.map((shortcut: TShortcut) => (
+          <li key={shortcut._id} className="capitalize flex gap-2 items-center">
+            <button
+              className="btn capitalize"
+              value={shortcut._id}
+              onClick={(e) => handleSubmit(e.currentTarget.value)}
+              type="button">
+              {shortcut.shortDescription}
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Pagination Controls */}
+      {data?.pagination && (
+        <div className="flex justify-center gap-2 mt-10">
           <button
-            className="btn capitalize"
-            value={shortcut._id}
-            onClick={(e) => handleSubmit(e.currentTarget.value)}
-            type="button">
-            {shortcut.shortDescription}
+            className="btn btn-sm"
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-left-icon lucide-arrow-left">
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
           </button>
-        </li>
-      ))}
-    </ul>
+          <span className="flex items-center">
+            Page {page} of {data.pagination.totalPages}
+          </span>
+          <button
+            className="btn btn-sm"
+            type="button"
+            onClick={() =>
+              setPage((p) => Math.min(data.pagination.totalPages, p + 1))
+            }
+            disabled={page === data.pagination.totalPages}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-right-icon lucide-arrow-right">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
+    </>
   );
 }
