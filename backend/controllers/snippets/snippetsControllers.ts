@@ -7,7 +7,7 @@ import { generateSnippetPrompt } from "./utils";
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
+  model: "gemini-2.5-flash",
   generationConfig: {
     temperature: 0.1,
     topK: 40,
